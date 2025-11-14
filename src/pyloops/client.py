@@ -1,4 +1,5 @@
 import uuid
+from http import HTTPStatus
 from typing import Any
 
 from pyloops._generated.api.api_key import get_api_key
@@ -32,9 +33,9 @@ from pyloops._generated.models import (
     IdempotencyKeyFailureResponse,
     MailingList,
 )
-from pyloops._generated.types import UNSET
+from pyloops._generated.types import UNSET, Response
 from pyloops.config import get_config
-from pyloops.exceptions import LoopsConfigurationError, LoopsError
+from pyloops.exceptions import LoopsConfigurationError, LoopsError, LoopsRateLimitError
 
 
 class LoopsClient:
@@ -84,6 +85,25 @@ class LoopsClient:
             prefix="Bearer",
         )
 
+    def _handle_response(self, response: Response[Any]) -> Any:
+        """
+        Check for rate limiting and return parsed response.
+
+        Args:
+            response: Response object from API call
+
+        Returns:
+            Parsed response data
+
+        Raises:
+            LoopsRateLimitError: If rate limit is exceeded (HTTP 429)
+        """
+        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+            limit = int(response.headers.get("x-ratelimit-limit", 0))
+            remaining = int(response.headers.get("x-ratelimit-remaining", 0))
+            raise LoopsRateLimitError(limit=limit, remaining=remaining)
+        return response.parsed
+
     async def health(self) -> bool:
         """
         Validate the API key.
@@ -93,8 +113,10 @@ class LoopsClient:
 
         Raises:
             LoopsError: If API key is invalid or request fails
+            LoopsRateLimitError: If rate limit is exceeded
         """
-        result = await get_api_key.asyncio(client=self._client)
+        response = await get_api_key.asyncio_detailed(client=self._client)
+        result = self._handle_response(response)
 
         if isinstance(result, GetApiKeyResponse401):
             raise LoopsError("Invalid API key", status_code=401, response_data=result)
@@ -152,7 +174,8 @@ class LoopsClient:
         if custom_properties:
             request.additional_properties = custom_properties
 
-        result = await put_contacts_update.asyncio(client=self._client, body=request)
+        response = await put_contacts_update.asyncio_detailed(client=self._client, body=request)
+        result = self._handle_response(response)
 
         if isinstance(result, ContactFailureResponse):
             raise LoopsError(
@@ -187,11 +210,12 @@ class LoopsClient:
         if not email and not user_id:
             raise LoopsError("Either email or user_id must be provided")
 
-        result = await get_contacts_find.asyncio(
+        response = await get_contacts_find.asyncio_detailed(
             client=self._client,
             email=email if email else UNSET,
             user_id=user_id if user_id else UNSET,
         )
+        result = self._handle_response(response)
 
         if isinstance(result, ContactFailureResponse):
             # Contact not found is not an error, return None
@@ -235,7 +259,8 @@ class LoopsClient:
             user_id=user_id if user_id else "",
         )
 
-        result = await post_contacts_delete.asyncio(client=self._client, body=body)
+        response = await post_contacts_delete.asyncio_detailed(client=self._client, body=body)
+        result = self._handle_response(response)
 
         if isinstance(result, ContactFailureResponse):
             # Not found is not an error
@@ -272,7 +297,8 @@ class LoopsClient:
         """
         body = ContactPropertyCreateRequest(name=name, type_=property_type)
 
-        result = await post_contacts_properties.asyncio(client=self._client, body=body)
+        response = await post_contacts_properties.asyncio_detailed(client=self._client, body=body)
+        result = self._handle_response(response)
 
         if result is None:
             raise LoopsError("Failed to create contact property", status_code=None)
@@ -292,7 +318,8 @@ class LoopsClient:
         Raises:
             LoopsError: If the request fails
         """
-        result = await get_contacts_properties.asyncio(client=self._client)
+        response = await get_contacts_properties.asyncio_detailed(client=self._client)
+        result = self._handle_response(response)
 
         if result is None:
             raise LoopsError("Failed to list contact properties", status_code=None)
@@ -312,7 +339,8 @@ class LoopsClient:
         Raises:
             LoopsError: If the request fails
         """
-        result = await get_lists.asyncio(client=self._client)
+        response = await get_lists.asyncio_detailed(client=self._client)
+        result = self._handle_response(response)
 
         if result is None:
             raise LoopsError("Failed to list mailing lists", status_code=None)
@@ -364,11 +392,12 @@ class LoopsClient:
             mailing_lists=EventRequestMailingLists.from_dict(mailing_lists) if mailing_lists else UNSET,
         )
 
-        result = await post_events_send.asyncio(
+        response = await post_events_send.asyncio_detailed(
             client=self._client,
             body=request,
             idempotency_key=idempotency_key,
         )
+        result = self._handle_response(response)
 
         if isinstance(result, EventFailureResponse):
             raise LoopsError(

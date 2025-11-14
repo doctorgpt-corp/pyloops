@@ -32,3 +32,15 @@ class LoopsError(Exception):
 class LoopsConfigurationError(LoopsError):
     def __init__(self, message: str = "API key not configured"):
         super().__init__(message, status_code=None)
+
+
+class LoopsRateLimitError(LoopsError):
+    def __init__(
+        self,
+        message: str = "Rate limit exceeded",
+        limit: int | None = None,
+        remaining: int | None = None,
+    ):
+        self.limit = limit
+        self.remaining = remaining
+        super().__init__(message, status_code=429)

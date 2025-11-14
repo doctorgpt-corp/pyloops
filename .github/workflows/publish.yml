@@ -25,6 +25,18 @@ jobs:
           CURRENT_VERSION=$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
+          # Extract API version (first 3 segments)
+          API_VERSION=$(echo "$CURRENT_VERSION" | cut -d. -f1-3)
+          echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
+
+          # Check if this is a client-only update (4 segments)
+          NUM_SEGMENTS=$(echo "$CURRENT_VERSION" | awk -F. '{print NF}')
+          if [ "$NUM_SEGMENTS" -eq 4 ]; then
+            echo "is_client_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_client_update=false" >> $GITHUB_OUTPUT
+          fi
+
           # Check if this is the first commit or if version changed in last commit
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
             PREVIOUS_VERSION=$(git show HEAD~1:pyproject.toml | grep '^version = ' | head -1 | sed 's/version = "\(.*\)"/\1/')
@@ -71,7 +83,7 @@ jobs:
           body: |
             ## PyLoops v${{ steps.version-check.outputs.current_version }}
 
-            SDK generated from Loops API version ${{ steps.version-check.outputs.current_version }}
+            ${{ steps.version-check.outputs.is_client_update == 'true' && '**Client wrapper update** - Based on Loops API version ' || 'SDK generated from Loops API version ' }}${{ steps.version-check.outputs.api_version }}
 
             ### Installation
             ```bash
