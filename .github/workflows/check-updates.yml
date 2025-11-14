@@ -74,6 +74,11 @@ jobs:
         run: |
           sed -i "s/current: \*\*[0-9.]*\*\*)/current: **${{ steps.fetch-spec.outputs.api_version }}**)/" README.md
 
+      - name: Update lockfile
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          uv sync
+
       - name: Create Pull Request
         if: steps.compare.outputs.needs_update == 'true'
         uses: peter-evans/create-pull-request@v7
