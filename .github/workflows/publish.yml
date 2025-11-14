@@ -1,0 +1,88 @@
+name: Build and Publish to PyPI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # For creating releases
+      id-token: write  # For publishing to PyPI
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if version changed
+        id: version-check
+        run: |
+          # Get current version
+          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+          # Check if this is the first commit or if version changed in last commit
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            PREVIOUS_VERSION=$(git show HEAD~1:pyproject.toml | grep '^version = ' | head -1 | sed 's/version = "\(.*\)"/\1/')
+            echo "previous_version=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
+
+            if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+              echo "should_publish=true" >> $GITHUB_OUTPUT
+              echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION - will publish"
+            else
+              echo "should_publish=false" >> $GITHUB_OUTPUT
+              echo "Version unchanged - skipping publish"
+            fi
+          else
+            # First commit, publish
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+            echo "previous_version=0.0.0" >> $GITHUB_OUTPUT
+            echo "First commit - will publish"
+          fi
+
+      - name: Set up Python
+        if: steps.version-check.outputs.should_publish == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        if: steps.version-check.outputs.should_publish == 'true'
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build package
+        if: steps.version-check.outputs.should_publish == 'true'
+        run: uv build
+
+      - name: Publish to PyPI
+        if: steps.version-check.outputs.should_publish == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Create GitHub Release
+        if: steps.version-check.outputs.should_publish == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version-check.outputs.current_version }}
+          name: Release v${{ steps.version-check.outputs.current_version }}
+          body: |
+            ## PyLoops v${{ steps.version-check.outputs.current_version }}
+
+            SDK generated from Loops API version ${{ steps.version-check.outputs.current_version }}
+
+            ### Installation
+            ```bash
+            pip install pyloops==${{ steps.version-check.outputs.current_version }}
+            ```
+
+            or with uv:
+            ```bash
+            uv add pyloops==${{ steps.version-check.outputs.current_version }}
+            ```
+
+            See [Loops API Documentation](https://loops.so/docs) for usage details.
+          draft: false
+          prerelease: false
