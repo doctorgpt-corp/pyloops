@@ -4,6 +4,7 @@ from pyloops._generated import api
 
 __all__ = ["api"]
 
+
 def __getattr__(name: str):
     """Dynamically forward attribute access to _generated.api."""
     import importlib
