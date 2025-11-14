@@ -71,7 +71,7 @@ For detailed API documentation, visit the [Loops.so API docs](https://loops.so/d
 
 ## Automated Updates
 
-This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.6.0**).
+This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.6.1**).
 
 A GitHub Action checks for API updates daily and creates a pull request when changes are detected. After review and merge, a new version is automatically published to PyPI.
 
