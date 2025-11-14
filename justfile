@@ -22,6 +22,40 @@ check: lint typecheck
 build:
     uv build
 
+# Bump client version
+bump-client:
+    #!/usr/bin/env bash
+    set -e
+    CURRENT=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+
+    # Count segments (split by .)
+    IFS='.' read -ra PARTS <<< "$CURRENT"
+    NUM_PARTS=${#PARTS[@]}
+
+    if [ $NUM_PARTS -eq 3 ]; then
+        # No client version yet, add .1
+        NEW_VERSION="$CURRENT.1"
+    elif [ $NUM_PARTS -eq 4 ]; then
+        # Increment existing client version
+        MAJOR=${PARTS[0]}
+        MINOR=${PARTS[1]}
+        PATCH=${PARTS[2]}
+        CLIENT=${PARTS[3]}
+        NEW_CLIENT=$((CLIENT + 1))
+        NEW_VERSION="$MAJOR.$MINOR.$PATCH.$NEW_CLIENT"
+    else
+        echo "❌ Error: Unexpected version format: $CURRENT"
+        exit 1
+    fi
+
+    # Update pyproject.toml
+    sed -i '' "s/^version = .*/version = \"$NEW_VERSION\"/" pyproject.toml
+
+    # Update lockfile
+    uv sync
+
+    echo "✅ Bumped version: $CURRENT → $NEW_VERSION"
+
 # Regenerate SDK from latest OpenAPI spec
 generate:
     @echo "🗑️  Removing old generated code..."

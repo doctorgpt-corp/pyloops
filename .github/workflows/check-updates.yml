@@ -34,9 +34,11 @@ jobs:
       - name: Get current package version
         id: current-version
         run: |
-          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
-          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          echo "Current package version: $CURRENT_VERSION"
+          FULL_VERSION=$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+          # Strip client version (4th segment) for comparison with API version
+          BASE_VERSION=$(echo "$FULL_VERSION" | cut -d. -f1-3)
+          echo "current_version=$BASE_VERSION" >> $GITHUB_OUTPUT
+          echo "Current package version: $FULL_VERSION (base: $BASE_VERSION)"
 
       - name: Compare versions
         id: compare
@@ -67,7 +69,9 @@ jobs:
       - name: Update version in pyproject.toml
         if: steps.compare.outputs.needs_update == 'true'
         run: |
-          sed -i "s/^version = .*/version = \"${{ steps.fetch-spec.outputs.api_version }}\"/" pyproject.toml
+          # Strip any client version suffix (4th segment) when updating to new API version
+          API_VERSION="${{ steps.fetch-spec.outputs.api_version }}"
+          sed -i "s/^version = .*/version = \"$API_VERSION\"/" pyproject.toml
 
       - name: Update version in README.md
         if: steps.compare.outputs.needs_update == 'true'
