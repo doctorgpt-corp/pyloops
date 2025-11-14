@@ -1,268 +1,416 @@
-import ssl
+import uuid
 from typing import Any
 
-import httpx
-from attrs import define, evolve, field
+from pyloops._generated.api.api_key import get_api_key
+from pyloops._generated.api.contact_properties import (
+    get_contacts_properties,
+    post_contacts_properties,
+)
+from pyloops._generated.api.contacts import (
+    get_contacts_find,
+    post_contacts_delete,
+    put_contacts_update,
+)
+from pyloops._generated.api.events import post_events_send
+from pyloops._generated.api.mailing_lists import get_lists
+from pyloops._generated.client import AuthenticatedClient
+from pyloops._generated.models import (
+    Contact,
+    ContactDeleteRequest,
+    ContactFailureResponse,
+    ContactProperty,
+    ContactPropertyCreateRequest,
+    ContactSuccessResponse,
+    ContactUpdateRequest,
+    ContactUpdateRequestMailingLists,
+    EventFailureResponse,
+    EventRequest,
+    EventRequestEventProperties,
+    EventRequestMailingLists,
+    EventSuccessResponse,
+    GetApiKeyResponse401,
+    IdempotencyKeyFailureResponse,
+    MailingList,
+)
+from pyloops._generated.types import UNSET
+from pyloops.config import get_config
+from pyloops.exceptions import LoopsConfigurationError, LoopsError
 
 
-@define
-class Client:
-    """A class for keeping track of data related to the API
+class LoopsClient:
+    """
+    High-level client wrapper for Loops.so API.
 
-    The following are accepted as keyword arguments and will be used to construct httpx Clients internally:
+    This client provides a more convenient interface than the low-level API,
+    with better error handling and simpler method signatures.
 
-        ``base_url``: The base URL for the API, all requests are made to a relative path to this URL
-
-        ``cookies``: A dictionary of cookies to be sent with every request
-
-        ``headers``: A dictionary of headers to be sent with every request
-
-        ``timeout``: The maximum amount of a time a request can take. API functions will raise
-        httpx.TimeoutException if this is exceeded.
-
-        ``verify_ssl``: Whether or not to verify the SSL certificate of the API server. This should be True in production,
-        but can be set to False for testing purposes.
-
-        ``follow_redirects``: Whether or not to follow redirects. Default value is False.
-
-        ``httpx_args``: A dictionary of additional arguments to be passed to the ``httpx.Client`` and ``httpx.AsyncClient`` constructor.
-
-
-    Attributes:
-        raise_on_unexpected_status: Whether or not to raise an errors.UnexpectedStatus if the API returns a
-            status code that was not documented in the source OpenAPI document. Can also be provided as a keyword
-            argument to the constructor.
+    Example:
+        >>> import pyloops
+        >>> pyloops.configure(api_key="your_api_key")
+        >>> client = pyloops.get_client()
+        >>> await client.upsert_contact(email="user@example.com", first_name="John")
     """
 
-    raise_on_unexpected_status: bool = field(default=False, kw_only=True)
-    _base_url: str = field(alias="base_url")
-    _cookies: dict[str, str] = field(factory=dict, kw_only=True, alias="cookies")
-    _headers: dict[str, str] = field(factory=dict, kw_only=True, alias="headers")
-    _timeout: httpx.Timeout | None = field(default=None, kw_only=True, alias="timeout")
-    _verify_ssl: str | bool | ssl.SSLContext = field(default=True, kw_only=True, alias="verify_ssl")
-    _follow_redirects: bool = field(default=False, kw_only=True, alias="follow_redirects")
-    _httpx_args: dict[str, Any] = field(factory=dict, kw_only=True, alias="httpx_args")
-    _client: httpx.Client | None = field(default=None, init=False)
-    _async_client: httpx.AsyncClient | None = field(default=None, init=False)
-
-    def with_headers(self, headers: dict[str, str]) -> "Client":
-        """Get a new client matching this one with additional headers"""
-        if self._client is not None:
-            self._client.headers.update(headers)
-        if self._async_client is not None:
-            self._async_client.headers.update(headers)
-        return evolve(self, headers={**self._headers, **headers})
-
-    def with_cookies(self, cookies: dict[str, str]) -> "Client":
-        """Get a new client matching this one with additional cookies"""
-        if self._client is not None:
-            self._client.cookies.update(cookies)
-        if self._async_client is not None:
-            self._async_client.cookies.update(cookies)
-        return evolve(self, cookies={**self._cookies, **cookies})
-
-    def with_timeout(self, timeout: httpx.Timeout) -> "Client":
-        """Get a new client matching this one with a new timeout configuration"""
-        if self._client is not None:
-            self._client.timeout = timeout
-        if self._async_client is not None:
-            self._async_client.timeout = timeout
-        return evolve(self, timeout=timeout)
-
-    def set_httpx_client(self, client: httpx.Client) -> "Client":
-        """Manually set the underlying httpx.Client
-
-        **NOTE**: This will override any other settings on the client, including cookies, headers, and timeout.
+    def __init__(
+        self,
+        api_key: str | None = None,
+        base_url: str = "https://app.loops.so/api/v1",
+    ):
         """
-        self._client = client
-        return self
+        Initialize the Loops client.
 
-    def get_httpx_client(self) -> httpx.Client:
-        """Get the underlying httpx.Client, constructing a new one if not previously set"""
-        if self._client is None:
-            self._client = httpx.Client(
-                base_url=self._base_url,
-                cookies=self._cookies,
-                headers=self._headers,
-                timeout=self._timeout,
-                verify=self._verify_ssl,
-                follow_redirects=self._follow_redirects,
-                **self._httpx_args,
-            )
-        return self._client
+        Args:
+            api_key: API key for Loops.so. If not provided, uses configured default or LOOPS_API_KEY env var.
+            base_url: Base URL for Loops API (default: https://app.loops.so/api/v1)
 
-    def __enter__(self) -> "Client":
-        """Enter a context manager for self.client—you cannot enter twice (see httpx docs)"""
-        self.get_httpx_client().__enter__()
-        return self
-
-    def __exit__(self, *args: Any, **kwargs: Any) -> None:
-        """Exit a context manager for internal httpx.Client (see httpx docs)"""
-        self.get_httpx_client().__exit__(*args, **kwargs)
-
-    def set_async_httpx_client(self, async_client: httpx.AsyncClient) -> "Client":
-        """Manually set the underlying httpx.AsyncClient
-
-        **NOTE**: This will override any other settings on the client, including cookies, headers, and timeout.
+        Raises:
+            LoopsConfigurationError: If no API key is available
         """
-        self._async_client = async_client
-        return self
+        # Get API key from parameter, config, or env var
+        if api_key is None:
+            config = get_config()
+            api_key = config["api_key"]
+            if config["base_url"]:
+                base_url = config["base_url"]
 
-    def get_async_httpx_client(self) -> httpx.AsyncClient:
-        """Get the underlying httpx.AsyncClient, constructing a new one if not previously set"""
-        if self._async_client is None:
-            self._async_client = httpx.AsyncClient(
-                base_url=self._base_url,
-                cookies=self._cookies,
-                headers=self._headers,
-                timeout=self._timeout,
-                verify=self._verify_ssl,
-                follow_redirects=self._follow_redirects,
-                **self._httpx_args,
+        if not api_key:
+            raise LoopsConfigurationError(
+                "API key not configured. Set LOOPS_API_KEY env var or call pyloops.configure(api_key='...')"
             )
-        return self._async_client
 
-    async def __aenter__(self) -> "Client":
-        """Enter a context manager for underlying httpx.AsyncClient—you cannot enter twice (see httpx docs)"""
-        await self.get_async_httpx_client().__aenter__()
-        return self
+        self._client = AuthenticatedClient(
+            base_url=base_url,
+            token=api_key,
+            prefix="Bearer",
+        )
 
-    async def __aexit__(self, *args: Any, **kwargs: Any) -> None:
-        """Exit a context manager for underlying httpx.AsyncClient (see httpx docs)"""
-        await self.get_async_httpx_client().__aexit__(*args, **kwargs)
+    async def health(self) -> bool:
+        """
+        Validate the API key.
+
+        Returns:
+            True if API key is valid
+
+        Raises:
+            LoopsError: If API key is invalid or request fails
+        """
+        result = await get_api_key.asyncio(client=self._client)
+
+        if isinstance(result, GetApiKeyResponse401):
+            raise LoopsError("Invalid API key", status_code=401, response_data=result)
+
+        if result is None:
+            raise LoopsError("Failed to validate API key", status_code=None)
+
+        return True
+
+    async def upsert_contact(
+        self,
+        email: str | None = None,
+        user_id: str | None = None,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        subscribed: bool | None = None,
+        user_group: str | None = None,
+        mailing_lists: dict[str, bool] | None = None,
+        **custom_properties: bool | float | str,
+    ) -> ContactSuccessResponse:
+        """
+        Create or update a contact (upsert operation).
+
+        Args:
+            email: Contact email address
+            user_id: Custom user ID
+            first_name: First name
+            last_name: Last name
+            subscribed: Subscription status
+            user_group: User group
+            mailing_lists: Dictionary of mailing list IDs to subscription status
+            **custom_properties: Additional custom contact properties
+
+        Returns:
+            ContactSuccessResponse on success
+
+        Raises:
+            LoopsError: If the request fails
+        """
+        if not email and not user_id:
+            raise LoopsError("Either email or user_id must be provided")
+
+        # Build the request
+        request = ContactUpdateRequest(
+            email=email if email else UNSET,
+            user_id=user_id if user_id else UNSET,
+            first_name=first_name if first_name else UNSET,
+            last_name=last_name if last_name else UNSET,
+            subscribed=subscribed if subscribed is not None else UNSET,
+            user_group=user_group if user_group else UNSET,
+            mailing_lists=ContactUpdateRequestMailingLists.from_dict(mailing_lists) if mailing_lists else UNSET,
+        )
+
+        # Add custom properties
+        if custom_properties:
+            request.additional_properties = custom_properties
+
+        result = await put_contacts_update.asyncio(client=self._client, body=request)
+
+        if isinstance(result, ContactFailureResponse):
+            raise LoopsError(
+                f"Failed to upsert contact: {getattr(result, 'message', 'Unknown error')}",
+                status_code=400,
+                response_data=result,
+            )
+
+        if isinstance(result, ContactSuccessResponse):
+            return result
+
+        raise LoopsError("Failed to upsert contact", status_code=None, response_data=result)
+
+    async def find_contact(
+        self,
+        email: str | None = None,
+        user_id: str | None = None,
+    ) -> list[Contact] | None:
+        """
+        Find a contact by email or user_id.
+
+        Args:
+            email: Contact email address
+            user_id: Custom user ID
+
+        Returns:
+            List of Contact objects if found, None otherwise
+
+        Raises:
+            LoopsError: If the request fails
+        """
+        if not email and not user_id:
+            raise LoopsError("Either email or user_id must be provided")
+
+        result = await get_contacts_find.asyncio(
+            client=self._client,
+            email=email if email else UNSET,
+            user_id=user_id if user_id else UNSET,
+        )
+
+        if isinstance(result, ContactFailureResponse):
+            # Contact not found is not an error, return None
+            if getattr(result, "success", None) is False:
+                return None
+            raise LoopsError(
+                f"Failed to find contact: {getattr(result, 'message', 'Unknown error')}",
+                status_code=400,
+                response_data=result,
+            )
+
+        if isinstance(result, list):
+            return result
+
+        return None
+
+    async def delete_contact(
+        self,
+        email: str | None = None,
+        user_id: str | None = None,
+    ) -> bool:
+        """
+        Delete a contact by email or user_id.
+
+        Args:
+            email: Contact email address
+            user_id: Custom user ID
+
+        Returns:
+            True if deleted successfully, False if not found
+
+        Raises:
+            LoopsError: If the request fails
+        """
+        if not email and not user_id:
+            raise LoopsError("Either email or user_id must be provided")
+
+        # ContactDeleteRequest requires both fields, use empty string for the unused one
+        body = ContactDeleteRequest(
+            email=email if email else "",
+            user_id=user_id if user_id else "",
+        )
+
+        result = await post_contacts_delete.asyncio(client=self._client, body=body)
+
+        if isinstance(result, ContactFailureResponse):
+            # Not found is not an error
+            if getattr(result, "success", None) is False:
+                return False
+            raise LoopsError(
+                f"Failed to delete contact: {getattr(result, 'message', 'Unknown error')}",
+                status_code=400,
+                response_data=result,
+            )
+
+        if isinstance(result, ContactSuccessResponse):
+            return True
+
+        return False
+
+    async def create_contact_property(
+        self,
+        name: str,
+        property_type: str,
+    ) -> dict[str, Any]:
+        """
+        Create a new custom contact property.
+
+        Args:
+            name: Property name
+            property_type: Property type (e.g., "string", "number", "boolean")
+
+        Returns:
+            Response data as dictionary
+
+        Raises:
+            LoopsError: If the request fails
+        """
+        body = ContactPropertyCreateRequest(name=name, type_=property_type)
+
+        result = await post_contacts_properties.asyncio(client=self._client, body=body)
+
+        if result is None:
+            raise LoopsError("Failed to create contact property", status_code=None)
+
+        if hasattr(result, "to_dict"):
+            return result.to_dict()
+
+        return {}
+
+    async def list_contact_properties(self) -> list[ContactProperty]:
+        """
+        List all contact properties.
+
+        Returns:
+            List of ContactProperty objects
+
+        Raises:
+            LoopsError: If the request fails
+        """
+        result = await get_contacts_properties.asyncio(client=self._client)
+
+        if result is None:
+            raise LoopsError("Failed to list contact properties", status_code=None)
+
+        if isinstance(result, list):
+            return result
+
+        return []
+
+    async def list_mailing_lists(self) -> list[MailingList]:
+        """
+        List all mailing lists.
+
+        Returns:
+            List of MailingList objects
+
+        Raises:
+            LoopsError: If the request fails
+        """
+        result = await get_lists.asyncio(client=self._client)
+
+        if result is None:
+            raise LoopsError("Failed to list mailing lists", status_code=None)
+
+        if isinstance(result, list):
+            return result
+
+        return []
+
+    async def send_event(
+        self,
+        event_name: str,
+        email: str | None = None,
+        user_id: str | None = None,
+        event_properties: dict[str, Any] | None = None,
+        mailing_lists: dict[str, bool] | None = None,
+        idempotency_key: str | None = None,
+    ) -> EventSuccessResponse:
+        """
+        Send an event to trigger emails in Loops.
+
+        Args:
+            event_name: Name of the event
+            email: Contact email address
+            user_id: Custom user ID
+            event_properties: Event properties dictionary
+            mailing_lists: Dictionary of mailing list IDs to subscription status
+            idempotency_key: Optional idempotency key (auto-generated if not provided)
+
+        Returns:
+            EventSuccessResponse on success
+
+        Raises:
+            LoopsError: If the request fails
+        """
+        if not email and not user_id:
+            raise LoopsError("Either email or user_id must be provided")
+
+        # Auto-generate idempotency key if not provided
+        if idempotency_key is None:
+            idempotency_key = str(uuid.uuid4())
+
+        # Build the request
+        request = EventRequest(
+            event_name=event_name,
+            email=email if email else UNSET,
+            user_id=user_id if user_id else UNSET,
+            event_properties=EventRequestEventProperties.from_dict(event_properties) if event_properties else UNSET,
+            mailing_lists=EventRequestMailingLists.from_dict(mailing_lists) if mailing_lists else UNSET,
+        )
+
+        result = await post_events_send.asyncio(
+            client=self._client,
+            body=request,
+            idempotency_key=idempotency_key,
+        )
+
+        if isinstance(result, EventFailureResponse):
+            raise LoopsError(
+                f"Failed to send event: {getattr(result, 'message', 'Unknown error')}",
+                status_code=400,
+                response_data=result,
+            )
+
+        if isinstance(result, IdempotencyKeyFailureResponse):
+            raise LoopsError(
+                f"Idempotency key conflict: {getattr(result, 'message', 'Duplicate request')}",
+                status_code=409,
+                response_data=result,
+            )
+
+        if isinstance(result, EventSuccessResponse):
+            return result
+
+        raise LoopsError("Failed to send event", status_code=None, response_data=result)
 
 
-@define
-class AuthenticatedClient:
-    """A Client which has been authenticated for use on secured endpoints
-
-    The following are accepted as keyword arguments and will be used to construct httpx Clients internally:
-
-        ``base_url``: The base URL for the API, all requests are made to a relative path to this URL
-
-        ``cookies``: A dictionary of cookies to be sent with every request
-
-        ``headers``: A dictionary of headers to be sent with every request
-
-        ``timeout``: The maximum amount of a time a request can take. API functions will raise
-        httpx.TimeoutException if this is exceeded.
-
-        ``verify_ssl``: Whether or not to verify the SSL certificate of the API server. This should be True in production,
-        but can be set to False for testing purposes.
-
-        ``follow_redirects``: Whether or not to follow redirects. Default value is False.
-
-        ``httpx_args``: A dictionary of additional arguments to be passed to the ``httpx.Client`` and ``httpx.AsyncClient`` constructor.
+# Module-level singleton
+_client: LoopsClient | None = None
 
 
-    Attributes:
-        raise_on_unexpected_status: Whether or not to raise an errors.UnexpectedStatus if the API returns a
-            status code that was not documented in the source OpenAPI document. Can also be provided as a keyword
-            argument to the constructor.
-        token: The token to use for authentication
-        prefix: The prefix to use for the Authorization header
-        auth_header_name: The name of the Authorization header
+def get_client() -> LoopsClient:
     """
+    Get or create singleton Loops client instance using configured settings.
 
-    raise_on_unexpected_status: bool = field(default=False, kw_only=True)
-    _base_url: str = field(alias="base_url")
-    _cookies: dict[str, str] = field(factory=dict, kw_only=True, alias="cookies")
-    _headers: dict[str, str] = field(factory=dict, kw_only=True, alias="headers")
-    _timeout: httpx.Timeout | None = field(default=None, kw_only=True, alias="timeout")
-    _verify_ssl: str | bool | ssl.SSLContext = field(default=True, kw_only=True, alias="verify_ssl")
-    _follow_redirects: bool = field(default=False, kw_only=True, alias="follow_redirects")
-    _httpx_args: dict[str, Any] = field(factory=dict, kw_only=True, alias="httpx_args")
-    _client: httpx.Client | None = field(default=None, init=False)
-    _async_client: httpx.AsyncClient | None = field(default=None, init=False)
+    Returns:
+        LoopsClient instance
 
-    token: str
-    prefix: str = "Bearer"
-    auth_header_name: str = "Authorization"
+    Raises:
+        LoopsConfigurationError: If API key is not configured
 
-    def with_headers(self, headers: dict[str, str]) -> "AuthenticatedClient":
-        """Get a new client matching this one with additional headers"""
-        if self._client is not None:
-            self._client.headers.update(headers)
-        if self._async_client is not None:
-            self._async_client.headers.update(headers)
-        return evolve(self, headers={**self._headers, **headers})
-
-    def with_cookies(self, cookies: dict[str, str]) -> "AuthenticatedClient":
-        """Get a new client matching this one with additional cookies"""
-        if self._client is not None:
-            self._client.cookies.update(cookies)
-        if self._async_client is not None:
-            self._async_client.cookies.update(cookies)
-        return evolve(self, cookies={**self._cookies, **cookies})
-
-    def with_timeout(self, timeout: httpx.Timeout) -> "AuthenticatedClient":
-        """Get a new client matching this one with a new timeout configuration"""
-        if self._client is not None:
-            self._client.timeout = timeout
-        if self._async_client is not None:
-            self._async_client.timeout = timeout
-        return evolve(self, timeout=timeout)
-
-    def set_httpx_client(self, client: httpx.Client) -> "AuthenticatedClient":
-        """Manually set the underlying httpx.Client
-
-        **NOTE**: This will override any other settings on the client, including cookies, headers, and timeout.
-        """
-        self._client = client
-        return self
-
-    def get_httpx_client(self) -> httpx.Client:
-        """Get the underlying httpx.Client, constructing a new one if not previously set"""
-        if self._client is None:
-            self._headers[self.auth_header_name] = f"{self.prefix} {self.token}" if self.prefix else self.token
-            self._client = httpx.Client(
-                base_url=self._base_url,
-                cookies=self._cookies,
-                headers=self._headers,
-                timeout=self._timeout,
-                verify=self._verify_ssl,
-                follow_redirects=self._follow_redirects,
-                **self._httpx_args,
-            )
-        return self._client
-
-    def __enter__(self) -> "AuthenticatedClient":
-        """Enter a context manager for self.client—you cannot enter twice (see httpx docs)"""
-        self.get_httpx_client().__enter__()
-        return self
-
-    def __exit__(self, *args: Any, **kwargs: Any) -> None:
-        """Exit a context manager for internal httpx.Client (see httpx docs)"""
-        self.get_httpx_client().__exit__(*args, **kwargs)
-
-    def set_async_httpx_client(self, async_client: httpx.AsyncClient) -> "AuthenticatedClient":
-        """Manually set the underlying httpx.AsyncClient
-
-        **NOTE**: This will override any other settings on the client, including cookies, headers, and timeout.
-        """
-        self._async_client = async_client
-        return self
-
-    def get_async_httpx_client(self) -> httpx.AsyncClient:
-        """Get the underlying httpx.AsyncClient, constructing a new one if not previously set"""
-        if self._async_client is None:
-            self._headers[self.auth_header_name] = f"{self.prefix} {self.token}" if self.prefix else self.token
-            self._async_client = httpx.AsyncClient(
-                base_url=self._base_url,
-                cookies=self._cookies,
-                headers=self._headers,
-                timeout=self._timeout,
-                verify=self._verify_ssl,
-                follow_redirects=self._follow_redirects,
-                **self._httpx_args,
-            )
-        return self._async_client
-
-    async def __aenter__(self) -> "AuthenticatedClient":
-        """Enter a context manager for underlying httpx.AsyncClient—you cannot enter twice (see httpx docs)"""
-        await self.get_async_httpx_client().__aenter__()
-        return self
-
-    async def __aexit__(self, *args: Any, **kwargs: Any) -> None:
-        """Exit a context manager for underlying httpx.AsyncClient (see httpx docs)"""
-        await self.get_async_httpx_client().__aexit__(*args, **kwargs)
+    Example:
+        >>> import pyloops
+        >>> pyloops.configure(api_key="your_api_key")
+        >>> client = pyloops.get_client()
+        >>> await client.upsert_contact(email="user@example.com")
+    """
+    global _client
+    if _client is None:
+        _client = LoopsClient()
+    return _client

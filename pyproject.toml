@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "pyloops"
-version = "1.6.1"
+version = "1.6.0"
 description = "Unofficial Python SDK for Loops.so email platform"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -39,4 +39,35 @@ module-root = "src/"
 [dependency-groups]
 dev = [
     "openapi-python-client>=0.27.1",
+    "pyright>=1.1.390",
+    "ruff>=0.8.0",
 ]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src"]
+exclude = [
+    ".venv",
+    "src/pyloops/_generated",   # All generated code
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/__pycache__", ".venv"]
+typeCheckingMode = "basic"
+reportMissingImports = true
+reportMissingTypeStubs = false
+pythonVersion = "3.12"

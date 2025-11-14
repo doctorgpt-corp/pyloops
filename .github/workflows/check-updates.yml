@@ -53,15 +53,15 @@ jobs:
         if: steps.compare.outputs.needs_update == 'true'
         run: |
           # Remove old generated code
-          rm -rf src/pyloops/*
+          rm -rf src/pyloops/_generated
 
           # Generate new SDK
           uv tool run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv
 
-          # Copy generated code to src
-          cp -r loops-open-api-spec-client/loops_open_api_spec_client/* src/pyloops/
+          # Move generated code to _generated
+          mv loops-open-api-spec-client/loops_open_api_spec_client src/pyloops/_generated
 
-          # Clean up temporary directory
+          # Clean up
           rm -rf loops-open-api-spec-client openapi.yaml
 
       - name: Update version in pyproject.toml
