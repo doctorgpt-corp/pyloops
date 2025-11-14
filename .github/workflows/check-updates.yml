@@ -24,7 +24,7 @@ jobs:
         id: fetch-spec
         run: |
           curl -s https://app.loops.so/openapi.yaml -o openapi.yaml
-          API_VERSION=$(grep '^version:' openapi.yaml | head -1 | awk '{print $2}')
+          API_VERSION=$(grep '  version:' openapi.yaml | head -1 | awk '{print $2}')
           echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
           echo "Found API version: $API_VERSION"
 
@@ -53,7 +53,7 @@ jobs:
           rm -rf src/pyloops/*
 
           # Generate new SDK
-          uv run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv
+          uv tool run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv
 
           # Copy generated code to src
           cp -r loops-open-api-spec-client/loops_open_api_spec_client/* src/pyloops/
