@@ -1,0 +1,97 @@
+name: Check for Loops API Updates
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # Every day at 4 AM UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Fetch OpenAPI spec and extract version
+        id: fetch-spec
+        run: |
+          curl -s https://app.loops.so/openapi.yaml -o openapi.yaml
+          API_VERSION=$(grep '^version:' openapi.yaml | head -1 | awk '{print $2}')
+          echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
+          echo "Found API version: $API_VERSION"
+
+      - name: Get current package version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current package version: $CURRENT_VERSION"
+
+      - name: Compare versions
+        id: compare
+        run: |
+          if [ "${{ steps.fetch-spec.outputs.api_version }}" != "${{ steps.current-version.outputs.current_version }}" ]; then
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "Version mismatch detected - update needed"
+          else
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "Versions match - no update needed"
+          fi
+
+      - name: Regenerate SDK
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          # Remove old generated code
+          rm -rf src/pyloops/*
+
+          # Generate new SDK
+          uv run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv
+
+          # Copy generated code to src
+          cp -r loops-open-api-spec-client/loops_open_api_spec_client/* src/pyloops/
+
+          # Clean up temporary directory
+          rm -rf loops-open-api-spec-client openapi.yaml
+
+      - name: Update version in pyproject.toml
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          sed -i "s/^version = .*/version = \"${{ steps.fetch-spec.outputs.api_version }}\"/" pyproject.toml
+
+      - name: Update version in README.md
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          sed -i "s/current: \*\*[0-9.]*\*\*)/current: **${{ steps.fetch-spec.outputs.api_version }}**)/" README.md
+
+      - name: Create Pull Request
+        if: steps.compare.outputs.needs_update == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update SDK to Loops API version ${{ steps.fetch-spec.outputs.api_version }}"
+          title: "Update SDK to Loops API version ${{ steps.fetch-spec.outputs.api_version }}"
+          body: |
+            ## Automated SDK Update
+
+            This PR updates the PyLoops SDK to match Loops API version **${{ steps.fetch-spec.outputs.api_version }}**.
+
+            ### Changes
+            - Regenerated SDK code from latest OpenAPI specification
+            - Updated package version from ${{ steps.current-version.outputs.current_version }} to ${{ steps.fetch-spec.outputs.api_version }}
+            - Updated version in README.md
+
+            ### Verification
+            Please review the generated code changes to ensure compatibility.
+
+            ---
+            *This PR was automatically generated*
+          branch: update-sdk-${{ steps.fetch-spec.outputs.api_version }}
+          delete-branch: true
