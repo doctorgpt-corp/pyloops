@@ -34,6 +34,11 @@ class LoopsConfigurationError(LoopsError):
         super().__init__(message, status_code=None)
 
 
+class LoopsContactExistsError(LoopsError):
+    def __init__(self, message: str = "Contact already exists"):
+        super().__init__(message, status_code=409)
+
+
 class LoopsRateLimitError(LoopsError):
     def __init__(
         self,
