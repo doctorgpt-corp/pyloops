@@ -473,6 +473,7 @@ class LoopsClient:
         event_properties: dict[str, Any] | None = None,
         mailing_lists: dict[str, bool] | None = None,
         idempotency_key: str | None = None,
+        **additional_properties: bool | float | str,
     ) -> EventSuccessResponse:
         """
         Send an event to trigger emails in Loops.
@@ -484,6 +485,7 @@ class LoopsClient:
             event_properties: Event properties dictionary
             mailing_lists: Dictionary of mailing list IDs to subscription status
             idempotency_key: Optional idempotency key (auto-generated if not provided)
+            **additional_properties: Contact properties to update (e.g., firstName="John", customField=123)
 
         Returns:
             EventSuccessResponse on success
@@ -506,6 +508,10 @@ class LoopsClient:
             event_properties=EventRequestEventProperties.from_dict(event_properties) if event_properties else UNSET,
             mailing_lists=EventRequestMailingLists.from_dict(mailing_lists) if mailing_lists else UNSET,
         )
+
+        # Set additional contact properties
+        if additional_properties:
+            request.additional_properties = additional_properties
 
         response = await post_events_send.asyncio_detailed(
             client=self._client,
