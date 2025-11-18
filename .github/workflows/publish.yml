@@ -74,6 +74,12 @@ jobs:
         if: steps.version-check.outputs.should_publish == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
 
+      - name: Download and prepare OpenAPI spec
+        if: steps.version-check.outputs.should_publish == 'true'
+        run: |
+          curl -s https://app.loops.so/openapi.yaml -o openapi.${{ steps.version-check.outputs.api_version }}.yml
+          echo "Downloaded OpenAPI spec as openapi.${{ steps.version-check.outputs.api_version }}.yml"
+
       - name: Create GitHub Release
         if: steps.version-check.outputs.should_publish == 'true'
         uses: softprops/action-gh-release@v2
@@ -96,5 +102,7 @@ jobs:
             ```
 
             See [Loops API Documentation](https://loops.so/docs) for usage details.
+          files: |
+            openapi.${{ steps.version-check.outputs.api_version }}.yml
           draft: false
           prerelease: false
