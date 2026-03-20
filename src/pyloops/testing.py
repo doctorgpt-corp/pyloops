@@ -70,6 +70,8 @@ def loops_respx_mock(
     api_key: str = "test-key",
     base_url: str = BASE_URL,
     assert_all_mocked: bool = True,
+    safe_mode: bool = False,
+    safe_mode_allowed_domains: tuple[str, ...] = (),
 ) -> Iterator[respx.Router]:
     """Return a context manager that mocks every Loops API endpoint.
 
@@ -87,8 +89,18 @@ def loops_respx_mock(
         assert_all_mocked: When *True* (the default), any httpx request that
             does not match a mocked route will raise immediately, preventing
             accidental real API calls.
+        safe_mode: When *True*, the client will only allow emails to domains
+            in *safe_mode_allowed_domains*. Defaults to *False* so tests can
+            use any email address.
+        safe_mode_allowed_domains: Tuple of allowed email domains when
+            *safe_mode* is enabled (e.g. ``("@test.com",)``).
     """
-    pyloops.configure(api_key=api_key, base_url=base_url)
+    pyloops.configure(
+        api_key=api_key,
+        base_url=base_url,
+        safe_mode=safe_mode,
+        safe_mode_allowed_domains=safe_mode_allowed_domains,
+    )
     pyloops.reset_client()
     with respx.mock(base_url=base_url, assert_all_called=False, assert_all_mocked=assert_all_mocked) as router:
         # Health / API key validation

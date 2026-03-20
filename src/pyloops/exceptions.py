@@ -39,6 +39,17 @@ class LoopsContactExistsError(LoopsError):
         super().__init__(message, status_code=409)
 
 
+class LoopsUnsafeEmailError(LoopsError):
+    """Raised when safe mode is enabled and an email domain is not in the allowlist."""
+
+    def __init__(self, email: str, allowed_domains: tuple[str, ...]):
+        domains = ", ".join(allowed_domains)
+        super().__init__(
+            f"Email '{email}' is not allowed in safe mode. Allowed domains: {domains}",
+            status_code=None,
+        )
+
+
 class LoopsRateLimitError(LoopsError):
     def __init__(
         self,

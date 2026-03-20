@@ -6,6 +6,7 @@ from pyloops.exceptions import (
     LoopsContactExistsError,
     LoopsError,
     LoopsRateLimitError,
+    LoopsUnsafeEmailError,
 )
 from pyloops.responses import (
     TransactionalEmail,
@@ -24,6 +25,7 @@ __all__ = (
     "LoopsConfigurationError",
     "LoopsContactExistsError",
     "LoopsRateLimitError",
+    "LoopsUnsafeEmailError",
     # Response models
     "TransactionalEmail",
     "TransactionalEmailPagination",
