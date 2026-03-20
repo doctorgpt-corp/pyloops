@@ -112,6 +112,145 @@ This SDK provides access to all Loops.so API endpoints:
 - **Transactional Emails**: Send and list transactional emails
 - **Sending IPs**: Retrieve dedicated sending IP addresses
 
+## Safe Mode
+
+When developing locally, you can enable **safe mode** to prevent accidentally sending emails or syncing contacts to real addresses. With safe mode enabled, only emails matching your allowed domains will be accepted — all others will raise a `LoopsUnsafeEmailError`.
+
+```python
+import pyloops
+
+pyloops.configure(
+    api_key="your_api_key_here",
+    safe_mode=True,
+    safe_mode_allowed_domains=("@test.com", "@example.com", "@yourcompany.com"),
+)
+
+client = pyloops.get_client()
+
+# This works
+await client.send_transactional_email(
+    transactional_id="welcome",
+    email="dev@test.com",
+)
+
+# This raises LoopsUnsafeEmailError
+await client.send_transactional_email(
+    transactional_id="welcome",
+    email="real-user@gmail.com",
+)
+```
+
+You can also set it per-client:
+
+```python
+client = pyloops.LoopsClient(
+    api_key="your_api_key_here",
+    safe_mode=True,
+    safe_mode_allowed_domains=("@test.com",),
+)
+```
+
+## Testing
+
+PyLoops ships a testing module that mocks all Loops API endpoints at the HTTP transport level using [respx](https://lundberg.github.io/respx/). Your real client code runs end-to-end, but no actual API requests leave the process.
+
+Install with the `testing` extra:
+
+```bash
+pip install pyloops[testing]
+```
+
+### Basic usage
+
+```python
+import json
+import pyloops
+from pyloops.testing import loops_respx_mock
+
+async def test_sends_welcome_email():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        await client.send_transactional_email(
+            transactional_id="welcome",
+            email="user@test.com",
+            data_variables={"name": "Jan"},
+        )
+
+        # Inspect the HTTP request that pyloops made
+        request = api["transactional"].calls[0].request
+        body = json.loads(request.content)
+        assert body["transactionalId"] == "welcome"
+        assert body["email"] == "user@test.com"
+```
+
+### Pytest fixture
+
+```python
+import pytest
+from pyloops.testing import loops_respx_mock
+
+@pytest.fixture
+def loops_api():
+    with loops_respx_mock() as router:
+        yield router
+
+async def test_create_contact(loops_api):
+    client = pyloops.get_client()
+    result = await client.create_contact(email="new@test.com")
+    assert result.success is True
+    assert loops_api["create_contact"].called
+```
+
+### Simulating errors
+
+Override any route to return custom responses:
+
+```python
+from httpx import Response
+
+async def test_handles_rate_limit(loops_api):
+    loops_api["transactional"].mock(
+        return_value=Response(
+            429,
+            json={"success": False},
+            headers={"x-ratelimit-limit": "10", "x-ratelimit-remaining": "0"},
+        )
+    )
+    client = pyloops.get_client()
+    with pytest.raises(pyloops.LoopsRateLimitError):
+        await client.send_transactional_email(transactional_id="abc", email="user@test.com")
+```
+
+### Available mock routes
+
+All routes are accessible by name on the yielded router:
+
+| Name | Method | Endpoint |
+|------|--------|----------|
+| `health` | GET | `/api-key` |
+| `transactional` | POST | `/transactional` |
+| `list_transactional` | GET | `/transactional` |
+| `create_contact` | POST | `/contacts/create` |
+| `upsert_contact` | PUT | `/contacts/update` |
+| `find_contact` | GET | `/contacts/find` |
+| `delete_contact` | POST | `/contacts/delete` |
+| `list_contact_properties` | GET | `/contacts/properties` |
+| `create_contact_property` | POST | `/contacts/properties` |
+| `send_event` | POST | `/events/send` |
+| `list_mailing_lists` | GET | `/lists` |
+| `list_sending_ips` | GET | `/dedicated-sending-ips` |
+
+### Testing with safe mode
+
+The mock disables safe mode by default. To test safe mode behavior, pass `safe_mode=True` and your allowed domains:
+
+```python
+with loops_respx_mock(safe_mode=True, safe_mode_allowed_domains=("@test.com",)) as api:
+    client = pyloops.get_client()
+    await client.send_transactional_email(transactional_id="t1", email="dev@test.com")  # OK
+    await client.send_transactional_email(transactional_id="t1", email="user@gmail.com")  # raises
+```
+
 ## Documentation
 
 For detailed API documentation, visit the [Loops.so API docs](https://loops.so/docs).
