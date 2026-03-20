@@ -717,3 +717,13 @@ def get_client() -> LoopsClient:
     if _client is None:
         _client = LoopsClient()
     return _client
+
+
+def reset_client() -> None:
+    """Reset the singleton client so the next ``get_client()`` creates a fresh instance.
+
+    Useful after calling ``configure()`` with new settings, or in test
+    teardown to prevent state leaking between tests.
+    """
+    global _client
+    _client = None

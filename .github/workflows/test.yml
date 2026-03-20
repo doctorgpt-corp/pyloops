@@ -26,10 +26,13 @@ jobs:
         run: uv sync --all-groups
 
       - name: Run ruff linting
-        run: uv run ruff check src/
+        run: uv run ruff check .
 
       - name: Run ruff formatting check
-        run: uv run ruff format --check src/
+        run: uv run ruff format --check .
 
       - name: Run pyright type checking
         run: uv run pyright src/
+
+      - name: Run tests
+        run: uv run pytest tests/
