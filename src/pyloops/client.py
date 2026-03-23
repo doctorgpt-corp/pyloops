@@ -56,6 +56,7 @@ from pyloops.exceptions import (
     LoopsContactExistsError,
     LoopsError,
     LoopsRateLimitError,
+    LoopsUnsafeEmailError,
 )
 from pyloops.responses import TransactionalEmailsResponse
 
@@ -78,6 +79,8 @@ class LoopsClient:
         self,
         api_key: str | None = None,
         base_url: str = "https://app.loops.so/api/v1",
+        safe_mode: bool | None = None,
+        safe_mode_allowed_domains: tuple[str, ...] | None = None,
     ):
         """
         Initialize the Loops client.
@@ -85,16 +88,30 @@ class LoopsClient:
         Args:
             api_key: API key for Loops.so. If not provided, uses configured default or LOOPS_API_KEY env var.
             base_url: Base URL for Loops API (default: https://app.loops.so/api/v1)
+            safe_mode: If True, only allow emails to domains in safe_mode_allowed_domains.
+                Useful for local development to prevent accidentally emailing real users.
+                If None, falls back to the value set via configure().
+            safe_mode_allowed_domains: Tuple of allowed email domains when safe_mode is enabled
+                (e.g. ("@test.com", "@example.com")). Each entry should start with "@".
+                If None, falls back to the value set via configure().
 
         Raises:
             LoopsConfigurationError: If no API key is available
         """
         # Get API key from parameter, config, or env var
+        config = get_config()
         if api_key is None:
-            config = get_config()
             api_key = config["api_key"]
             if config["base_url"]:
                 base_url = config["base_url"]
+
+        if safe_mode is None:
+            safe_mode = config["safe_mode"]
+        self._safe_mode = safe_mode
+
+        if safe_mode_allowed_domains is None:
+            safe_mode_allowed_domains = config["safe_mode_allowed_domains"]
+        self._safe_mode_allowed_domains = safe_mode_allowed_domains
 
         if not api_key:
             raise LoopsConfigurationError(
@@ -125,6 +142,20 @@ class LoopsClient:
             remaining = int(response.headers.get("x-ratelimit-remaining", 0))
             raise LoopsRateLimitError(limit=limit, remaining=remaining)
         return response.parsed
+
+    def _validate_email(self, email: str | None) -> None:
+        """Validate email domain against the allowlist when safe mode is enabled."""
+        if not self._safe_mode or not email:
+            return
+        if not self._safe_mode_allowed_domains:
+            raise LoopsConfigurationError(
+                "safe_mode is enabled but no safe_mode_allowed_domains configured. "
+                "Set allowed domains via configure(safe_mode_allowed_domains=('@test.com',)) "
+                "or pass them to LoopsClient()."
+            )
+        email_lower = email.lower()
+        if not any(email_lower.endswith(domain) for domain in self._safe_mode_allowed_domains):
+            raise LoopsUnsafeEmailError(email, self._safe_mode_allowed_domains)
 
     async def health(self) -> bool:
         """
@@ -185,6 +216,8 @@ class LoopsClient:
             LoopsError: If the request fails (400)
             LoopsRateLimitError: If rate limit is exceeded
         """
+        self._validate_email(email)
+
         # Build the request
         request = ContactRequest(
             email=email,
@@ -267,6 +300,8 @@ class LoopsClient:
         if not email and not user_id:
             raise LoopsError("Either email or user_id must be provided")
 
+        self._validate_email(email)
+
         # Build the request
         request = ContactUpdateRequest(
             email=email if email else UNSET,
@@ -325,6 +360,8 @@ class LoopsClient:
         if not email and not user_id:
             raise LoopsError("Either email or user_id must be provided")
 
+        self._validate_email(email)
+
         response = await get_contacts_find.asyncio_detailed(
             client=self._client,
             email=email if email else UNSET,
@@ -367,6 +404,8 @@ class LoopsClient:
         """
         if not email and not user_id:
             raise LoopsError("Either email or user_id must be provided")
+
+        self._validate_email(email)
 
         # ContactDeleteRequest requires both fields, use empty string for the unused one
         body = ContactDeleteRequest(
@@ -496,6 +535,8 @@ class LoopsClient:
         if not email and not user_id:
             raise LoopsError("Either email or user_id must be provided")
 
+        self._validate_email(email)
+
         # Auto-generate idempotency key if not provided
         if idempotency_key is None:
             idempotency_key = str(uuid.uuid4())
@@ -570,6 +611,8 @@ class LoopsClient:
             LoopsError: If the request fails (400, 404) or idempotency key conflict (409)
             LoopsRateLimitError: If rate limit is exceeded
         """
+        self._validate_email(email)
+
         # Auto-generate idempotency key if not provided
         if idempotency_key is None:
             idempotency_key = str(uuid.uuid4())
@@ -717,3 +760,13 @@ def get_client() -> LoopsClient:
     if _client is None:
         _client = LoopsClient()
     return _client
+
+
+def reset_client() -> None:
+    """Reset the singleton client so the next ``get_client()`` creates a fresh instance.
+
+    Useful after calling ``configure()`` with new settings, or in test
+    teardown to prevent state leaking between tests.
+    """
+    global _client
+    _client = None

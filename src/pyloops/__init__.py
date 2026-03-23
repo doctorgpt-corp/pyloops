@@ -1,11 +1,12 @@
 from pyloops._generated.client import AuthenticatedClient, Client
-from pyloops.client import LoopsClient, get_client
+from pyloops.client import LoopsClient, get_client, reset_client
 from pyloops.config import configure, get_config
 from pyloops.exceptions import (
     LoopsConfigurationError,
     LoopsContactExistsError,
     LoopsError,
     LoopsRateLimitError,
+    LoopsUnsafeEmailError,
 )
 from pyloops.responses import (
     TransactionalEmail,
@@ -17,12 +18,14 @@ __all__ = (
     # High-level API
     "LoopsClient",
     "get_client",
+    "reset_client",
     "configure",
     "get_config",
     "LoopsError",
     "LoopsConfigurationError",
     "LoopsContactExistsError",
     "LoopsRateLimitError",
+    "LoopsUnsafeEmailError",
     # Response models
     "TransactionalEmail",
     "TransactionalEmailPagination",

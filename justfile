@@ -4,19 +4,23 @@ install:
 
 # Run linting
 lint:
-    uv run ruff check src/
+    uv run ruff check .
 
-# Format code
-fmt:
-    uv run ruff check --fix src/
-    uv run ruff format src/
+# Format code and tests
+format:
+    uv run ruff check --fix .
+    uv run ruff format .
 
 # Run type checking
 typecheck:
     uv run pyright src/
 
-# Run all checks (lint + typecheck)
-check: lint typecheck
+# Run tests
+test:
+    uv run pytest tests/
+
+# Run all checks (lint + typecheck + tests)
+check: lint typecheck test
 
 # Build the package
 build:
