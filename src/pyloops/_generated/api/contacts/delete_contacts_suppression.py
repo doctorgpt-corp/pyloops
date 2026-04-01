@@ -5,24 +5,28 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.contact_property import ContactProperty
+from ...models.contact_failure_response import ContactFailureResponse
+from ...models.contact_suppression_remove_response import ContactSuppressionRemoveResponse
 from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
-    list_: str | Unset = UNSET,
+    email: str | Unset = UNSET,
+    user_id: str | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
 
-    params["list"] = list_
+    params["email"] = email
+
+    params["userId"] = user_id
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     _kwargs: dict[str, Any] = {
-        "method": "get",
-        "url": "/contacts/properties",
+        "method": "delete",
+        "url": "/contacts/suppression",
         "params": params,
     }
 
@@ -31,16 +35,21 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | list[ContactProperty] | None:
+) -> Any | ContactFailureResponse | ContactSuppressionRemoveResponse | None:
     if response.status_code == 200:
-        response_200 = []
-        _response_200 = response.json()
-        for response_200_item_data in _response_200:
-            response_200_item = ContactProperty.from_dict(response_200_item_data)
-
-            response_200.append(response_200_item)
+        response_200 = ContactSuppressionRemoveResponse.from_dict(response.json())
 
         return response_200
+
+    if response.status_code == 400:
+        response_400 = ContactFailureResponse.from_dict(response.json())
+
+        return response_400
+
+    if response.status_code == 404:
+        response_404 = ContactFailureResponse.from_dict(response.json())
+
+        return response_404
 
     if response.status_code == 405:
         response_405 = cast(Any, None)
@@ -54,7 +63,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | list[ContactProperty]]:
+) -> Response[Any | ContactFailureResponse | ContactSuppressionRemoveResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -66,26 +75,29 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    list_: str | Unset = UNSET,
-) -> Response[Any | list[ContactProperty]]:
-    r"""Get a list of contact properties
+    email: str | Unset = UNSET,
+    user_id: str | Unset = UNSET,
+) -> Response[Any | ContactFailureResponse | ContactSuppressionRemoveResponse]:
+    """Remove a contact from suppression list
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Remove a suppressed contact from the suppression list by `email` or `userId`. Include only one query
+    parameter.
 
     Args:
-        list_ (str | Unset):
+        email (str | Unset):
+        user_id (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | list[ContactProperty]]
+        Response[Any | ContactFailureResponse | ContactSuppressionRemoveResponse]
     """
 
     kwargs = _get_kwargs(
-        list_=list_,
+        email=email,
+        user_id=user_id,
     )
 
     response = client.get_httpx_client().request(
@@ -98,53 +110,59 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    list_: str | Unset = UNSET,
-) -> Any | list[ContactProperty] | None:
-    r"""Get a list of contact properties
+    email: str | Unset = UNSET,
+    user_id: str | Unset = UNSET,
+) -> Any | ContactFailureResponse | ContactSuppressionRemoveResponse | None:
+    """Remove a contact from suppression list
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Remove a suppressed contact from the suppression list by `email` or `userId`. Include only one query
+    parameter.
 
     Args:
-        list_ (str | Unset):
+        email (str | Unset):
+        user_id (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | list[ContactProperty]
+        Any | ContactFailureResponse | ContactSuppressionRemoveResponse
     """
 
     return sync_detailed(
         client=client,
-        list_=list_,
+        email=email,
+        user_id=user_id,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    list_: str | Unset = UNSET,
-) -> Response[Any | list[ContactProperty]]:
-    r"""Get a list of contact properties
+    email: str | Unset = UNSET,
+    user_id: str | Unset = UNSET,
+) -> Response[Any | ContactFailureResponse | ContactSuppressionRemoveResponse]:
+    """Remove a contact from suppression list
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Remove a suppressed contact from the suppression list by `email` or `userId`. Include only one query
+    parameter.
 
     Args:
-        list_ (str | Unset):
+        email (str | Unset):
+        user_id (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | list[ContactProperty]]
+        Response[Any | ContactFailureResponse | ContactSuppressionRemoveResponse]
     """
 
     kwargs = _get_kwargs(
-        list_=list_,
+        email=email,
+        user_id=user_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -155,27 +173,30 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    list_: str | Unset = UNSET,
-) -> Any | list[ContactProperty] | None:
-    r"""Get a list of contact properties
+    email: str | Unset = UNSET,
+    user_id: str | Unset = UNSET,
+) -> Any | ContactFailureResponse | ContactSuppressionRemoveResponse | None:
+    """Remove a contact from suppression list
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Remove a suppressed contact from the suppression list by `email` or `userId`. Include only one query
+    parameter.
 
     Args:
-        list_ (str | Unset):
+        email (str | Unset):
+        user_id (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | list[ContactProperty]
+        Any | ContactFailureResponse | ContactSuppressionRemoveResponse
     """
 
     return (
         await asyncio_detailed(
             client=client,
-            list_=list_,
+            email=email,
+            user_id=user_id,
         )
     ).parsed

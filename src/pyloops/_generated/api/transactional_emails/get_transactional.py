@@ -13,6 +13,7 @@ def _get_kwargs(
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
 ) -> dict[str, Any]:
+
     params: dict[str, Any] = {}
 
     params["perPage"] = per_page
