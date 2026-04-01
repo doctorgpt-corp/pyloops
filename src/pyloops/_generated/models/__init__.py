@@ -15,6 +15,10 @@ from .contact_property_success_response import ContactPropertySuccessResponse
 from .contact_request import ContactRequest
 from .contact_request_mailing_lists import ContactRequestMailingLists
 from .contact_success_response import ContactSuccessResponse
+from .contact_suppression_removal_quota import ContactSuppressionRemovalQuota
+from .contact_suppression_remove_response import ContactSuppressionRemoveResponse
+from .contact_suppression_status_response import ContactSuppressionStatusResponse
+from .contact_suppression_status_response_contact import ContactSuppressionStatusResponseContact
 from .contact_update_request import ContactUpdateRequest
 from .contact_update_request_mailing_lists import ContactUpdateRequestMailingLists
 from .event_failure_response import EventFailureResponse
@@ -56,6 +60,10 @@ __all__ = (
     "ContactRequest",
     "ContactRequestMailingLists",
     "ContactSuccessResponse",
+    "ContactSuppressionRemovalQuota",
+    "ContactSuppressionRemoveResponse",
+    "ContactSuppressionStatusResponse",
+    "ContactSuppressionStatusResponseContact",
     "ContactUpdateRequest",
     "ContactUpdateRequestMailingLists",
     "EventFailureResponse",
