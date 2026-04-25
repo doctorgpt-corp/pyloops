@@ -6,29 +6,51 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="ContactUpdateRequestMailingLists")
+T = TypeVar("T", bound="ComponentFailureResponse")
 
 
 @_attrs_define
-class ContactUpdateRequestMailingLists:
-    """An object of mailing list IDs and boolean subscription statuses."""
+class ComponentFailureResponse:
+    """
+    Attributes:
+        success (bool):
+        message (str):
+    """
 
+    success: bool
+    message: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        success = self.success
+
+        message = self.message
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "success": success,
+                "message": message,
+            }
+        )
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        contact_update_request_mailing_lists = cls()
+        success = d.pop("success")
 
-        contact_update_request_mailing_lists.additional_properties = d
-        return contact_update_request_mailing_lists
+        message = d.pop("message")
+
+        component_failure_response = cls(
+            success=success,
+            message=message,
+        )
+
+        component_failure_response.additional_properties = d
+        return component_failure_response
 
     @property
     def additional_keys(self) -> list[str]:

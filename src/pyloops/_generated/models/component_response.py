@@ -6,29 +6,67 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="ContactUpdateRequestMailingLists")
+T = TypeVar("T", bound="ComponentResponse")
 
 
 @_attrs_define
-class ContactUpdateRequestMailingLists:
-    """An object of mailing list IDs and boolean subscription statuses."""
+class ComponentResponse:
+    """
+    Attributes:
+        success (bool):
+        component_id (str):
+        name (str):
+        lmx (str): The component body serialized as LMX.
+    """
 
+    success: bool
+    component_id: str
+    name: str
+    lmx: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        success = self.success
+
+        component_id = self.component_id
+
+        name = self.name
+
+        lmx = self.lmx
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "success": success,
+                "componentId": component_id,
+                "name": name,
+                "lmx": lmx,
+            }
+        )
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        contact_update_request_mailing_lists = cls()
+        success = d.pop("success")
 
-        contact_update_request_mailing_lists.additional_properties = d
-        return contact_update_request_mailing_lists
+        component_id = d.pop("componentId")
+
+        name = d.pop("name")
+
+        lmx = d.pop("lmx")
+
+        component_response = cls(
+            success=success,
+            component_id=component_id,
+            name=name,
+            lmx=lmx,
+        )
+
+        component_response.additional_properties = d
+        return component_response
 
     @property
     def additional_keys(self) -> list[str]:
