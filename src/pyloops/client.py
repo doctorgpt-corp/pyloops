@@ -4,22 +4,40 @@ from http import HTTPStatus
 from typing import Any
 
 from pyloops._generated.api.api_key import get_api_key
+from pyloops._generated.api.campaigns import (
+    get_campaigns,
+    get_campaigns_campaign_id,
+    post_campaigns,
+    post_campaigns_campaign_id,
+)
+from pyloops._generated.api.components import get_components, get_components_component_id
 from pyloops._generated.api.contact_properties import (
     get_contacts_properties,
     post_contacts_properties,
 )
 from pyloops._generated.api.contacts import (
+    delete_contacts_suppression,
     get_contacts_find,
+    get_contacts_suppression,
     post_contacts_create,
     post_contacts_delete,
     put_contacts_update,
 )
 from pyloops._generated.api.dedicated_sending_i_ps import get_dedicated_sending_ips
+from pyloops._generated.api.email_messages import (
+    get_email_messages_email_message_id,
+    post_email_messages_email_message_id,
+)
 from pyloops._generated.api.events import post_events_send
 from pyloops._generated.api.mailing_lists import get_lists
+from pyloops._generated.api.themes import get_themes, get_themes_theme_id
 from pyloops._generated.api.transactional_emails import get_transactional, post_transactional
 from pyloops._generated.client import AuthenticatedClient
 from pyloops._generated.models import (
+    CampaignFailureResponse,
+    CampaignResponse,
+    ComponentFailureResponse,
+    ComponentResponse,
     Contact,
     ContactDeleteRequest,
     ContactFailureResponse,
@@ -28,8 +46,14 @@ from pyloops._generated.models import (
     ContactRequest,
     ContactRequestMailingLists,
     ContactSuccessResponse,
+    ContactSuppressionRemoveResponse,
+    ContactSuppressionStatusResponse,
     ContactUpdateRequest,
     ContactUpdateRequestMailingLists,
+    CreateCampaignRequest,
+    CreateCampaignResponse,
+    EmailMessageFailureResponse,
+    EmailMessageResponse,
     EventFailureResponse,
     EventRequest,
     EventRequestEventProperties,
@@ -38,7 +62,12 @@ from pyloops._generated.models import (
     GetApiKeyResponse401,
     GetDedicatedSendingIpsResponse500,
     IdempotencyKeyFailureResponse,
+    ListCampaignsResponse,
+    ListComponentsResponse,
+    ListThemesResponse,
     MailingList,
+    ThemeFailureResponse,
+    ThemeResponse,
     TransactionalFailure2Response,
     TransactionalFailure3Response,
     TransactionalFailure4Response,
@@ -48,6 +77,8 @@ from pyloops._generated.models import (
     TransactionalRequestAttachmentsItem,
     TransactionalRequestDataVariables,
     TransactionalSuccessResponse,
+    UpdateCampaignRequest,
+    UpdateEmailMessageRequest,
 )
 from pyloops._generated.types import UNSET, Response
 from pyloops.config import get_config
@@ -734,6 +765,474 @@ class LoopsClient:
             return result
 
         raise LoopsError("Failed to list sending IPs", status_code=None, response_data=result)
+
+    # ------------------------------------------------------------------
+    # Campaigns
+    # ------------------------------------------------------------------
+
+    async def list_campaigns(
+        self,
+        per_page: int | None = None,
+        cursor: str | None = None,
+    ) -> ListCampaignsResponse:
+        """
+        Retrieve a paginated list of campaigns.
+
+        Args:
+            per_page: Results per page (10-50). Default: 20
+            cursor: Pagination cursor
+
+        Returns:
+            ListCampaignsResponse with pagination and data
+
+        Raises:
+            LoopsError: If the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_campaigns.asyncio_detailed(
+            client=self._client,
+            per_page=str(per_page) if per_page is not None else UNSET,
+            cursor=cursor if cursor else UNSET,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, CampaignFailureResponse):
+            raise LoopsError(
+                f"Failed to list campaigns: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, ListCampaignsResponse):
+            return result
+
+        raise LoopsError("Failed to list campaigns", status_code=None, response_data=result)
+
+    async def get_campaign(self, campaign_id: str) -> CampaignResponse:
+        """
+        Retrieve a single campaign by ID.
+
+        Args:
+            campaign_id: The campaign ID
+
+        Returns:
+            CampaignResponse
+
+        Raises:
+            LoopsError: If not found (404) or request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_campaigns_campaign_id.asyncio_detailed(
+            campaign_id=campaign_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, CampaignFailureResponse):
+            raise LoopsError(
+                f"Failed to get campaign: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, CampaignResponse):
+            return result
+
+        raise LoopsError("Failed to get campaign", status_code=None, response_data=result)
+
+    async def create_campaign(self, name: str) -> CreateCampaignResponse:
+        """
+        Create a new campaign.
+
+        Args:
+            name: Campaign name
+
+        Returns:
+            CreateCampaignResponse with campaign_id and linked email_message_id
+
+        Raises:
+            LoopsError: If the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = CreateCampaignRequest(name=name)
+        response = await post_campaigns.asyncio_detailed(client=self._client, body=body)
+        result = self._handle_response(response)
+
+        if isinstance(result, CampaignFailureResponse):
+            raise LoopsError(
+                f"Failed to create campaign: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, CreateCampaignResponse):
+            return result
+
+        raise LoopsError("Failed to create campaign", status_code=None, response_data=result)
+
+    async def update_campaign(self, campaign_id: str, name: str) -> CampaignResponse:
+        """
+        Update a campaign's name.
+
+        Args:
+            campaign_id: The campaign ID
+            name: New campaign name
+
+        Returns:
+            CampaignResponse
+
+        Raises:
+            LoopsError: If not found (404) or request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = UpdateCampaignRequest(name=name)
+        response = await post_campaigns_campaign_id.asyncio_detailed(
+            campaign_id=campaign_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, CampaignFailureResponse):
+            raise LoopsError(
+                f"Failed to update campaign: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, CampaignResponse):
+            return result
+
+        raise LoopsError("Failed to update campaign", status_code=None, response_data=result)
+
+    # ------------------------------------------------------------------
+    # Components
+    # ------------------------------------------------------------------
+
+    async def list_components(
+        self,
+        per_page: int | None = None,
+        cursor: str | None = None,
+    ) -> ListComponentsResponse:
+        """
+        Retrieve a paginated list of components.
+
+        Args:
+            per_page: Results per page (10-50). Default: 20
+            cursor: Pagination cursor
+
+        Returns:
+            ListComponentsResponse with pagination and data
+
+        Raises:
+            LoopsError: If the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_components.asyncio_detailed(
+            client=self._client,
+            per_page=str(per_page) if per_page is not None else UNSET,
+            cursor=cursor if cursor else UNSET,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, ComponentFailureResponse):
+            raise LoopsError(
+                f"Failed to list components: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, ListComponentsResponse):
+            return result
+
+        raise LoopsError("Failed to list components", status_code=None, response_data=result)
+
+    async def get_component(self, component_id: str) -> ComponentResponse:
+        """
+        Retrieve a single component by ID.
+
+        Args:
+            component_id: The component ID
+
+        Returns:
+            ComponentResponse
+
+        Raises:
+            LoopsError: If not found (404) or request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_components_component_id.asyncio_detailed(
+            component_id=component_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, ComponentFailureResponse):
+            raise LoopsError(
+                f"Failed to get component: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, ComponentResponse):
+            return result
+
+        raise LoopsError("Failed to get component", status_code=None, response_data=result)
+
+    # ------------------------------------------------------------------
+    # Themes
+    # ------------------------------------------------------------------
+
+    async def list_themes(
+        self,
+        per_page: int | None = None,
+        cursor: str | None = None,
+    ) -> ListThemesResponse:
+        """
+        Retrieve a paginated list of themes.
+
+        Args:
+            per_page: Results per page (10-50). Default: 20
+            cursor: Pagination cursor
+
+        Returns:
+            ListThemesResponse with pagination and data
+
+        Raises:
+            LoopsError: If the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_themes.asyncio_detailed(
+            client=self._client,
+            per_page=str(per_page) if per_page is not None else UNSET,
+            cursor=cursor if cursor else UNSET,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, ThemeFailureResponse):
+            raise LoopsError(
+                f"Failed to list themes: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, ListThemesResponse):
+            return result
+
+        raise LoopsError("Failed to list themes", status_code=None, response_data=result)
+
+    async def get_theme(self, theme_id: str) -> ThemeResponse:
+        """
+        Retrieve a single theme by ID.
+
+        Args:
+            theme_id: The theme ID
+
+        Returns:
+            ThemeResponse
+
+        Raises:
+            LoopsError: If not found (404) or request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_themes_theme_id.asyncio_detailed(
+            theme_id=theme_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, ThemeFailureResponse):
+            raise LoopsError(
+                f"Failed to get theme: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, ThemeResponse):
+            return result
+
+        raise LoopsError("Failed to get theme", status_code=None, response_data=result)
+
+    # ------------------------------------------------------------------
+    # Email Messages
+    # ------------------------------------------------------------------
+
+    async def get_email_message(self, email_message_id: str) -> EmailMessageResponse:
+        """
+        Retrieve an email message by ID.
+
+        Args:
+            email_message_id: The email message ID
+
+        Returns:
+            EmailMessageResponse
+
+        Raises:
+            LoopsError: If not found (404) or request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_email_messages_email_message_id.asyncio_detailed(
+            email_message_id=email_message_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, EmailMessageFailureResponse):
+            raise LoopsError(
+                f"Failed to get email message: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, EmailMessageResponse):
+            return result
+
+        raise LoopsError("Failed to get email message", status_code=None, response_data=result)
+
+    async def update_email_message(
+        self,
+        email_message_id: str,
+        subject: str | None = None,
+        preview_text: str | None = None,
+        from_name: str | None = None,
+        from_email: str | None = None,
+        reply_to_email: str | None = None,
+        lmx: str | None = None,
+        expected_revision_id: str | None = None,
+    ) -> EmailMessageResponse:
+        """
+        Update an email message.
+
+        Args:
+            email_message_id: The email message ID
+            subject: Email subject line
+            preview_text: Preview text shown in inbox
+            from_name: Sender display name
+            from_email: Sender username (without @ or domain; team domain is appended)
+            reply_to_email: Reply-to email address (must be empty or a valid email)
+            lmx: Email body as LMX with styles embedded in a <Style /> tag
+            expected_revision_id: Optimistic concurrency token (raises 409 if out of sync)
+
+        Returns:
+            EmailMessageResponse
+
+        Raises:
+            LoopsError: If the request fails or revision conflict (409)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = UpdateEmailMessageRequest(
+            subject=subject if subject is not None else UNSET,
+            preview_text=preview_text if preview_text is not None else UNSET,
+            from_name=from_name if from_name is not None else UNSET,
+            from_email=from_email if from_email is not None else UNSET,
+            reply_to_email=reply_to_email if reply_to_email is not None else UNSET,
+            lmx=lmx if lmx is not None else UNSET,
+            expected_revision_id=expected_revision_id if expected_revision_id is not None else UNSET,
+        )
+        response = await post_email_messages_email_message_id.asyncio_detailed(
+            email_message_id=email_message_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, EmailMessageFailureResponse):
+            raise LoopsError(
+                f"Failed to update email message: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, EmailMessageResponse):
+            return result
+
+        raise LoopsError("Failed to update email message", status_code=None, response_data=result)
+
+    # ------------------------------------------------------------------
+    # Contact Suppression
+    # ------------------------------------------------------------------
+
+    async def get_contact_suppression(
+        self,
+        email: str | None = None,
+        user_id: str | None = None,
+    ) -> ContactSuppressionStatusResponse:
+        """
+        Get the suppression status of a contact.
+
+        Args:
+            email: Contact email address
+            user_id: Custom user ID
+
+        Returns:
+            ContactSuppressionStatusResponse with is_suppressed flag and removal quota
+
+        Raises:
+            LoopsError: If neither email nor user_id is provided, or request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        if not email and not user_id:
+            raise LoopsError("Either email or user_id must be provided")
+
+        response = await get_contacts_suppression.asyncio_detailed(
+            client=self._client,
+            email=email if email else UNSET,
+            user_id=user_id if user_id else UNSET,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, ContactFailureResponse):
+            raise LoopsError(
+                f"Failed to get suppression status: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, ContactSuppressionStatusResponse):
+            return result
+
+        raise LoopsError("Failed to get suppression status", status_code=None, response_data=result)
+
+    async def remove_contact_suppression(
+        self,
+        email: str | None = None,
+        user_id: str | None = None,
+    ) -> ContactSuppressionRemoveResponse:
+        """
+        Remove a contact from the suppression list.
+
+        Args:
+            email: Contact email address
+            user_id: Custom user ID
+
+        Returns:
+            ContactSuppressionRemoveResponse with success flag and remaining removal quota
+
+        Raises:
+            LoopsError: If neither email nor user_id is provided, or request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        if not email and not user_id:
+            raise LoopsError("Either email or user_id must be provided")
+
+        response = await delete_contacts_suppression.asyncio_detailed(
+            client=self._client,
+            email=email if email else UNSET,
+            user_id=user_id if user_id else UNSET,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, ContactFailureResponse):
+            raise LoopsError(
+                f"Failed to remove suppression: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+
+        if isinstance(result, ContactSuppressionRemoveResponse):
+            return result
+
+        raise LoopsError("Failed to remove suppression", status_code=None, response_data=result)
 
 
 # Module-level singleton
