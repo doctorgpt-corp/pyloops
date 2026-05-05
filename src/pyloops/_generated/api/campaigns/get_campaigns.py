@@ -5,24 +5,28 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.contact_property import ContactProperty
+from ...models.campaign_failure_response import CampaignFailureResponse
+from ...models.list_campaigns_response import ListCampaignsResponse
 from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
-    list_: str | Unset = UNSET,
+    per_page: str | Unset = UNSET,
+    cursor: str | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
 
-    params["list"] = list_
+    params["perPage"] = per_page
+
+    params["cursor"] = cursor
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/contacts/properties",
+        "url": "/campaigns",
         "params": params,
     }
 
@@ -31,16 +35,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | list[ContactProperty] | None:
+) -> Any | CampaignFailureResponse | ListCampaignsResponse | None:
     if response.status_code == 200:
-        response_200 = []
-        _response_200 = response.json()
-        for response_200_item_data in _response_200:
-            response_200_item = ContactProperty.from_dict(response_200_item_data)
-
-            response_200.append(response_200_item)
+        response_200 = ListCampaignsResponse.from_dict(response.json())
 
         return response_200
+
+    if response.status_code == 400:
+        response_400 = CampaignFailureResponse.from_dict(response.json())
+
+        return response_400
+
+    if response.status_code == 401:
+        response_401 = cast(Any, None)
+        return response_401
 
     if response.status_code == 405:
         response_405 = cast(Any, None)
@@ -54,7 +62,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | list[ContactProperty]]:
+) -> Response[Any | CampaignFailureResponse | ListCampaignsResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -66,26 +74,28 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    list_: str | Unset = UNSET,
-) -> Response[Any | list[ContactProperty]]:
-    r"""Get a list of contact properties
+    per_page: str | Unset = UNSET,
+    cursor: str | Unset = UNSET,
+) -> Response[Any | CampaignFailureResponse | ListCampaignsResponse]:
+    """List campaigns
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Retrieve a paginated list of campaigns.
 
     Args:
-        list_ (str | Unset):
+        per_page (str | Unset):
+        cursor (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | list[ContactProperty]]
+        Response[Any | CampaignFailureResponse | ListCampaignsResponse]
     """
 
     kwargs = _get_kwargs(
-        list_=list_,
+        per_page=per_page,
+        cursor=cursor,
     )
 
     response = client.get_httpx_client().request(
@@ -98,53 +108,57 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    list_: str | Unset = UNSET,
-) -> Any | list[ContactProperty] | None:
-    r"""Get a list of contact properties
+    per_page: str | Unset = UNSET,
+    cursor: str | Unset = UNSET,
+) -> Any | CampaignFailureResponse | ListCampaignsResponse | None:
+    """List campaigns
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Retrieve a paginated list of campaigns.
 
     Args:
-        list_ (str | Unset):
+        per_page (str | Unset):
+        cursor (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | list[ContactProperty]
+        Any | CampaignFailureResponse | ListCampaignsResponse
     """
 
     return sync_detailed(
         client=client,
-        list_=list_,
+        per_page=per_page,
+        cursor=cursor,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    list_: str | Unset = UNSET,
-) -> Response[Any | list[ContactProperty]]:
-    r"""Get a list of contact properties
+    per_page: str | Unset = UNSET,
+    cursor: str | Unset = UNSET,
+) -> Response[Any | CampaignFailureResponse | ListCampaignsResponse]:
+    """List campaigns
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Retrieve a paginated list of campaigns.
 
     Args:
-        list_ (str | Unset):
+        per_page (str | Unset):
+        cursor (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | list[ContactProperty]]
+        Response[Any | CampaignFailureResponse | ListCampaignsResponse]
     """
 
     kwargs = _get_kwargs(
-        list_=list_,
+        per_page=per_page,
+        cursor=cursor,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -155,27 +169,29 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    list_: str | Unset = UNSET,
-) -> Any | list[ContactProperty] | None:
-    r"""Get a list of contact properties
+    per_page: str | Unset = UNSET,
+    cursor: str | Unset = UNSET,
+) -> Any | CampaignFailureResponse | ListCampaignsResponse | None:
+    """List campaigns
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Retrieve a paginated list of campaigns.
 
     Args:
-        list_ (str | Unset):
+        per_page (str | Unset):
+        cursor (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | list[ContactProperty]
+        Any | CampaignFailureResponse | ListCampaignsResponse
     """
 
     return (
         await asyncio_detailed(
             client=client,
-            list_=list_,
+            per_page=per_page,
+            cursor=cursor,
         )
     ).parsed
