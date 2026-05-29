@@ -13,8 +13,8 @@ T = TypeVar("T", bound="ThemeStyles")
 
 @_attrs_define
 class ThemeStyles:
-    """Flat map of style attributes, matching the attribute names accepted by the LMX `<Style />` tag. Only keys with a
-    value set on the theme are returned; all keys are optional.
+    """Flat map of style attributes, matching the attribute names accepted by the LMX `<Style />` tag. All attributes are
+    returned with the values stored on the theme.
 
         Attributes:
             background_color (str | Unset):

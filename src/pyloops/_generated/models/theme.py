@@ -20,7 +20,7 @@ class Theme:
         theme_id (str):
         name (str):
         styles (ThemeStyles): Flat map of style attributes, matching the attribute names accepted by the LMX `<Style />`
-            tag. Only keys with a value set on the theme are returned; all keys are optional.
+            tag. All attributes are returned with the values stored on the theme.
         is_default (bool): Whether this theme is the team's default.
         created_at (str): ISO 8601 timestamp.
         updated_at (str): ISO 8601 timestamp.

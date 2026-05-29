@@ -6,19 +6,19 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.email_message_failure_response import EmailMessageFailureResponse
-from ...models.email_message_response import EmailMessageResponse
+from ...models.transactional_failure_response import TransactionalFailureResponse
+from ...models.transactional_resource import TransactionalResource
 from ...types import Response
 
 
 def _get_kwargs(
-    email_message_id: str,
+    transactional_id: str,
 ) -> dict[str, Any]:
 
     _kwargs: dict[str, Any] = {
-        "method": "get",
-        "url": "/email-messages/{email_message_id}".format(
-            email_message_id=quote(str(email_message_id), safe=""),
+        "method": "post",
+        "url": "/transactionals/{transactional_id}/draft".format(
+            transactional_id=quote(str(transactional_id), safe=""),
         ),
     }
 
@@ -27,14 +27,14 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | EmailMessageFailureResponse | EmailMessageResponse | None:
+) -> Any | TransactionalFailureResponse | TransactionalResource | None:
     if response.status_code == 200:
-        response_200 = EmailMessageResponse.from_dict(response.json())
+        response_200 = TransactionalResource.from_dict(response.json())
 
         return response_200
 
     if response.status_code == 400:
-        response_400 = EmailMessageFailureResponse.from_dict(response.json())
+        response_400 = TransactionalFailureResponse.from_dict(response.json())
 
         return response_400
 
@@ -43,18 +43,13 @@ def _parse_response(
         return response_401
 
     if response.status_code == 404:
-        response_404 = EmailMessageFailureResponse.from_dict(response.json())
+        response_404 = TransactionalFailureResponse.from_dict(response.json())
 
         return response_404
 
     if response.status_code == 405:
         response_405 = cast(Any, None)
         return response_405
-
-    if response.status_code == 409:
-        response_409 = EmailMessageFailureResponse.from_dict(response.json())
-
-        return response_409
 
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
@@ -64,7 +59,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | EmailMessageFailureResponse | EmailMessageResponse]:
+) -> Response[Any | TransactionalFailureResponse | TransactionalResource]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -74,27 +69,29 @@ def _build_response(
 
 
 def sync_detailed(
-    email_message_id: str,
+    transactional_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | EmailMessageFailureResponse | EmailMessageResponse]:
-    """Get an email message
+) -> Response[Any | TransactionalFailureResponse | TransactionalResource]:
+    """Ensure a draft email message
 
-     Retrieve an email message, including its compiled LMX content.
+     Ensure the transactional has a draft email message. If a draft already exists it is returned
+    unchanged; otherwise a new empty draft is created (seeded from the most recent published version
+    when present). Use `/email-messages/{emailMessageId}` to edit the draft's content.
 
     Args:
-        email_message_id (str):
+        transactional_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | EmailMessageFailureResponse | EmailMessageResponse]
+        Response[Any | TransactionalFailureResponse | TransactionalResource]
     """
 
     kwargs = _get_kwargs(
-        email_message_id=email_message_id,
+        transactional_id=transactional_id,
     )
 
     response = client.get_httpx_client().request(
@@ -105,53 +102,57 @@ def sync_detailed(
 
 
 def sync(
-    email_message_id: str,
+    transactional_id: str,
     *,
     client: AuthenticatedClient,
-) -> Any | EmailMessageFailureResponse | EmailMessageResponse | None:
-    """Get an email message
+) -> Any | TransactionalFailureResponse | TransactionalResource | None:
+    """Ensure a draft email message
 
-     Retrieve an email message, including its compiled LMX content.
+     Ensure the transactional has a draft email message. If a draft already exists it is returned
+    unchanged; otherwise a new empty draft is created (seeded from the most recent published version
+    when present). Use `/email-messages/{emailMessageId}` to edit the draft's content.
 
     Args:
-        email_message_id (str):
+        transactional_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | EmailMessageFailureResponse | EmailMessageResponse
+        Any | TransactionalFailureResponse | TransactionalResource
     """
 
     return sync_detailed(
-        email_message_id=email_message_id,
+        transactional_id=transactional_id,
         client=client,
     ).parsed
 
 
 async def asyncio_detailed(
-    email_message_id: str,
+    transactional_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | EmailMessageFailureResponse | EmailMessageResponse]:
-    """Get an email message
+) -> Response[Any | TransactionalFailureResponse | TransactionalResource]:
+    """Ensure a draft email message
 
-     Retrieve an email message, including its compiled LMX content.
+     Ensure the transactional has a draft email message. If a draft already exists it is returned
+    unchanged; otherwise a new empty draft is created (seeded from the most recent published version
+    when present). Use `/email-messages/{emailMessageId}` to edit the draft's content.
 
     Args:
-        email_message_id (str):
+        transactional_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | EmailMessageFailureResponse | EmailMessageResponse]
+        Response[Any | TransactionalFailureResponse | TransactionalResource]
     """
 
     kwargs = _get_kwargs(
-        email_message_id=email_message_id,
+        transactional_id=transactional_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -160,28 +161,30 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    email_message_id: str,
+    transactional_id: str,
     *,
     client: AuthenticatedClient,
-) -> Any | EmailMessageFailureResponse | EmailMessageResponse | None:
-    """Get an email message
+) -> Any | TransactionalFailureResponse | TransactionalResource | None:
+    """Ensure a draft email message
 
-     Retrieve an email message, including its compiled LMX content.
+     Ensure the transactional has a draft email message. If a draft already exists it is returned
+    unchanged; otherwise a new empty draft is created (seeded from the most recent published version
+    when present). Use `/email-messages/{emailMessageId}` to edit the draft's content.
 
     Args:
-        email_message_id (str):
+        transactional_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | EmailMessageFailureResponse | EmailMessageResponse
+        Any | TransactionalFailureResponse | TransactionalResource
     """
 
     return (
         await asyncio_detailed(
-            email_message_id=email_message_id,
+            transactional_id=transactional_id,
             client=client,
         )
     ).parsed
