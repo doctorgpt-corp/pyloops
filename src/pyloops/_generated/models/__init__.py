@@ -3,6 +3,7 @@
 from .campaign_failure_response import CampaignFailureResponse
 from .campaign_list_item import CampaignListItem
 from .campaign_response import CampaignResponse
+from .complete_upload_response import CompleteUploadResponse
 from .component import Component
 from .component_failure_response import ComponentFailureResponse
 from .component_response import ComponentResponse
@@ -29,8 +30,13 @@ from .contact_update_request import ContactUpdateRequest
 from .contact_update_request_mailing_lists import ContactUpdateRequestMailingLists
 from .create_campaign_request import CreateCampaignRequest
 from .create_campaign_response import CreateCampaignResponse
+from .create_transactional_request import CreateTransactionalRequest
+from .create_upload_request import CreateUploadRequest
+from .create_upload_response import CreateUploadResponse
 from .email_message_failure_response import EmailMessageFailureResponse
 from .email_message_response import EmailMessageResponse
+from .email_message_response_warnings_item import EmailMessageResponseWarningsItem
+from .email_message_response_warnings_item_severity import EmailMessageResponseWarningsItemSeverity
 from .event_failure_response import EventFailureResponse
 from .event_request import EventRequest
 from .event_request_event_properties import EventRequestEventProperties
@@ -46,11 +52,15 @@ from .list_components_response import ListComponentsResponse
 from .list_components_response_pagination import ListComponentsResponsePagination
 from .list_themes_response import ListThemesResponse
 from .list_themes_response_pagination import ListThemesResponsePagination
+from .list_transactionals_resource_response import ListTransactionalsResourceResponse
+from .list_transactionals_resource_response_pagination import ListTransactionalsResourceResponsePagination
 from .mailing_list import MailingList
 from .theme import Theme
 from .theme_failure_response import ThemeFailureResponse
 from .theme_response import ThemeResponse
 from .theme_styles import ThemeStyles
+from .transactional_draft_response import TransactionalDraftResponse
+from .transactional_email_resource import TransactionalEmailResource
 from .transactional_failure_2_response import TransactionalFailure2Response
 from .transactional_failure_3_response import TransactionalFailure3Response
 from .transactional_failure_3_response_error import TransactionalFailure3ResponseError
@@ -62,14 +72,19 @@ from .transactional_failure_response import TransactionalFailureResponse
 from .transactional_request import TransactionalRequest
 from .transactional_request_attachments_item import TransactionalRequestAttachmentsItem
 from .transactional_request_data_variables import TransactionalRequestDataVariables
+from .transactional_response import TransactionalResponse
 from .transactional_success_response import TransactionalSuccessResponse
 from .update_campaign_request import UpdateCampaignRequest
 from .update_email_message_request import UpdateEmailMessageRequest
+from .update_transactional_request import UpdateTransactionalRequest
+from .upload_failure_response import UploadFailureResponse
+from .upload_limit_exceeded_failure_response import UploadLimitExceededFailureResponse
 
 __all__ = (
     "CampaignFailureResponse",
     "CampaignListItem",
     "CampaignResponse",
+    "CompleteUploadResponse",
     "Component",
     "ComponentFailureResponse",
     "ComponentResponse",
@@ -96,8 +111,13 @@ __all__ = (
     "ContactUpdateRequestMailingLists",
     "CreateCampaignRequest",
     "CreateCampaignResponse",
+    "CreateTransactionalRequest",
+    "CreateUploadRequest",
+    "CreateUploadResponse",
     "EmailMessageFailureResponse",
     "EmailMessageResponse",
+    "EmailMessageResponseWarningsItem",
+    "EmailMessageResponseWarningsItemSeverity",
     "EventFailureResponse",
     "EventRequest",
     "EventRequestEventProperties",
@@ -113,11 +133,15 @@ __all__ = (
     "ListComponentsResponsePagination",
     "ListThemesResponse",
     "ListThemesResponsePagination",
+    "ListTransactionalsResourceResponse",
+    "ListTransactionalsResourceResponsePagination",
     "MailingList",
     "Theme",
     "ThemeFailureResponse",
     "ThemeResponse",
     "ThemeStyles",
+    "TransactionalDraftResponse",
+    "TransactionalEmailResource",
     "TransactionalFailure2Response",
     "TransactionalFailure3Response",
     "TransactionalFailure3ResponseError",
@@ -129,7 +153,11 @@ __all__ = (
     "TransactionalRequest",
     "TransactionalRequestAttachmentsItem",
     "TransactionalRequestDataVariables",
+    "TransactionalResponse",
     "TransactionalSuccessResponse",
     "UpdateCampaignRequest",
     "UpdateEmailMessageRequest",
+    "UpdateTransactionalRequest",
+    "UploadFailureResponse",
+    "UploadLimitExceededFailureResponse",
 )

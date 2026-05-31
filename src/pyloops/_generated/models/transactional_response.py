@@ -7,42 +7,43 @@ from typing import Any, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="CampaignListItem")
+T = TypeVar("T", bound="TransactionalResponse")
 
 
 @_attrs_define
-class CampaignListItem:
+class TransactionalResponse:
     """
     Attributes:
-        campaign_id (str):
-        email_message_id (None | str):
+        success (bool):
+        transactional_id (str):
         name (str):
-        subject (str):
-        status (str): Campaign lifecycle status.
+        draft_email_message_id (None | str):
+        published_email_message_id (None | str):
         created_at (datetime.datetime):
         updated_at (datetime.datetime):
     """
 
-    campaign_id: str
-    email_message_id: None | str
+    success: bool
+    transactional_id: str
     name: str
-    subject: str
-    status: str
+    draft_email_message_id: None | str
+    published_email_message_id: None | str
     created_at: datetime.datetime
     updated_at: datetime.datetime
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        campaign_id = self.campaign_id
+        success = self.success
 
-        email_message_id: None | str
-        email_message_id = self.email_message_id
+        transactional_id = self.transactional_id
 
         name = self.name
 
-        subject = self.subject
+        draft_email_message_id: None | str
+        draft_email_message_id = self.draft_email_message_id
 
-        status = self.status
+        published_email_message_id: None | str
+        published_email_message_id = self.published_email_message_id
 
         created_at = self.created_at.isoformat()
 
@@ -52,11 +53,11 @@ class CampaignListItem:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "campaignId": campaign_id,
-                "emailMessageId": email_message_id,
+                "success": success,
+                "transactionalId": transactional_id,
                 "name": name,
-                "subject": subject,
-                "status": status,
+                "draftEmailMessageId": draft_email_message_id,
+                "publishedEmailMessageId": published_email_message_id,
                 "createdAt": created_at,
                 "updatedAt": updated_at,
             }
@@ -67,37 +68,42 @@ class CampaignListItem:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        campaign_id = d.pop("campaignId")
+        success = d.pop("success")
 
-        def _parse_email_message_id(data: object) -> None | str:
+        transactional_id = d.pop("transactionalId")
+
+        name = d.pop("name")
+
+        def _parse_draft_email_message_id(data: object) -> None | str:
             if data is None:
                 return data
             return cast(None | str, data)
 
-        email_message_id = _parse_email_message_id(d.pop("emailMessageId"))
+        draft_email_message_id = _parse_draft_email_message_id(d.pop("draftEmailMessageId"))
 
-        name = d.pop("name")
+        def _parse_published_email_message_id(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
 
-        subject = d.pop("subject")
-
-        status = d.pop("status")
+        published_email_message_id = _parse_published_email_message_id(d.pop("publishedEmailMessageId"))
 
         created_at = datetime.datetime.fromisoformat(d.pop("createdAt"))
 
         updated_at = datetime.datetime.fromisoformat(d.pop("updatedAt"))
 
-        campaign_list_item = cls(
-            campaign_id=campaign_id,
-            email_message_id=email_message_id,
+        transactional_response = cls(
+            success=success,
+            transactional_id=transactional_id,
             name=name,
-            subject=subject,
-            status=status,
+            draft_email_message_id=draft_email_message_id,
+            published_email_message_id=published_email_message_id,
             created_at=created_at,
             updated_at=updated_at,
         )
 
-        campaign_list_item.additional_properties = d
-        return campaign_list_item
+        transactional_response.additional_properties = d
+        return transactional_response
 
     @property
     def additional_keys(self) -> list[str]:
