@@ -18,19 +18,15 @@ T = TypeVar("T", bound="ListCampaignsResponse")
 class ListCampaignsResponse:
     """
     Attributes:
-        success (bool):
         pagination (ListCampaignsResponsePagination):
         data (list[CampaignListItem]):
     """
 
-    success: bool
     pagination: ListCampaignsResponsePagination
     data: list[CampaignListItem]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
-
         pagination = self.pagination.to_dict()
 
         data = []
@@ -42,7 +38,6 @@ class ListCampaignsResponse:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "success": success,
                 "pagination": pagination,
                 "data": data,
             }
@@ -56,8 +51,6 @@ class ListCampaignsResponse:
         from ..models.list_campaigns_response_pagination import ListCampaignsResponsePagination
 
         d = dict(src_dict)
-        success = d.pop("success")
-
         pagination = ListCampaignsResponsePagination.from_dict(d.pop("pagination"))
 
         data = []
@@ -68,7 +61,6 @@ class ListCampaignsResponse:
             data.append(data_item)
 
         list_campaigns_response = cls(
-            success=success,
             pagination=pagination,
             data=data,
         )

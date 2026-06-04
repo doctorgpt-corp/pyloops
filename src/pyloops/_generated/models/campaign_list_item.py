@@ -6,7 +6,6 @@ from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 T = TypeVar("T", bound="CampaignListItem")
 
@@ -15,7 +14,7 @@ T = TypeVar("T", bound="CampaignListItem")
 class CampaignListItem:
     """
     Attributes:
-        campaign_id (str):
+        id (str):
         email_message_id (None | str):
         name (str):
         subject (str):
@@ -24,7 +23,7 @@ class CampaignListItem:
         updated_at (datetime.datetime):
     """
 
-    campaign_id: str
+    id: str
     email_message_id: None | str
     name: str
     subject: str
@@ -34,7 +33,7 @@ class CampaignListItem:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        campaign_id = self.campaign_id
+        id = self.id
 
         email_message_id: None | str
         email_message_id = self.email_message_id
@@ -53,7 +52,7 @@ class CampaignListItem:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "campaignId": campaign_id,
+                "id": id,
                 "emailMessageId": email_message_id,
                 "name": name,
                 "subject": subject,
@@ -68,7 +67,7 @@ class CampaignListItem:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        campaign_id = d.pop("campaignId")
+        id = d.pop("id")
 
         def _parse_email_message_id(data: object) -> None | str:
             if data is None:
@@ -83,12 +82,12 @@ class CampaignListItem:
 
         status = d.pop("status")
 
-        created_at = isoparse(d.pop("createdAt"))
+        created_at = datetime.datetime.fromisoformat(d.pop("createdAt"))
 
-        updated_at = isoparse(d.pop("updatedAt"))
+        updated_at = datetime.datetime.fromisoformat(d.pop("updatedAt"))
 
         campaign_list_item = cls(
-            campaign_id=campaign_id,
+            id=id,
             email_message_id=email_message_id,
             name=name,
             subject=subject,
