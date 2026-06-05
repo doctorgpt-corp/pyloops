@@ -18,19 +18,15 @@ T = TypeVar("T", bound="ListThemesResponse")
 class ListThemesResponse:
     """
     Attributes:
-        success (bool):
         pagination (ListThemesResponsePagination):
         data (list[Theme]):
     """
 
-    success: bool
     pagination: ListThemesResponsePagination
     data: list[Theme]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
-
         pagination = self.pagination.to_dict()
 
         data = []
@@ -42,7 +38,6 @@ class ListThemesResponse:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "success": success,
                 "pagination": pagination,
                 "data": data,
             }
@@ -56,8 +51,6 @@ class ListThemesResponse:
         from ..models.theme import Theme
 
         d = dict(src_dict)
-        success = d.pop("success")
-
         pagination = ListThemesResponsePagination.from_dict(d.pop("pagination"))
 
         data = []
@@ -68,7 +61,6 @@ class ListThemesResponse:
             data.append(data_item)
 
         list_themes_response = cls(
-            success=success,
             pagination=pagination,
             data=data,
         )

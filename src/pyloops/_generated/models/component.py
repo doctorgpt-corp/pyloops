@@ -13,18 +13,18 @@ T = TypeVar("T", bound="Component")
 class Component:
     """
     Attributes:
-        component_id (str):
+        id (str):
         name (str):
         lmx (str): The component body serialized as LMX.
     """
 
-    component_id: str
+    id: str
     name: str
     lmx: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        component_id = self.component_id
+        id = self.id
 
         name = self.name
 
@@ -34,7 +34,7 @@ class Component:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "componentId": component_id,
+                "id": id,
                 "name": name,
                 "lmx": lmx,
             }
@@ -45,14 +45,14 @@ class Component:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        component_id = d.pop("componentId")
+        id = d.pop("id")
 
         name = d.pop("name")
 
         lmx = d.pop("lmx")
 
         component = cls(
-            component_id=component_id,
+            id=id,
             name=name,
             lmx=lmx,
         )

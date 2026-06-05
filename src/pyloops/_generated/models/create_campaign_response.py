@@ -6,7 +6,6 @@ from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 T = TypeVar("T", bound="CreateCampaignResponse")
 
@@ -15,8 +14,7 @@ T = TypeVar("T", bound="CreateCampaignResponse")
 class CreateCampaignResponse:
     """
     Attributes:
-        success (bool):
-        campaign_id (str):
+        id (str):
         name (str):
         status (str):
         created_at (datetime.datetime):
@@ -27,8 +25,7 @@ class CreateCampaignResponse:
             this as `expectedRevisionId` on your first update.
     """
 
-    success: bool
-    campaign_id: str
+    id: str
     name: str
     status: str
     created_at: datetime.datetime
@@ -38,9 +35,7 @@ class CreateCampaignResponse:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
-
-        campaign_id = self.campaign_id
+        id = self.id
 
         name = self.name
 
@@ -59,8 +54,7 @@ class CreateCampaignResponse:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "success": success,
-                "campaignId": campaign_id,
+                "id": id,
                 "name": name,
                 "status": status,
                 "createdAt": created_at,
@@ -75,17 +69,15 @@ class CreateCampaignResponse:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        success = d.pop("success")
-
-        campaign_id = d.pop("campaignId")
+        id = d.pop("id")
 
         name = d.pop("name")
 
         status = d.pop("status")
 
-        created_at = isoparse(d.pop("createdAt"))
+        created_at = datetime.datetime.fromisoformat(d.pop("createdAt"))
 
-        updated_at = isoparse(d.pop("updatedAt"))
+        updated_at = datetime.datetime.fromisoformat(d.pop("updatedAt"))
 
         email_message_id = d.pop("emailMessageId")
 
@@ -99,8 +91,7 @@ class CreateCampaignResponse:
         )
 
         create_campaign_response = cls(
-            success=success,
-            campaign_id=campaign_id,
+            id=id,
             name=name,
             status=status,
             created_at=created_at,

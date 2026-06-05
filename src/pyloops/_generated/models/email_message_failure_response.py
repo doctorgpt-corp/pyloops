@@ -13,24 +13,19 @@ T = TypeVar("T", bound="EmailMessageFailureResponse")
 class EmailMessageFailureResponse:
     """
     Attributes:
-        success (bool):
         message (str):
     """
 
-    success: bool
     message: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
-
         message = self.message
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "success": success,
                 "message": message,
             }
         )
@@ -40,12 +35,9 @@ class EmailMessageFailureResponse:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        success = d.pop("success")
-
         message = d.pop("message")
 
         email_message_failure_response = cls(
-            success=success,
             message=message,
         )
 
