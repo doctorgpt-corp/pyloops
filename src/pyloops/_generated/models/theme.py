@@ -17,16 +17,16 @@ T = TypeVar("T", bound="Theme")
 class Theme:
     """
     Attributes:
-        theme_id (str):
+        id (str):
         name (str):
         styles (ThemeStyles): Flat map of style attributes, matching the attribute names accepted by the LMX `<Style />`
-            tag. Only keys with a value set on the theme are returned; all keys are optional.
+            tag. All attributes are returned with the values stored on the theme.
         is_default (bool): Whether this theme is the team's default.
         created_at (str): ISO 8601 timestamp.
         updated_at (str): ISO 8601 timestamp.
     """
 
-    theme_id: str
+    id: str
     name: str
     styles: ThemeStyles
     is_default: bool
@@ -35,7 +35,7 @@ class Theme:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        theme_id = self.theme_id
+        id = self.id
 
         name = self.name
 
@@ -51,7 +51,7 @@ class Theme:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "themeId": theme_id,
+                "id": id,
                 "name": name,
                 "styles": styles,
                 "isDefault": is_default,
@@ -67,7 +67,7 @@ class Theme:
         from ..models.theme_styles import ThemeStyles
 
         d = dict(src_dict)
-        theme_id = d.pop("themeId")
+        id = d.pop("id")
 
         name = d.pop("name")
 
@@ -80,7 +80,7 @@ class Theme:
         updated_at = d.pop("updatedAt")
 
         theme = cls(
-            theme_id=theme_id,
+            id=id,
             name=name,
             styles=styles,
             is_default=is_default,
