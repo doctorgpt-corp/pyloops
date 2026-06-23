@@ -13,22 +13,18 @@ T = TypeVar("T", bound="ComponentResponse")
 class ComponentResponse:
     """
     Attributes:
-        success (bool):
-        component_id (str):
+        id (str):
         name (str):
         lmx (str): The component body serialized as LMX.
     """
 
-    success: bool
-    component_id: str
+    id: str
     name: str
     lmx: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
-
-        component_id = self.component_id
+        id = self.id
 
         name = self.name
 
@@ -38,8 +34,7 @@ class ComponentResponse:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "success": success,
-                "componentId": component_id,
+                "id": id,
                 "name": name,
                 "lmx": lmx,
             }
@@ -50,17 +45,14 @@ class ComponentResponse:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        success = d.pop("success")
-
-        component_id = d.pop("componentId")
+        id = d.pop("id")
 
         name = d.pop("name")
 
         lmx = d.pop("lmx")
 
         component_response = cls(
-            success=success,
-            component_id=component_id,
+            id=id,
             name=name,
             lmx=lmx,
         )
