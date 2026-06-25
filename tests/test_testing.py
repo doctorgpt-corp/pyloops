@@ -721,6 +721,7 @@ async def test_complete_upload_limit_exceeded():
         with pytest.raises(LoopsRateLimitError) as exc_info:
             await client.complete_upload("mock-asset-id")
         assert exc_info.value.limit == 100
+        assert exc_info.value.remaining == 0
 
 
 @pytest.mark.asyncio
@@ -900,3 +901,67 @@ async def test_list_workflows_rate_limit():
         with pytest.raises(LoopsRateLimitError) as exc_info:
             await client.list_workflows()
         assert exc_info.value.limit == 7
+        assert exc_info.value.remaining == 0
+
+
+# ---------------------------------------------------------------------------
+# Error-path coverage for the new 1.14.x wrappers
+# ---------------------------------------------------------------------------
+
+# (route_name, call) for every new wrapper not already given a standalone error
+# test above (complete_upload, get_workflow, create_campaign_group are covered
+# separately). A 400 on the mocked route must surface as a LoopsError.
+_NEW_WRAPPER_ERROR_CASES = [
+    ("list_transactional_templates", lambda c: c.list_transactional_templates()),
+    ("get_transactional_template", lambda c: c.get_transactional_template("x")),
+    ("create_transactional_template", lambda c: c.create_transactional_template(name="x")),
+    ("update_transactional_template", lambda c: c.update_transactional_template("x", name="y")),
+    ("draft_transactional_template", lambda c: c.draft_transactional_template("x")),
+    ("publish_transactional_template", lambda c: c.publish_transactional_template("x")),
+    ("create_upload", lambda c: c.create_upload(content_type="image/png", content_length=1)),
+    ("get_workflow_node", lambda c: c.get_workflow_node("wf", "node")),
+    ("list_workflows", lambda c: c.list_workflows()),
+    ("list_audience_segments", lambda c: c.list_audience_segments()),
+    ("get_audience_segment", lambda c: c.get_audience_segment("x")),
+    ("list_campaign_groups", lambda c: c.list_campaign_groups()),
+    ("get_campaign_group", lambda c: c.get_campaign_group("x")),
+    ("update_campaign_group", lambda c: c.update_campaign_group("x", name="y")),
+    ("list_transactional_groups", lambda c: c.list_transactional_groups()),
+    ("get_transactional_group", lambda c: c.get_transactional_group("x")),
+    ("create_transactional_group", lambda c: c.create_transactional_group(name="x")),
+    ("update_transactional_group", lambda c: c.update_transactional_group("x", name="y")),
+    ("preview_email_message", lambda c: c.preview_email_message("x", emails=["user@test.com"])),
+]
+
+
+@pytest.mark.parametrize(
+    ("route_name", "call"),
+    _NEW_WRAPPER_ERROR_CASES,
+    ids=[name for name, _ in _NEW_WRAPPER_ERROR_CASES],
+)
+@pytest.mark.asyncio
+async def test_new_wrapper_error_path(route_name, call):
+    with loops_respx_mock() as api:
+        api[route_name].mock(return_value=Response(400, json={"message": "boom"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError):
+            await call(client)
+
+
+# ---------------------------------------------------------------------------
+# Legacy base_url override still matches mock routes (regression)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_legacy_v1_base_url_still_matches_routes():
+    # A caller pinned to the old ".../api/v1" default: LoopsClient strips the
+    # trailing /v1 and loops_respx_mock() must normalize the router to match.
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        with loops_respx_mock(base_url="https://app.loops.so/api/v1") as api:
+            client = pyloops.get_client()
+            assert await client.health() is True
+            assert api["health"].called

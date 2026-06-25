@@ -102,7 +102,16 @@ def loops_respx_mock(
         safe_mode_allowed_domains=safe_mode_allowed_domains,
     )
     pyloops.reset_client()
-    with respx.mock(base_url=base_url, assert_all_called=False, assert_all_mocked=assert_all_mocked) as router:
+    # LoopsClient strips a trailing "/v1" from base_url (see
+    # LoopsClient._normalize_base_url), so the router must listen on the same
+    # normalized URL — otherwise a legacy ".../api/v1" override would make the
+    # client request "/api/v1/..." while respx listens under "/api/v1/v1/...".
+    normalized_base_url = base_url.rstrip("/")
+    if normalized_base_url.endswith("/v1"):
+        normalized_base_url = normalized_base_url[: -len("/v1")]
+    with respx.mock(
+        base_url=normalized_base_url, assert_all_called=False, assert_all_mocked=assert_all_mocked
+    ) as router:
         # Health / API key validation
         router.get("/v1/api-key", name="health").mock(
             return_value=respx.MockResponse(200, json={"success": True, "teamName": "Test"})
