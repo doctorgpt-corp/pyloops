@@ -60,15 +60,17 @@ For more control, use the auto-generated low-level API directly:
 
 ```python
 from pyloops import AuthenticatedClient
-from pyloops.api.contacts import put_contacts_update
-from pyloops.models import ContactUpdateRequest
+from pyloops._generated.api.contacts import put_v1_contacts_update
+from pyloops._generated.models import ContactUpdateRequest
 
+# Note: the base URL must NOT include the "/v1" segment — it is now part of
+# each endpoint path (e.g. /v1/contacts/update).
 client = AuthenticatedClient(
-    base_url="https://app.loops.so/api/v1",
+    base_url="https://app.loops.so/api",
     token="your_api_key_here",
 )
 
-response = await put_contacts_update.asyncio(
+response = await put_v1_contacts_update.asyncio(
     client=client,
     body=ContactUpdateRequest(
         email="user@example.com",
@@ -257,7 +259,7 @@ For detailed API documentation, visit the [Loops.so API docs](https://loops.so/d
 
 ## Automated Updates
 
-This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.8.0**).
+This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.14.2**).
 
 A GitHub Action checks for API updates daily and creates a pull request when changes are detected. After review and merge, a new version is automatically published to PyPI.
 

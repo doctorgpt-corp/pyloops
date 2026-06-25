@@ -33,7 +33,8 @@ Tests run with pytest and require no real API key — all HTTP is intercepted at
 ```
 tests/
   test_safe_mode.py   # 40 tests — safe mode email domain validation
-  test_testing.py     # 31 tests — mock utility + every client method
+  test_testing.py     # 74 tests — mock utility + every client method
+  test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
 ```
 
 Run tests:
@@ -96,7 +97,7 @@ async def test_something():
 `loops_respx_mock()` is a context manager that:
 1. Calls `pyloops.configure()` with the given `api_key` (default `"test-key"`)
 2. Resets the singleton client so a fresh one is created against the mock
-3. Activates a `respx` router that intercepts all httpx calls to `https://app.loops.so/api/v1`
+3. Activates a `respx` router that intercepts all httpx calls to `https://app.loops.so/api` (the `/v1` version segment is part of each endpoint path)
 4. Registers a default success response for every Loops endpoint
 5. On exit, resets the singleton again to prevent state leaking between tests
 
@@ -106,30 +107,52 @@ All routes are accessible by name on the yielded router.
 
 | Name | Endpoint |
 |---|---|
-| `health` | `GET /api-key` |
-| `create_contact` | `POST /contacts/create` |
-| `upsert_contact` | `PUT /contacts/update` |
-| `find_contact` | `GET /contacts/find` |
-| `delete_contact` | `POST /contacts/delete` |
-| `list_contact_properties` | `GET /contacts/properties` |
-| `create_contact_property` | `POST /contacts/properties` |
-| `get_contact_suppression` | `GET /contacts/suppression` |
-| `remove_contact_suppression` | `DELETE /contacts/suppression` |
-| `send_event` | `POST /events/send` |
-| `list_mailing_lists` | `GET /lists` |
-| `transactional` | `POST /transactional` |
-| `list_transactional` | `GET /transactional` |
-| `list_sending_ips` | `GET /dedicated-sending-ips` |
-| `list_campaigns` | `GET /campaigns` |
-| `create_campaign` | `POST /campaigns` |
-| `get_campaign` | `GET /campaigns/{id}` |
-| `update_campaign` | `POST /campaigns/{id}` |
-| `list_components` | `GET /components` |
-| `get_component` | `GET /components/{id}` |
-| `list_themes` | `GET /themes` |
-| `get_theme` | `GET /themes/{id}` |
-| `get_email_message` | `GET /email-messages/{id}` |
-| `update_email_message` | `POST /email-messages/{id}` |
+| `health` | `GET /v1/api-key` |
+| `create_contact` | `POST /v1/contacts/create` |
+| `upsert_contact` | `PUT /v1/contacts/update` |
+| `find_contact` | `GET /v1/contacts/find` |
+| `delete_contact` | `POST /v1/contacts/delete` |
+| `list_contact_properties` | `GET /v1/contacts/properties` |
+| `create_contact_property` | `POST /v1/contacts/properties` |
+| `get_contact_suppression` | `GET /v1/contacts/suppression` |
+| `remove_contact_suppression` | `DELETE /v1/contacts/suppression` |
+| `send_event` | `POST /v1/events/send` |
+| `list_mailing_lists` | `GET /v1/lists` |
+| `transactional` | `POST /v1/transactional` |
+| `list_transactional` | `GET /v1/transactional` |
+| `list_sending_ips` | `GET /v1/dedicated-sending-ips` |
+| `list_campaigns` | `GET /v1/campaigns` |
+| `create_campaign` | `POST /v1/campaigns` |
+| `get_campaign` | `GET /v1/campaigns/{id}` |
+| `update_campaign` | `POST /v1/campaigns/{id}` |
+| `list_components` | `GET /v1/components` |
+| `get_component` | `GET /v1/components/{id}` |
+| `list_themes` | `GET /v1/themes` |
+| `get_theme` | `GET /v1/themes/{id}` |
+| `get_email_message` | `GET /v1/email-messages/{id}` |
+| `update_email_message` | `POST /v1/email-messages/{id}` |
+| `list_transactional_templates` | `GET /v1/transactional-emails` |
+| `get_transactional_template` | `GET /v1/transactional-emails/{id}` |
+| `create_transactional_template` | `POST /v1/transactional-emails` |
+| `update_transactional_template` | `POST /v1/transactional-emails/{id}` |
+| `draft_transactional_template` | `POST /v1/transactional-emails/{id}/draft` |
+| `publish_transactional_template` | `POST /v1/transactional-emails/{id}/publish` |
+| `create_upload` | `POST /v1/uploads` |
+| `complete_upload` | `POST /v1/uploads/{id}/complete` |
+| `list_workflows` | `GET /v1/workflows` |
+| `get_workflow` | `GET /v1/workflows/{id}` |
+| `get_workflow_node` | `GET /v1/workflows/{id}/nodes/{node_id}` |
+| `list_audience_segments` | `GET /v1/audience-segments` |
+| `get_audience_segment` | `GET /v1/audience-segments/{id}` |
+| `list_campaign_groups` | `GET /v1/campaign-groups` |
+| `get_campaign_group` | `GET /v1/campaign-groups/{id}` |
+| `create_campaign_group` | `POST /v1/campaign-groups` |
+| `update_campaign_group` | `POST /v1/campaign-groups/{id}` |
+| `list_transactional_groups` | `GET /v1/transactional-groups` |
+| `get_transactional_group` | `GET /v1/transactional-groups/{id}` |
+| `create_transactional_group` | `POST /v1/transactional-groups` |
+| `update_transactional_group` | `POST /v1/transactional-groups/{id}` |
+| `preview_email_message` | `POST /v1/email-messages/{id}/preview` |
 
 ### Simulating errors
 

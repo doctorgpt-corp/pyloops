@@ -7,7 +7,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 if TYPE_CHECKING:
-    from ..models.campaign_list_item import CampaignListItem
+    from ..models.campaign_response import CampaignResponse
     from ..models.list_campaigns_response_pagination import ListCampaignsResponsePagination
 
 
@@ -18,19 +18,15 @@ T = TypeVar("T", bound="ListCampaignsResponse")
 class ListCampaignsResponse:
     """
     Attributes:
-        success (bool):
         pagination (ListCampaignsResponsePagination):
-        data (list[CampaignListItem]):
+        data (list[CampaignResponse]):
     """
 
-    success: bool
     pagination: ListCampaignsResponsePagination
-    data: list[CampaignListItem]
+    data: list[CampaignResponse]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
-
         pagination = self.pagination.to_dict()
 
         data = []
@@ -42,7 +38,6 @@ class ListCampaignsResponse:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "success": success,
                 "pagination": pagination,
                 "data": data,
             }
@@ -52,23 +47,20 @@ class ListCampaignsResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.campaign_list_item import CampaignListItem
+        from ..models.campaign_response import CampaignResponse
         from ..models.list_campaigns_response_pagination import ListCampaignsResponsePagination
 
         d = dict(src_dict)
-        success = d.pop("success")
-
         pagination = ListCampaignsResponsePagination.from_dict(d.pop("pagination"))
 
         data = []
         _data = d.pop("data")
         for data_item_data in _data:
-            data_item = CampaignListItem.from_dict(data_item_data)
+            data_item = CampaignResponse.from_dict(data_item_data)
 
             data.append(data_item)
 
         list_campaigns_response = cls(
-            success=success,
             pagination=pagination,
             data=data,
         )

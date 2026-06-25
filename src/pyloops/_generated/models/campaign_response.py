@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
+
+if TYPE_CHECKING:
+    from ..models.audience_filter_type_0 import AudienceFilterType0
+    from ..models.campaign_scheduling import CampaignScheduling
+
 
 T = TypeVar("T", bound="CampaignResponse")
 
@@ -15,28 +19,37 @@ T = TypeVar("T", bound="CampaignResponse")
 class CampaignResponse:
     """
     Attributes:
-        success (bool):
-        campaign_id (str):
+        id (str):
         name (str):
         status (str):
         created_at (datetime.datetime):
         updated_at (datetime.datetime):
         email_message_id (None | str):
+        campaign_group_id (None | str):
+        mailing_list_id (None | str):
+        audience_segment_id (None | str):
+        audience_filter (AudienceFilterType0 | None): A tree of audience conditions combined with `match`. Null when the
+            campaign targets a mailing list or segment without an explicit filter.
+        scheduling (CampaignScheduling): When the campaign is scheduled to send.
     """
 
-    success: bool
-    campaign_id: str
+    id: str
     name: str
     status: str
     created_at: datetime.datetime
     updated_at: datetime.datetime
     email_message_id: None | str
+    campaign_group_id: None | str
+    mailing_list_id: None | str
+    audience_segment_id: None | str
+    audience_filter: AudienceFilterType0 | None
+    scheduling: CampaignScheduling
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
+        from ..models.audience_filter_type_0 import AudienceFilterType0
 
-        campaign_id = self.campaign_id
+        id = self.id
 
         name = self.name
 
@@ -49,17 +62,38 @@ class CampaignResponse:
         email_message_id: None | str
         email_message_id = self.email_message_id
 
+        campaign_group_id: None | str
+        campaign_group_id = self.campaign_group_id
+
+        mailing_list_id: None | str
+        mailing_list_id = self.mailing_list_id
+
+        audience_segment_id: None | str
+        audience_segment_id = self.audience_segment_id
+
+        audience_filter: dict[str, Any] | None
+        if isinstance(self.audience_filter, AudienceFilterType0):
+            audience_filter = self.audience_filter.to_dict()
+        else:
+            audience_filter = self.audience_filter
+
+        scheduling = self.scheduling.to_dict()
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "success": success,
-                "campaignId": campaign_id,
+                "id": id,
                 "name": name,
                 "status": status,
                 "createdAt": created_at,
                 "updatedAt": updated_at,
                 "emailMessageId": email_message_id,
+                "campaignGroupId": campaign_group_id,
+                "mailingListId": mailing_list_id,
+                "audienceSegmentId": audience_segment_id,
+                "audienceFilter": audience_filter,
+                "scheduling": scheduling,
             }
         )
 
@@ -67,18 +101,19 @@ class CampaignResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        d = dict(src_dict)
-        success = d.pop("success")
+        from ..models.audience_filter_type_0 import AudienceFilterType0
+        from ..models.campaign_scheduling import CampaignScheduling
 
-        campaign_id = d.pop("campaignId")
+        d = dict(src_dict)
+        id = d.pop("id")
 
         name = d.pop("name")
 
         status = d.pop("status")
 
-        created_at = isoparse(d.pop("createdAt"))
+        created_at = datetime.datetime.fromisoformat(d.pop("createdAt"))
 
-        updated_at = isoparse(d.pop("updatedAt"))
+        updated_at = datetime.datetime.fromisoformat(d.pop("updatedAt"))
 
         def _parse_email_message_id(data: object) -> None | str:
             if data is None:
@@ -87,14 +122,56 @@ class CampaignResponse:
 
         email_message_id = _parse_email_message_id(d.pop("emailMessageId"))
 
+        def _parse_campaign_group_id(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        campaign_group_id = _parse_campaign_group_id(d.pop("campaignGroupId"))
+
+        def _parse_mailing_list_id(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        mailing_list_id = _parse_mailing_list_id(d.pop("mailingListId"))
+
+        def _parse_audience_segment_id(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        audience_segment_id = _parse_audience_segment_id(d.pop("audienceSegmentId"))
+
+        def _parse_audience_filter(data: object) -> AudienceFilterType0 | None:
+            if data is None:
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_audience_filter_type_0 = AudienceFilterType0.from_dict(data)
+
+                return componentsschemas_audience_filter_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(AudienceFilterType0 | None, data)
+
+        audience_filter = _parse_audience_filter(d.pop("audienceFilter"))
+
+        scheduling = CampaignScheduling.from_dict(d.pop("scheduling"))
+
         campaign_response = cls(
-            success=success,
-            campaign_id=campaign_id,
+            id=id,
             name=name,
             status=status,
             created_at=created_at,
             updated_at=updated_at,
             email_message_id=email_message_id,
+            campaign_group_id=campaign_group_id,
+            mailing_list_id=mailing_list_id,
+            audience_segment_id=audience_segment_id,
+            audience_filter=audience_filter,
+            scheduling=scheduling,
         )
 
         campaign_response.additional_properties = d

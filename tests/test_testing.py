@@ -173,6 +173,29 @@ EXPECTED_ROUTE_NAMES = [
     "update_email_message",
     "get_contact_suppression",
     "remove_contact_suppression",
+    # 1.14.x
+    "list_transactional_templates",
+    "get_transactional_template",
+    "create_transactional_template",
+    "update_transactional_template",
+    "draft_transactional_template",
+    "publish_transactional_template",
+    "create_upload",
+    "complete_upload",
+    "list_workflows",
+    "get_workflow",
+    "get_workflow_node",
+    "list_audience_segments",
+    "get_audience_segment",
+    "list_campaign_groups",
+    "get_campaign_group",
+    "create_campaign_group",
+    "update_campaign_group",
+    "list_transactional_groups",
+    "get_transactional_group",
+    "create_transactional_group",
+    "update_transactional_group",
+    "preview_email_message",
 ]
 
 
@@ -313,7 +336,6 @@ async def test_list_campaigns():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.list_campaigns()
-        assert result.success is True
         assert result.data == []
         assert api["list_campaigns"].called
 
@@ -323,8 +345,7 @@ async def test_get_campaign():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_campaign("mock-campaign-id")
-        assert result.success is True
-        assert result.campaign_id == "mock-campaign-id"
+        assert result.id == "mock-campaign-id"
         assert api["get_campaign"].called
 
 
@@ -333,8 +354,7 @@ async def test_create_campaign():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.create_campaign(name="My Campaign")
-        assert result.success is True
-        assert result.campaign_id == "mock-campaign-id"
+        assert result.id == "mock-campaign-id"
         assert result.email_message_id == "mock-email-message-id"
 
         request = api["create_campaign"].calls[0].request
@@ -347,7 +367,6 @@ async def test_update_campaign():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.update_campaign("mock-campaign-id", name="Updated Campaign")
-        assert result.success is True
         assert result.name == "Updated Campaign"
 
         request = api["update_campaign"].calls[0].request
@@ -365,7 +384,6 @@ async def test_list_components():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.list_components()
-        assert result.success is True
         assert result.data == []
         assert api["list_components"].called
 
@@ -375,8 +393,7 @@ async def test_get_component():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_component("mock-component-id")
-        assert result.success is True
-        assert result.component_id == "mock-component-id"
+        assert result.id == "mock-component-id"
         assert result.name == "Mock Component"
         assert api["get_component"].called
 
@@ -391,7 +408,6 @@ async def test_list_themes():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.list_themes()
-        assert result.success is True
         assert result.data == []
         assert api["list_themes"].called
 
@@ -401,8 +417,7 @@ async def test_get_theme():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_theme("mock-theme-id")
-        assert result.success is True
-        assert result.theme_id == "mock-theme-id"
+        assert result.id == "mock-theme-id"
         assert result.name == "Mock Theme"
         assert api["get_theme"].called
 
@@ -417,8 +432,7 @@ async def test_get_email_message():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_email_message("mock-email-message-id")
-        assert result.success is True
-        assert result.email_message_id == "mock-email-message-id"
+        assert result.id == "mock-email-message-id"
         assert result.subject == "Mock Subject"
         assert api["get_email_message"].called
 
@@ -432,7 +446,7 @@ async def test_update_email_message():
             subject="New Subject",
             from_name="Alice",
         )
-        assert result.success is True
+        assert result.id == "mock-email-message-id"
 
         request = api["update_email_message"].calls[0].request
         body = json.loads(request.content)
@@ -606,3 +620,348 @@ async def test_campaigns_rate_limit():
             await client.list_campaigns()
         assert exc_info.value.limit == 5
         assert exc_info.value.remaining == 0
+
+
+# ---------------------------------------------------------------------------
+# New endpoint families (1.14.x)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_list_transactional_templates():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_transactional_templates()
+        assert result.data == []
+        assert api["list_transactional_templates"].called
+
+
+@pytest.mark.asyncio
+async def test_get_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_transactional_template("mock-transactional-id")
+        assert result.id == "mock-transactional-id"
+        assert api["get_transactional_template"].called
+
+
+@pytest.mark.asyncio
+async def test_create_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_transactional_template(name="My Template", transactional_group_id="grp-1")
+        assert result.id == "mock-transactional-id"
+        body = json.loads(api["create_transactional_template"].calls[0].request.content)
+        assert body["name"] == "My Template"
+        assert body["transactionalGroupId"] == "grp-1"
+
+
+@pytest.mark.asyncio
+async def test_update_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_transactional_template("mock-transactional-id", name="Renamed")
+        assert result.id == "mock-transactional-id"
+        body = json.loads(api["update_transactional_template"].calls[0].request.content)
+        assert body["name"] == "Renamed"
+        assert "transactionalGroupId" not in body  # UNSET omitted
+
+
+@pytest.mark.asyncio
+async def test_draft_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.draft_transactional_template("mock-transactional-id")
+        assert result.id == "mock-transactional-id"
+        assert api["draft_transactional_template"].called
+
+
+@pytest.mark.asyncio
+async def test_publish_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.publish_transactional_template("mock-transactional-id")
+        assert result.id == "mock-transactional-id"
+        assert api["publish_transactional_template"].called
+
+
+@pytest.mark.asyncio
+async def test_create_upload():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_upload(content_type="image/png", content_length=1234)
+        assert result.email_asset_id == "mock-asset-id"
+        body = json.loads(api["create_upload"].calls[0].request.content)
+        assert body["contentType"] == "image/png"
+        assert body["contentLength"] == 1234
+
+
+@pytest.mark.asyncio
+async def test_complete_upload():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.complete_upload("mock-asset-id")
+        assert result.final_url == "https://example.com/final.png"
+        assert api["complete_upload"].called
+
+
+@pytest.mark.asyncio
+async def test_complete_upload_limit_exceeded():
+    # The upload-limit-exceeded response uses HTTP 429, which pyloops surfaces
+    # uniformly as a rate-limit error.
+    with loops_respx_mock() as api:
+        api["complete_upload"].mock(
+            return_value=Response(
+                429,
+                json={"message": "Upload limit exceeded"},
+                headers={"x-ratelimit-limit": "100", "x-ratelimit-remaining": "0"},
+            )
+        )
+        client = pyloops.get_client()
+        with pytest.raises(LoopsRateLimitError) as exc_info:
+            await client.complete_upload("mock-asset-id")
+        assert exc_info.value.limit == 100
+        assert exc_info.value.remaining == 0
+
+
+@pytest.mark.asyncio
+async def test_complete_upload_error():
+    with loops_respx_mock() as api:
+        api["complete_upload"].mock(return_value=Response(400, json={"message": "Bad upload"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Bad upload"):
+            await client.complete_upload("mock-asset-id")
+
+
+@pytest.mark.asyncio
+async def test_list_workflows():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_workflows()
+        assert result.data == []
+        assert api["list_workflows"].called
+
+
+@pytest.mark.asyncio
+async def test_get_workflow():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_workflow("mock-workflow-id")
+        assert result.id == "mock-workflow-id"
+        assert api["get_workflow"].called
+
+
+@pytest.mark.asyncio
+async def test_get_workflow_node():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_workflow_node("mock-workflow-id", "mock-node-id")
+        assert result.id == "mock-node-id"
+        assert api["get_workflow_node"].called
+
+
+@pytest.mark.asyncio
+async def test_list_audience_segments():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_audience_segments()
+        assert result.data == []
+        assert api["list_audience_segments"].called
+
+
+@pytest.mark.asyncio
+async def test_get_audience_segment():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_audience_segment("mock-segment-id")
+        assert result.id == "mock-segment-id"
+        assert api["get_audience_segment"].called
+
+
+@pytest.mark.asyncio
+async def test_list_campaign_groups():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_campaign_groups()
+        assert result.data == []
+        assert api["list_campaign_groups"].called
+
+
+@pytest.mark.asyncio
+async def test_get_campaign_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_campaign_group("mock-group-id")
+        assert result.id == "mock-group-id"
+        assert api["get_campaign_group"].called
+
+
+@pytest.mark.asyncio
+async def test_create_campaign_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_campaign_group(name="Group A", description="desc")
+        assert result.id == "mock-group-id"
+        body = json.loads(api["create_campaign_group"].calls[0].request.content)
+        assert body["name"] == "Group A"
+        assert body["description"] == "desc"
+
+
+@pytest.mark.asyncio
+async def test_update_campaign_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_campaign_group("mock-group-id", name="Group B")
+        assert result.id == "mock-group-id"
+        body = json.loads(api["update_campaign_group"].calls[0].request.content)
+        assert body["name"] == "Group B"
+
+
+@pytest.mark.asyncio
+async def test_list_transactional_groups():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_transactional_groups()
+        assert result.data == []
+        assert api["list_transactional_groups"].called
+
+
+@pytest.mark.asyncio
+async def test_get_transactional_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_transactional_group("mock-group-id")
+        assert result.id == "mock-group-id"
+        assert api["get_transactional_group"].called
+
+
+@pytest.mark.asyncio
+async def test_create_transactional_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_transactional_group(name="TGroup")
+        assert result.id == "mock-group-id"
+        assert api["create_transactional_group"].called
+
+
+@pytest.mark.asyncio
+async def test_update_transactional_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_transactional_group("mock-group-id", description="new desc")
+        assert result.id == "mock-group-id"
+        body = json.loads(api["update_transactional_group"].calls[0].request.content)
+        assert body["description"] == "new desc"
+
+
+@pytest.mark.asyncio
+async def test_preview_email_message():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.preview_email_message(
+            "mock-email-message-id",
+            emails=["user@test.com"],
+            data_variables={"name": "Jan"},
+        )
+        assert result.id == "mock-preview-id"
+        body = json.loads(api["preview_email_message"].calls[0].request.content)
+        assert body["emails"] == ["user@test.com"]
+        assert body["dataVariables"] == {"name": "Jan"}
+
+
+@pytest.mark.asyncio
+async def test_get_workflow_not_found():
+    with loops_respx_mock() as api:
+        api["get_workflow"].mock(return_value=Response(404, json={"message": "Workflow not found"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Workflow not found"):
+            await client.get_workflow("missing")
+
+
+@pytest.mark.asyncio
+async def test_create_campaign_group_error():
+    with loops_respx_mock() as api:
+        api["create_campaign_group"].mock(return_value=Response(400, json={"message": "Invalid group"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Invalid group"):
+            await client.create_campaign_group(name="bad")
+
+
+@pytest.mark.asyncio
+async def test_list_workflows_rate_limit():
+    with loops_respx_mock() as api:
+        api["list_workflows"].mock(
+            return_value=Response(
+                429,
+                json={"success": False},
+                headers={"x-ratelimit-limit": "7", "x-ratelimit-remaining": "0"},
+            )
+        )
+        client = pyloops.get_client()
+        with pytest.raises(LoopsRateLimitError) as exc_info:
+            await client.list_workflows()
+        assert exc_info.value.limit == 7
+        assert exc_info.value.remaining == 0
+
+
+# ---------------------------------------------------------------------------
+# Error-path coverage for the new 1.14.x wrappers
+# ---------------------------------------------------------------------------
+
+# (route_name, call) for every new wrapper not already given a standalone error
+# test above (complete_upload, get_workflow, create_campaign_group are covered
+# separately). A 400 on the mocked route must surface as a LoopsError.
+_NEW_WRAPPER_ERROR_CASES = [
+    ("list_transactional_templates", lambda c: c.list_transactional_templates()),
+    ("get_transactional_template", lambda c: c.get_transactional_template("x")),
+    ("create_transactional_template", lambda c: c.create_transactional_template(name="x")),
+    ("update_transactional_template", lambda c: c.update_transactional_template("x", name="y")),
+    ("draft_transactional_template", lambda c: c.draft_transactional_template("x")),
+    ("publish_transactional_template", lambda c: c.publish_transactional_template("x")),
+    ("create_upload", lambda c: c.create_upload(content_type="image/png", content_length=1)),
+    ("get_workflow_node", lambda c: c.get_workflow_node("wf", "node")),
+    ("list_workflows", lambda c: c.list_workflows()),
+    ("list_audience_segments", lambda c: c.list_audience_segments()),
+    ("get_audience_segment", lambda c: c.get_audience_segment("x")),
+    ("list_campaign_groups", lambda c: c.list_campaign_groups()),
+    ("get_campaign_group", lambda c: c.get_campaign_group("x")),
+    ("update_campaign_group", lambda c: c.update_campaign_group("x", name="y")),
+    ("list_transactional_groups", lambda c: c.list_transactional_groups()),
+    ("get_transactional_group", lambda c: c.get_transactional_group("x")),
+    ("create_transactional_group", lambda c: c.create_transactional_group(name="x")),
+    ("update_transactional_group", lambda c: c.update_transactional_group("x", name="y")),
+    ("preview_email_message", lambda c: c.preview_email_message("x", emails=["user@test.com"])),
+]
+
+
+@pytest.mark.parametrize(
+    ("route_name", "call"),
+    _NEW_WRAPPER_ERROR_CASES,
+    ids=[name for name, _ in _NEW_WRAPPER_ERROR_CASES],
+)
+@pytest.mark.asyncio
+async def test_new_wrapper_error_path(route_name, call):
+    with loops_respx_mock() as api:
+        api[route_name].mock(return_value=Response(400, json={"message": "boom"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError):
+            await call(client)
+
+
+# ---------------------------------------------------------------------------
+# Legacy base_url override still matches mock routes (regression)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_legacy_v1_base_url_still_matches_routes():
+    # A caller pinned to the old ".../api/v1" default: LoopsClient strips the
+    # trailing /v1 and loops_respx_mock() must normalize the router to match.
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        with loops_respx_mock(base_url="https://app.loops.so/api/v1") as api:
+            client = pyloops.get_client()
+            assert await client.health() is True
+            assert api["health"].called

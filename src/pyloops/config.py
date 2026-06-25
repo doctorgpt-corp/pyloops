@@ -10,7 +10,7 @@ class LoopsConfig(TypedDict):
 
 
 _default_api_key: str | None = None
-_default_base_url: str = "https://app.loops.so/api/v1"
+_default_base_url: str = "https://app.loops.so/api"
 _default_safe_mode: bool = False
 _default_safe_mode_allowed_domains: tuple[str, ...] = ()
 
@@ -26,7 +26,9 @@ def configure(
 
     Args:
         api_key: Loops API key. If not provided, will fall back to LOOPS_API_KEY env var.
-        base_url: Base URL for Loops API (default: https://app.loops.so/api/v1)
+        base_url: Base URL for Loops API (default: https://app.loops.so/api). Do not include
+            the ``/v1`` version segment; it is now part of each endpoint path. A trailing
+            ``/v1`` is stripped automatically (with a DeprecationWarning).
         safe_mode: If True, only allow emails to domains in safe_mode_allowed_domains.
             Useful for local development to prevent accidentally emailing real users.
         safe_mode_allowed_domains: Tuple of allowed email domains when safe_mode is enabled
