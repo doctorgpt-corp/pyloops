@@ -61,7 +61,7 @@ except ImportError as exc:
         "respx is required for pyloops testing utilities. Install it with: pip install pyloops[testing]"
     ) from exc
 
-BASE_URL = "https://app.loops.so/api/v1"
+BASE_URL = "https://app.loops.so/api"
 
 
 @contextmanager
@@ -104,15 +104,15 @@ def loops_respx_mock(
     pyloops.reset_client()
     with respx.mock(base_url=base_url, assert_all_called=False, assert_all_mocked=assert_all_mocked) as router:
         # Health / API key validation
-        router.get("/api-key", name="health").mock(
+        router.get("/v1/api-key", name="health").mock(
             return_value=respx.MockResponse(200, json={"success": True, "teamName": "Test"})
         )
 
         # Transactional emails
-        router.post("/transactional", name="transactional").mock(
+        router.post("/v1/transactional", name="transactional").mock(
             return_value=respx.MockResponse(200, json={"success": True})
         )
-        router.get("/transactional", name="list_transactional").mock(
+        router.get("/v1/transactional", name="list_transactional").mock(
             return_value=respx.MockResponse(
                 200,
                 json={
@@ -128,13 +128,13 @@ def loops_respx_mock(
         )
 
         # Contacts
-        router.post("/contacts/create", name="create_contact").mock(
+        router.post("/v1/contacts/create", name="create_contact").mock(
             return_value=respx.MockResponse(200, json={"success": True, "id": "mock-contact-id"})
         )
-        router.put("/contacts/update", name="upsert_contact").mock(
+        router.put("/v1/contacts/update", name="upsert_contact").mock(
             return_value=respx.MockResponse(200, json={"success": True, "id": "mock-contact-id"})
         )
-        router.get("/contacts/find", name="find_contact").mock(
+        router.get("/v1/contacts/find", name="find_contact").mock(
             return_value=respx.MockResponse(
                 200,
                 json=[
@@ -147,92 +147,99 @@ def loops_respx_mock(
                 ],
             )
         )
-        router.post("/contacts/delete", name="delete_contact").mock(
+        router.post("/v1/contacts/delete", name="delete_contact").mock(
             return_value=respx.MockResponse(200, json={"message": "Contact deleted.", "success": True})
         )
 
         # Contact properties
-        router.get("/contacts/properties", name="list_contact_properties").mock(
+        router.get("/v1/contacts/properties", name="list_contact_properties").mock(
             return_value=respx.MockResponse(200, json=[])
         )
-        router.post("/contacts/properties", name="create_contact_property").mock(
+        router.post("/v1/contacts/properties", name="create_contact_property").mock(
             return_value=respx.MockResponse(
                 200, json={"success": True, "key": "custom_prop", "label": "Custom Prop", "type": "string"}
             )
         )
 
         # Events
-        router.post("/events/send", name="send_event").mock(
+        router.post("/v1/events/send", name="send_event").mock(
             return_value=respx.MockResponse(200, json={"success": True})
         )
 
         # Mailing lists
-        router.get("/lists", name="list_mailing_lists").mock(return_value=respx.MockResponse(200, json=[]))
+        router.get("/v1/lists", name="list_mailing_lists").mock(return_value=respx.MockResponse(200, json=[]))
 
         # Dedicated sending IPs
-        router.get("/dedicated-sending-ips", name="list_sending_ips").mock(
+        router.get("/v1/dedicated-sending-ips", name="list_sending_ips").mock(
             return_value=respx.MockResponse(200, json=[])
         )
 
         # Campaigns
         _pagination = {"totalResults": 0, "returnedResults": 0, "perPage": 20, "totalPages": 0, "nextCursor": None}
-        router.get("/campaigns", name="list_campaigns").mock(
-            return_value=respx.MockResponse(200, json={"success": True, "pagination": _pagination, "data": []})
+        # Fields added to campaign responses in the Loops API v1.14.x update.
+        _campaign_targeting = {
+            "campaignGroupId": None,
+            "mailingListId": None,
+            "audienceSegmentId": None,
+            "audienceFilter": None,
+            "scheduling": {"method": "now", "timestamp": None},
+        }
+        router.get("/v1/campaigns", name="list_campaigns").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
         )
-        router.get(url__regex=r"/campaigns/[^/]+$", name="get_campaign").mock(
+        router.get(url__regex=r"/v1/campaigns/[^/]+$", name="get_campaign").mock(
             return_value=respx.MockResponse(
                 200,
                 json={
-                    "success": True,
-                    "campaignId": "mock-campaign-id",
+                    "id": "mock-campaign-id",
                     "name": "Mock Campaign",
                     "status": "draft",
                     "createdAt": "2024-01-01T00:00:00.000Z",
                     "updatedAt": "2024-01-01T00:00:00.000Z",
                     "emailMessageId": None,
+                    **_campaign_targeting,
                 },
             )
         )
-        router.post("/campaigns", name="create_campaign").mock(
+        router.post("/v1/campaigns", name="create_campaign").mock(
             return_value=respx.MockResponse(
                 201,
                 json={
-                    "success": True,
-                    "campaignId": "mock-campaign-id",
+                    "id": "mock-campaign-id",
                     "name": "Mock Campaign",
                     "status": "draft",
                     "createdAt": "2024-01-01T00:00:00.000Z",
                     "updatedAt": "2024-01-01T00:00:00.000Z",
                     "emailMessageId": "mock-email-message-id",
                     "emailMessageContentRevisionId": None,
+                    **_campaign_targeting,
                 },
             )
         )
-        router.post(url__regex=r"/campaigns/[^/]+$", name="update_campaign").mock(
+        router.post(url__regex=r"/v1/campaigns/[^/]+$", name="update_campaign").mock(
             return_value=respx.MockResponse(
                 200,
                 json={
-                    "success": True,
-                    "campaignId": "mock-campaign-id",
+                    "id": "mock-campaign-id",
                     "name": "Updated Campaign",
                     "status": "draft",
                     "createdAt": "2024-01-01T00:00:00.000Z",
                     "updatedAt": "2024-01-02T00:00:00.000Z",
                     "emailMessageId": None,
+                    **_campaign_targeting,
                 },
             )
         )
 
         # Components
-        router.get("/components", name="list_components").mock(
-            return_value=respx.MockResponse(200, json={"success": True, "pagination": _pagination, "data": []})
+        router.get("/v1/components", name="list_components").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
         )
-        router.get(url__regex=r"/components/[^/]+$", name="get_component").mock(
+        router.get(url__regex=r"/v1/components/[^/]+$", name="get_component").mock(
             return_value=respx.MockResponse(
                 200,
                 json={
-                    "success": True,
-                    "componentId": "mock-component-id",
+                    "id": "mock-component-id",
                     "name": "Mock Component",
                     "lmx": "<Text>Hello</Text>",
                 },
@@ -240,15 +247,14 @@ def loops_respx_mock(
         )
 
         # Themes
-        router.get("/themes", name="list_themes").mock(
-            return_value=respx.MockResponse(200, json={"success": True, "pagination": _pagination, "data": []})
+        router.get("/v1/themes", name="list_themes").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
         )
-        router.get(url__regex=r"/themes/[^/]+$", name="get_theme").mock(
+        router.get(url__regex=r"/v1/themes/[^/]+$", name="get_theme").mock(
             return_value=respx.MockResponse(
                 200,
                 json={
-                    "success": True,
-                    "themeId": "mock-theme-id",
+                    "id": "mock-theme-id",
                     "name": "Mock Theme",
                     "styles": {},
                     "isDefault": False,
@@ -260,27 +266,27 @@ def loops_respx_mock(
 
         # Email messages
         _email_message_json = {
-            "success": True,
-            "emailMessageId": "mock-email-message-id",
+            "id": "mock-email-message-id",
             "campaignId": None,
             "subject": "Mock Subject",
             "previewText": "",
             "fromName": "Test",
             "fromEmail": "test",
             "replyToEmail": "",
+            "emailFormat": "styled",
             "lmx": "<Text>Hello</Text>",
             "contentRevisionId": "rev-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
         }
-        router.get(url__regex=r"/email-messages/[^/]+$", name="get_email_message").mock(
+        router.get(url__regex=r"/v1/email-messages/[^/]+$", name="get_email_message").mock(
             return_value=respx.MockResponse(200, json=_email_message_json)
         )
-        router.post(url__regex=r"/email-messages/[^/]+$", name="update_email_message").mock(
+        router.post(url__regex=r"/v1/email-messages/[^/]+$", name="update_email_message").mock(
             return_value=respx.MockResponse(200, json=_email_message_json)
         )
 
         # Contact suppression
-        router.get("/contacts/suppression", name="get_contact_suppression").mock(
+        router.get("/v1/contacts/suppression", name="get_contact_suppression").mock(
             return_value=respx.MockResponse(
                 200,
                 json={
@@ -290,7 +296,7 @@ def loops_respx_mock(
                 },
             )
         )
-        router.delete("/contacts/suppression", name="remove_contact_suppression").mock(
+        router.delete("/v1/contacts/suppression", name="remove_contact_suppression").mock(
             return_value=respx.MockResponse(
                 200,
                 json={

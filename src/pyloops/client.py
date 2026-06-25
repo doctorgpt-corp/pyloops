@@ -1,37 +1,38 @@
 import json
 import uuid
+import warnings
 from http import HTTPStatus
 from typing import Any
 
-from pyloops._generated.api.api_key import get_api_key
+from pyloops._generated.api.api_key import get_v1_api_key
 from pyloops._generated.api.campaigns import (
-    get_campaigns,
-    get_campaigns_campaign_id,
-    post_campaigns,
-    post_campaigns_campaign_id,
+    get_v1_campaigns,
+    get_v_1_campaigns_campaign_id,
+    post_v1_campaigns,
+    post_v_1_campaigns_campaign_id,
 )
-from pyloops._generated.api.components import get_components, get_components_component_id
+from pyloops._generated.api.components import get_v1_components, get_v_1_components_component_id
 from pyloops._generated.api.contact_properties import (
-    get_contacts_properties,
-    post_contacts_properties,
+    get_v1_contacts_properties,
+    post_v1_contacts_properties,
 )
 from pyloops._generated.api.contacts import (
-    delete_contacts_suppression,
-    get_contacts_find,
-    get_contacts_suppression,
-    post_contacts_create,
-    post_contacts_delete,
-    put_contacts_update,
+    delete_v1_contacts_suppression,
+    get_v1_contacts_find,
+    get_v1_contacts_suppression,
+    post_v1_contacts_create,
+    post_v1_contacts_delete,
+    put_v1_contacts_update,
 )
-from pyloops._generated.api.dedicated_sending_i_ps import get_dedicated_sending_ips
+from pyloops._generated.api.dedicated_sending_i_ps import get_v1_dedicated_sending_ips
 from pyloops._generated.api.email_messages import (
-    get_email_messages_email_message_id,
-    post_email_messages_email_message_id,
+    get_v_1_email_messages_email_message_id,
+    post_v_1_email_messages_email_message_id,
 )
-from pyloops._generated.api.events import post_events_send
-from pyloops._generated.api.mailing_lists import get_lists
-from pyloops._generated.api.themes import get_themes, get_themes_theme_id
-from pyloops._generated.api.transactional_emails import get_transactional, post_transactional
+from pyloops._generated.api.events import post_v1_events_send
+from pyloops._generated.api.mailing_lists import get_v1_lists
+from pyloops._generated.api.themes import get_v1_themes, get_v_1_themes_theme_id
+from pyloops._generated.api.transactional_emails import get_v1_transactional, post_v1_transactional
 from pyloops._generated.client import AuthenticatedClient
 from pyloops._generated.models import (
     CampaignFailureResponse,
@@ -59,8 +60,8 @@ from pyloops._generated.models import (
     EventRequestEventProperties,
     EventRequestMailingLists,
     EventSuccessResponse,
-    GetApiKeyResponse401,
-    GetDedicatedSendingIpsResponse500,
+    GetV1ApiKeyResponse401,
+    GetV1DedicatedSendingIpsResponse500,
     IdempotencyKeyFailureResponse,
     ListCampaignsResponse,
     ListComponentsResponse,
@@ -72,10 +73,10 @@ from pyloops._generated.models import (
     TransactionalFailure3Response,
     TransactionalFailure4Response,
     TransactionalFailure5Response,
-    TransactionalFailureResponse,
     TransactionalRequest,
     TransactionalRequestAttachmentsItem,
     TransactionalRequestDataVariables,
+    TransactionalSendFailureResponse,
     TransactionalSuccessResponse,
     UpdateCampaignRequest,
     UpdateEmailMessageRequest,
@@ -109,7 +110,7 @@ class LoopsClient:
     def __init__(
         self,
         api_key: str | None = None,
-        base_url: str = "https://app.loops.so/api/v1",
+        base_url: str = "https://app.loops.so/api",
         safe_mode: bool | None = None,
         safe_mode_allowed_domains: tuple[str, ...] | None = None,
     ):
@@ -118,7 +119,10 @@ class LoopsClient:
 
         Args:
             api_key: API key for Loops.so. If not provided, uses configured default or LOOPS_API_KEY env var.
-            base_url: Base URL for Loops API (default: https://app.loops.so/api/v1)
+            base_url: Base URL for Loops API (default: https://app.loops.so/api). As of the
+                Loops API v1.14.x update the ``/v1`` version segment is part of each endpoint
+                path, so the base URL must NOT include it. A trailing ``/v1`` is stripped
+                automatically (with a DeprecationWarning) for backwards compatibility.
             safe_mode: If True, only allow emails to domains in safe_mode_allowed_domains.
                 Useful for local development to prevent accidentally emailing real users.
                 If None, falls back to the value set via configure().
@@ -150,10 +154,36 @@ class LoopsClient:
             )
 
         self._client = AuthenticatedClient(
-            base_url=base_url,
+            base_url=self._normalize_base_url(base_url),
             token=api_key,
             prefix="Bearer",
         )
+
+    @staticmethod
+    def _normalize_base_url(base_url: str) -> str:
+        """Normalize the base URL for the Loops API.
+
+        As of the Loops API v1.14.x update, the ``/v1`` version segment is part of
+        every endpoint path (e.g. ``/v1/api-key``) rather than the base URL. Older
+        pyloops versions defaulted the base URL to ``https://app.loops.so/api/v1``,
+        so a base URL that still ends in ``/v1`` would produce doubled paths like
+        ``/api/v1/v1/api-key``.
+
+        To keep upgrades smooth, any trailing ``/v1`` (and trailing slashes) is
+        stripped here, with a ``DeprecationWarning`` so callers know to drop it.
+        """
+        normalized = base_url.rstrip("/")
+        if normalized.endswith("/v1"):
+            warnings.warn(
+                "base_url ending in '/v1' is deprecated: the Loops API version segment "
+                "is now part of each endpoint path. Drop the trailing '/v1' from your "
+                "base_url (e.g. use 'https://app.loops.so/api'). It is being stripped "
+                "automatically for now.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            normalized = normalized[: -len("/v1")]
+        return normalized
 
     def _handle_response(self, response: Response[Any]) -> Any:
         """
@@ -199,10 +229,10 @@ class LoopsClient:
             LoopsError: If API key is invalid or request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_api_key.asyncio_detailed(client=self._client)
+        response = await get_v1_api_key.asyncio_detailed(client=self._client)
         result = self._handle_response(response)
 
-        if isinstance(result, GetApiKeyResponse401):
+        if isinstance(result, GetV1ApiKeyResponse401):
             raise LoopsError("Invalid API key", status_code=401, response_data=result)
 
         if result is None:
@@ -271,7 +301,7 @@ class LoopsClient:
         if custom_properties:
             request.additional_properties = custom_properties
 
-        response = await post_contacts_create.asyncio_detailed(client=self._client, body=request)
+        response = await post_v1_contacts_create.asyncio_detailed(client=self._client, body=request)
         result = self._handle_response(response)
 
         if isinstance(result, ContactFailureResponse):
@@ -355,7 +385,7 @@ class LoopsClient:
         if custom_properties:
             request.additional_properties = custom_properties
 
-        response = await put_contacts_update.asyncio_detailed(client=self._client, body=request)
+        response = await put_v1_contacts_update.asyncio_detailed(client=self._client, body=request)
         result = self._handle_response(response)
 
         if isinstance(result, ContactFailureResponse):
@@ -393,7 +423,7 @@ class LoopsClient:
 
         self._validate_email(email)
 
-        response = await get_contacts_find.asyncio_detailed(
+        response = await get_v1_contacts_find.asyncio_detailed(
             client=self._client,
             email=email if email else UNSET,
             user_id=user_id if user_id else UNSET,
@@ -444,7 +474,7 @@ class LoopsClient:
             user_id=user_id if user_id else "",
         )
 
-        response = await post_contacts_delete.asyncio_detailed(client=self._client, body=body)
+        response = await post_v1_contacts_delete.asyncio_detailed(client=self._client, body=body)
         result = self._handle_response(response)
 
         if isinstance(result, ContactFailureResponse):
@@ -482,7 +512,7 @@ class LoopsClient:
         """
         body = ContactPropertyCreateRequest(name=name, type_=property_type)
 
-        response = await post_contacts_properties.asyncio_detailed(client=self._client, body=body)
+        response = await post_v1_contacts_properties.asyncio_detailed(client=self._client, body=body)
         result = self._handle_response(response)
 
         if result is None:
@@ -503,7 +533,7 @@ class LoopsClient:
         Raises:
             LoopsError: If the request fails
         """
-        response = await get_contacts_properties.asyncio_detailed(client=self._client)
+        response = await get_v1_contacts_properties.asyncio_detailed(client=self._client)
         result = self._handle_response(response)
 
         if result is None:
@@ -524,7 +554,7 @@ class LoopsClient:
         Raises:
             LoopsError: If the request fails
         """
-        response = await get_lists.asyncio_detailed(client=self._client)
+        response = await get_v1_lists.asyncio_detailed(client=self._client)
         result = self._handle_response(response)
 
         if result is None:
@@ -585,7 +615,7 @@ class LoopsClient:
         if additional_properties:
             request.additional_properties = additional_properties
 
-        response = await post_events_send.asyncio_detailed(
+        response = await post_v1_events_send.asyncio_detailed(
             client=self._client,
             body=request,
             idempotency_key=idempotency_key,
@@ -659,7 +689,7 @@ class LoopsClient:
             else UNSET,
         )
 
-        response = await post_transactional.asyncio_detailed(
+        response = await post_v1_transactional.asyncio_detailed(
             client=self._client,
             body=request,
             idempotency_key=idempotency_key,
@@ -668,7 +698,7 @@ class LoopsClient:
 
         # Handle error responses (all return success=false + message)
         failure_types = (
-            TransactionalFailureResponse,
+            TransactionalSendFailureResponse,
             TransactionalFailure2Response,
             TransactionalFailure3Response,
             TransactionalFailure4Response,
@@ -723,7 +753,7 @@ class LoopsClient:
             LoopsError: If the request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_transactional.asyncio_detailed(
+        response = await get_v1_transactional.asyncio_detailed(
             client=self._client,
             per_page=str(per_page) if per_page is not None else UNSET,
             cursor=cursor if cursor else UNSET,
@@ -751,10 +781,10 @@ class LoopsClient:
             LoopsError: If the request fails (500)
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_dedicated_sending_ips.asyncio_detailed(client=self._client)
+        response = await get_v1_dedicated_sending_ips.asyncio_detailed(client=self._client)
         result = self._handle_response(response)
 
-        if isinstance(result, GetDedicatedSendingIpsResponse500):
+        if isinstance(result, GetV1DedicatedSendingIpsResponse500):
             raise LoopsError(
                 "Server error retrieving sending IPs",
                 status_code=500,
@@ -789,7 +819,7 @@ class LoopsClient:
             LoopsError: If the request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_campaigns.asyncio_detailed(
+        response = await get_v1_campaigns.asyncio_detailed(
             client=self._client,
             per_page=str(per_page) if per_page is not None else UNSET,
             cursor=cursor if cursor else UNSET,
@@ -822,7 +852,7 @@ class LoopsClient:
             LoopsError: If not found (404) or request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_campaigns_campaign_id.asyncio_detailed(
+        response = await get_v_1_campaigns_campaign_id.asyncio_detailed(
             campaign_id=campaign_id,
             client=self._client,
         )
@@ -855,7 +885,7 @@ class LoopsClient:
             LoopsRateLimitError: If rate limit is exceeded
         """
         body = CreateCampaignRequest(name=name)
-        response = await post_campaigns.asyncio_detailed(client=self._client, body=body)
+        response = await post_v1_campaigns.asyncio_detailed(client=self._client, body=body)
         result = self._handle_response(response)
 
         if isinstance(result, CampaignFailureResponse):
@@ -886,7 +916,7 @@ class LoopsClient:
             LoopsRateLimitError: If rate limit is exceeded
         """
         body = UpdateCampaignRequest(name=name)
-        response = await post_campaigns_campaign_id.asyncio_detailed(
+        response = await post_v_1_campaigns_campaign_id.asyncio_detailed(
             campaign_id=campaign_id,
             client=self._client,
             body=body,
@@ -928,7 +958,7 @@ class LoopsClient:
             LoopsError: If the request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_components.asyncio_detailed(
+        response = await get_v1_components.asyncio_detailed(
             client=self._client,
             per_page=str(per_page) if per_page is not None else UNSET,
             cursor=cursor if cursor else UNSET,
@@ -961,7 +991,7 @@ class LoopsClient:
             LoopsError: If not found (404) or request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_components_component_id.asyncio_detailed(
+        response = await get_v_1_components_component_id.asyncio_detailed(
             component_id=component_id,
             client=self._client,
         )
@@ -1002,7 +1032,7 @@ class LoopsClient:
             LoopsError: If the request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_themes.asyncio_detailed(
+        response = await get_v1_themes.asyncio_detailed(
             client=self._client,
             per_page=str(per_page) if per_page is not None else UNSET,
             cursor=cursor if cursor else UNSET,
@@ -1035,7 +1065,7 @@ class LoopsClient:
             LoopsError: If not found (404) or request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_themes_theme_id.asyncio_detailed(
+        response = await get_v_1_themes_theme_id.asyncio_detailed(
             theme_id=theme_id,
             client=self._client,
         )
@@ -1071,7 +1101,7 @@ class LoopsClient:
             LoopsError: If not found (404) or request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
-        response = await get_email_messages_email_message_id.asyncio_detailed(
+        response = await get_v_1_email_messages_email_message_id.asyncio_detailed(
             email_message_id=email_message_id,
             client=self._client,
         )
@@ -1129,7 +1159,7 @@ class LoopsClient:
             lmx=lmx if lmx is not None else UNSET,
             expected_revision_id=expected_revision_id if expected_revision_id is not None else UNSET,
         )
-        response = await post_email_messages_email_message_id.asyncio_detailed(
+        response = await post_v_1_email_messages_email_message_id.asyncio_detailed(
             email_message_id=email_message_id,
             client=self._client,
             body=body,
@@ -1174,7 +1204,7 @@ class LoopsClient:
         if not email and not user_id:
             raise LoopsError("Either email or user_id must be provided")
 
-        response = await get_contacts_suppression.asyncio_detailed(
+        response = await get_v1_contacts_suppression.asyncio_detailed(
             client=self._client,
             email=email if email else UNSET,
             user_id=user_id if user_id else UNSET,
@@ -1215,7 +1245,7 @@ class LoopsClient:
         if not email and not user_id:
             raise LoopsError("Either email or user_id must be provided")
 
-        response = await delete_contacts_suppression.asyncio_detailed(
+        response = await delete_v1_contacts_suppression.asyncio_detailed(
             client=self._client,
             email=email if email else UNSET,
             user_id=user_id if user_id else UNSET,

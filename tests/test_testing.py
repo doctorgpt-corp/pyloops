@@ -313,7 +313,6 @@ async def test_list_campaigns():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.list_campaigns()
-        assert result.success is True
         assert result.data == []
         assert api["list_campaigns"].called
 
@@ -323,8 +322,7 @@ async def test_get_campaign():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_campaign("mock-campaign-id")
-        assert result.success is True
-        assert result.campaign_id == "mock-campaign-id"
+        assert result.id == "mock-campaign-id"
         assert api["get_campaign"].called
 
 
@@ -333,8 +331,7 @@ async def test_create_campaign():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.create_campaign(name="My Campaign")
-        assert result.success is True
-        assert result.campaign_id == "mock-campaign-id"
+        assert result.id == "mock-campaign-id"
         assert result.email_message_id == "mock-email-message-id"
 
         request = api["create_campaign"].calls[0].request
@@ -347,7 +344,6 @@ async def test_update_campaign():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.update_campaign("mock-campaign-id", name="Updated Campaign")
-        assert result.success is True
         assert result.name == "Updated Campaign"
 
         request = api["update_campaign"].calls[0].request
@@ -365,7 +361,6 @@ async def test_list_components():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.list_components()
-        assert result.success is True
         assert result.data == []
         assert api["list_components"].called
 
@@ -375,8 +370,7 @@ async def test_get_component():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_component("mock-component-id")
-        assert result.success is True
-        assert result.component_id == "mock-component-id"
+        assert result.id == "mock-component-id"
         assert result.name == "Mock Component"
         assert api["get_component"].called
 
@@ -391,7 +385,6 @@ async def test_list_themes():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.list_themes()
-        assert result.success is True
         assert result.data == []
         assert api["list_themes"].called
 
@@ -401,8 +394,7 @@ async def test_get_theme():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_theme("mock-theme-id")
-        assert result.success is True
-        assert result.theme_id == "mock-theme-id"
+        assert result.id == "mock-theme-id"
         assert result.name == "Mock Theme"
         assert api["get_theme"].called
 
@@ -417,8 +409,7 @@ async def test_get_email_message():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_email_message("mock-email-message-id")
-        assert result.success is True
-        assert result.email_message_id == "mock-email-message-id"
+        assert result.id == "mock-email-message-id"
         assert result.subject == "Mock Subject"
         assert api["get_email_message"].called
 
@@ -432,7 +423,7 @@ async def test_update_email_message():
             subject="New Subject",
             from_name="Alice",
         )
-        assert result.success is True
+        assert result.id == "mock-email-message-id"
 
         request = api["update_email_message"].calls[0].request
         body = json.loads(request.content)
