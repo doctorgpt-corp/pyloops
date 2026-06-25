@@ -307,6 +307,142 @@ def loops_respx_mock(
             )
         )
 
+        # ------------------------------------------------------------------
+        # New endpoint families (Loops API v1.14.x)
+        # ------------------------------------------------------------------
+
+        # Transactional email templates
+        _transactional_resource = {
+            "id": "mock-transactional-id",
+            "name": "Mock Transactional",
+            "draftEmailMessageId": None,
+            "publishedEmailMessageId": None,
+            "transactionalGroupId": None,
+            "createdAt": "2024-01-01T00:00:00.000Z",
+            "updatedAt": "2024-01-01T00:00:00.000Z",
+            "dataVariables": [],
+        }
+        _transactional_draft = {
+            "id": "mock-transactional-id",
+            "name": "Mock Transactional",
+            "draftEmailMessageId": None,
+            "draftEmailMessageContentRevisionId": None,
+            "publishedEmailMessageId": None,
+            "createdAt": "2024-01-01T00:00:00.000Z",
+            "updatedAt": "2024-01-01T00:00:00.000Z",
+            "dataVariables": [],
+        }
+        router.get("/v1/transactional-emails", name="list_transactional_templates").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
+        )
+        router.get(url__regex=r"/v1/transactional-emails/[^/]+$", name="get_transactional_template").mock(
+            return_value=respx.MockResponse(200, json=_transactional_resource)
+        )
+        router.post("/v1/transactional-emails", name="create_transactional_template").mock(
+            return_value=respx.MockResponse(201, json=_transactional_draft)
+        )
+        router.post(url__regex=r"/v1/transactional-emails/[^/]+/draft$", name="draft_transactional_template").mock(
+            return_value=respx.MockResponse(200, json=_transactional_draft)
+        )
+        router.post(url__regex=r"/v1/transactional-emails/[^/]+/publish$", name="publish_transactional_template").mock(
+            return_value=respx.MockResponse(200, json=_transactional_resource)
+        )
+        router.post(url__regex=r"/v1/transactional-emails/[^/]+$", name="update_transactional_template").mock(
+            return_value=respx.MockResponse(200, json=_transactional_resource)
+        )
+
+        # Uploads
+        router.post("/v1/uploads", name="create_upload").mock(
+            return_value=respx.MockResponse(
+                200,
+                json={"emailAssetId": "mock-asset-id", "presignedUrl": "https://example.com/upload"},
+            )
+        )
+        router.post(url__regex=r"/v1/uploads/[^/]+/complete$", name="complete_upload").mock(
+            return_value=respx.MockResponse(
+                200,
+                json={"emailAssetId": "mock-asset-id", "finalUrl": "https://example.com/final.png"},
+            )
+        )
+
+        # Workflows
+        router.get("/v1/workflows", name="list_workflows").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
+        )
+        router.get(url__regex=r"/v1/workflows/[^/]+/nodes/[^/]+$", name="get_workflow_node").mock(
+            return_value=respx.MockResponse(
+                200,
+                json={
+                    "id": "mock-node-id",
+                    "workflowId": "mock-workflow-id",
+                    "typeName": "ExitAction",
+                    "nextNodeIds": [],
+                },
+            )
+        )
+        router.get(url__regex=r"/v1/workflows/[^/]+$", name="get_workflow").mock(
+            return_value=respx.MockResponse(
+                200,
+                json={"id": "mock-workflow-id", "rootNodeId": "mock-node-id", "nodes": {}},
+            )
+        )
+
+        # Audience segments
+        router.get("/v1/audience-segments", name="list_audience_segments").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
+        )
+        router.get(url__regex=r"/v1/audience-segments/[^/]+$", name="get_audience_segment").mock(
+            return_value=respx.MockResponse(
+                200,
+                json={
+                    "id": "mock-segment-id",
+                    "name": "Mock Segment",
+                    "description": "A mock audience segment",
+                    "createdAt": "2024-01-01T00:00:00.000Z",
+                    "updatedAt": "2024-01-01T00:00:00.000Z",
+                    "filter": None,
+                },
+            )
+        )
+
+        # Campaign + transactional groups (shared GroupResponse shape)
+        _group_json = {
+            "id": "mock-group-id",
+            "name": "Mock Group",
+            "description": "A mock group",
+            "createdAt": "2024-01-01T00:00:00.000Z",
+            "updatedAt": "2024-01-01T00:00:00.000Z",
+        }
+        router.get("/v1/campaign-groups", name="list_campaign_groups").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
+        )
+        router.get(url__regex=r"/v1/campaign-groups/[^/]+$", name="get_campaign_group").mock(
+            return_value=respx.MockResponse(200, json=_group_json)
+        )
+        router.post("/v1/campaign-groups", name="create_campaign_group").mock(
+            return_value=respx.MockResponse(200, json=_group_json)
+        )
+        router.post(url__regex=r"/v1/campaign-groups/[^/]+$", name="update_campaign_group").mock(
+            return_value=respx.MockResponse(200, json=_group_json)
+        )
+        router.get("/v1/transactional-groups", name="list_transactional_groups").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
+        )
+        router.get(url__regex=r"/v1/transactional-groups/[^/]+$", name="get_transactional_group").mock(
+            return_value=respx.MockResponse(200, json=_group_json)
+        )
+        router.post("/v1/transactional-groups", name="create_transactional_group").mock(
+            return_value=respx.MockResponse(200, json=_group_json)
+        )
+        router.post(url__regex=r"/v1/transactional-groups/[^/]+$", name="update_transactional_group").mock(
+            return_value=respx.MockResponse(200, json=_group_json)
+        )
+
+        # Email message preview
+        router.post(url__regex=r"/v1/email-messages/[^/]+/preview$", name="preview_email_message").mock(
+            return_value=respx.MockResponse(200, json={"id": "mock-preview-id"})
+        )
+
         try:
             yield router
         finally:

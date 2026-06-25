@@ -173,6 +173,29 @@ EXPECTED_ROUTE_NAMES = [
     "update_email_message",
     "get_contact_suppression",
     "remove_contact_suppression",
+    # 1.14.x
+    "list_transactional_templates",
+    "get_transactional_template",
+    "create_transactional_template",
+    "update_transactional_template",
+    "draft_transactional_template",
+    "publish_transactional_template",
+    "create_upload",
+    "complete_upload",
+    "list_workflows",
+    "get_workflow",
+    "get_workflow_node",
+    "list_audience_segments",
+    "get_audience_segment",
+    "list_campaign_groups",
+    "get_campaign_group",
+    "create_campaign_group",
+    "update_campaign_group",
+    "list_transactional_groups",
+    "get_transactional_group",
+    "create_transactional_group",
+    "update_transactional_group",
+    "preview_email_message",
 ]
 
 
@@ -597,3 +620,283 @@ async def test_campaigns_rate_limit():
             await client.list_campaigns()
         assert exc_info.value.limit == 5
         assert exc_info.value.remaining == 0
+
+
+# ---------------------------------------------------------------------------
+# New endpoint families (1.14.x)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_list_transactional_templates():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_transactional_templates()
+        assert result.data == []
+        assert api["list_transactional_templates"].called
+
+
+@pytest.mark.asyncio
+async def test_get_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_transactional_template("mock-transactional-id")
+        assert result.id == "mock-transactional-id"
+        assert api["get_transactional_template"].called
+
+
+@pytest.mark.asyncio
+async def test_create_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_transactional_template(name="My Template", transactional_group_id="grp-1")
+        assert result.id == "mock-transactional-id"
+        body = json.loads(api["create_transactional_template"].calls[0].request.content)
+        assert body["name"] == "My Template"
+        assert body["transactionalGroupId"] == "grp-1"
+
+
+@pytest.mark.asyncio
+async def test_update_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_transactional_template("mock-transactional-id", name="Renamed")
+        assert result.id == "mock-transactional-id"
+        body = json.loads(api["update_transactional_template"].calls[0].request.content)
+        assert body["name"] == "Renamed"
+        assert "transactionalGroupId" not in body  # UNSET omitted
+
+
+@pytest.mark.asyncio
+async def test_draft_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.draft_transactional_template("mock-transactional-id")
+        assert result.id == "mock-transactional-id"
+        assert api["draft_transactional_template"].called
+
+
+@pytest.mark.asyncio
+async def test_publish_transactional_template():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.publish_transactional_template("mock-transactional-id")
+        assert result.id == "mock-transactional-id"
+        assert api["publish_transactional_template"].called
+
+
+@pytest.mark.asyncio
+async def test_create_upload():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_upload(content_type="image/png", content_length=1234)
+        assert result.email_asset_id == "mock-asset-id"
+        body = json.loads(api["create_upload"].calls[0].request.content)
+        assert body["contentType"] == "image/png"
+        assert body["contentLength"] == 1234
+
+
+@pytest.mark.asyncio
+async def test_complete_upload():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.complete_upload("mock-asset-id")
+        assert result.final_url == "https://example.com/final.png"
+        assert api["complete_upload"].called
+
+
+@pytest.mark.asyncio
+async def test_complete_upload_limit_exceeded():
+    # The upload-limit-exceeded response uses HTTP 429, which pyloops surfaces
+    # uniformly as a rate-limit error.
+    with loops_respx_mock() as api:
+        api["complete_upload"].mock(
+            return_value=Response(
+                429,
+                json={"message": "Upload limit exceeded"},
+                headers={"x-ratelimit-limit": "100", "x-ratelimit-remaining": "0"},
+            )
+        )
+        client = pyloops.get_client()
+        with pytest.raises(LoopsRateLimitError) as exc_info:
+            await client.complete_upload("mock-asset-id")
+        assert exc_info.value.limit == 100
+
+
+@pytest.mark.asyncio
+async def test_complete_upload_error():
+    with loops_respx_mock() as api:
+        api["complete_upload"].mock(return_value=Response(400, json={"message": "Bad upload"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Bad upload"):
+            await client.complete_upload("mock-asset-id")
+
+
+@pytest.mark.asyncio
+async def test_list_workflows():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_workflows()
+        assert result.data == []
+        assert api["list_workflows"].called
+
+
+@pytest.mark.asyncio
+async def test_get_workflow():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_workflow("mock-workflow-id")
+        assert result.id == "mock-workflow-id"
+        assert api["get_workflow"].called
+
+
+@pytest.mark.asyncio
+async def test_get_workflow_node():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_workflow_node("mock-workflow-id", "mock-node-id")
+        assert result.id == "mock-node-id"
+        assert api["get_workflow_node"].called
+
+
+@pytest.mark.asyncio
+async def test_list_audience_segments():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_audience_segments()
+        assert result.data == []
+        assert api["list_audience_segments"].called
+
+
+@pytest.mark.asyncio
+async def test_get_audience_segment():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_audience_segment("mock-segment-id")
+        assert result.id == "mock-segment-id"
+        assert api["get_audience_segment"].called
+
+
+@pytest.mark.asyncio
+async def test_list_campaign_groups():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_campaign_groups()
+        assert result.data == []
+        assert api["list_campaign_groups"].called
+
+
+@pytest.mark.asyncio
+async def test_get_campaign_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_campaign_group("mock-group-id")
+        assert result.id == "mock-group-id"
+        assert api["get_campaign_group"].called
+
+
+@pytest.mark.asyncio
+async def test_create_campaign_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_campaign_group(name="Group A", description="desc")
+        assert result.id == "mock-group-id"
+        body = json.loads(api["create_campaign_group"].calls[0].request.content)
+        assert body["name"] == "Group A"
+        assert body["description"] == "desc"
+
+
+@pytest.mark.asyncio
+async def test_update_campaign_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_campaign_group("mock-group-id", name="Group B")
+        assert result.id == "mock-group-id"
+        body = json.loads(api["update_campaign_group"].calls[0].request.content)
+        assert body["name"] == "Group B"
+
+
+@pytest.mark.asyncio
+async def test_list_transactional_groups():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_transactional_groups()
+        assert result.data == []
+        assert api["list_transactional_groups"].called
+
+
+@pytest.mark.asyncio
+async def test_get_transactional_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_transactional_group("mock-group-id")
+        assert result.id == "mock-group-id"
+        assert api["get_transactional_group"].called
+
+
+@pytest.mark.asyncio
+async def test_create_transactional_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_transactional_group(name="TGroup")
+        assert result.id == "mock-group-id"
+        assert api["create_transactional_group"].called
+
+
+@pytest.mark.asyncio
+async def test_update_transactional_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_transactional_group("mock-group-id", description="new desc")
+        assert result.id == "mock-group-id"
+        body = json.loads(api["update_transactional_group"].calls[0].request.content)
+        assert body["description"] == "new desc"
+
+
+@pytest.mark.asyncio
+async def test_preview_email_message():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.preview_email_message(
+            "mock-email-message-id",
+            emails=["user@test.com"],
+            data_variables={"name": "Jan"},
+        )
+        assert result.id == "mock-preview-id"
+        body = json.loads(api["preview_email_message"].calls[0].request.content)
+        assert body["emails"] == ["user@test.com"]
+        assert body["dataVariables"] == {"name": "Jan"}
+
+
+@pytest.mark.asyncio
+async def test_get_workflow_not_found():
+    with loops_respx_mock() as api:
+        api["get_workflow"].mock(return_value=Response(404, json={"message": "Workflow not found"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Workflow not found"):
+            await client.get_workflow("missing")
+
+
+@pytest.mark.asyncio
+async def test_create_campaign_group_error():
+    with loops_respx_mock() as api:
+        api["create_campaign_group"].mock(return_value=Response(400, json={"message": "Invalid group"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Invalid group"):
+            await client.create_campaign_group(name="bad")
+
+
+@pytest.mark.asyncio
+async def test_list_workflows_rate_limit():
+    with loops_respx_mock() as api:
+        api["list_workflows"].mock(
+            return_value=Response(
+                429,
+                json={"success": False},
+                headers={"x-ratelimit-limit": "7", "x-ratelimit-remaining": "0"},
+            )
+        )
+        client = pyloops.get_client()
+        with pytest.raises(LoopsRateLimitError) as exc_info:
+            await client.list_workflows()
+        assert exc_info.value.limit == 7
