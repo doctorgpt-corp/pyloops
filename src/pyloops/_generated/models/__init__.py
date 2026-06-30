@@ -143,6 +143,7 @@ from .simplified_variant_workflow_node import SimplifiedVariantWorkflowNode
 from .simplified_variant_workflow_node_type_name import SimplifiedVariantWorkflowNodeTypeName
 from .simplified_workflow import SimplifiedWorkflow
 from .simplified_workflow_nodes import SimplifiedWorkflowNodes
+from .simplified_workflow_status import SimplifiedWorkflowStatus
 from .theme import Theme
 from .theme_failure_response import ThemeFailureResponse
 from .theme_response import ThemeResponse
@@ -331,6 +332,7 @@ __all__ = (
     "SimplifiedVariantWorkflowNodeTypeName",
     "SimplifiedWorkflow",
     "SimplifiedWorkflowNodes",
+    "SimplifiedWorkflowStatus",
     "Theme",
     "ThemeFailureResponse",
     "ThemeResponse",
