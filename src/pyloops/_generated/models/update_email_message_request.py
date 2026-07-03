@@ -41,14 +41,14 @@ class UpdateEmailMessageRequest:
         email_format (UpdateEmailMessageRequestEmailFormat | Unset): The rendering format of the email.
         lmx (str | Unset): The email body serialized as LMX. Styles must be embedded in the LMX `<Style />` tag.
         contact_properties_fallbacks (UpdateEmailMessageRequestContactPropertiesFallbacks | Unset): Fallback values for
-            contact properties, keyed by property name. A null value deletes the fallback; a string value sets it. This is a
-            full replacement of the existing map.
+            contact properties, keyed by property name. Per-key merge: a string value sets the fallback, a null value
+            deletes it, and keys omitted from the map are left unchanged.
         event_properties_fallbacks (UpdateEmailMessageRequestEventPropertiesFallbacks | Unset): Fallback values for
-            event properties, keyed by property name. A null value deletes the fallback; a string value sets it. This is a
-            full replacement of the existing map.
+            event properties, keyed by property name. Per-key merge: a string value sets the fallback, a null value deletes
+            it, and keys omitted from the map are left unchanged.
         data_variables_fallbacks (UpdateEmailMessageRequestDataVariablesFallbacks | Unset): Fallback values for data
-            variables, keyed by variable name. A null value deletes the fallback; a string value sets it. This is a full
-            replacement of the existing map.
+            variables, keyed by variable name. Per-key merge: a string value sets the fallback, a null value deletes it, and
+            keys omitted from the map are left unchanged.
     """
 
     expected_revision_id: str | Unset = UNSET

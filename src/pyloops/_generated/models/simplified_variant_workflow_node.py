@@ -6,7 +6,6 @@ from typing import Any, TypeVar, cast
 from attrs import define as _attrs_define
 
 from ..models.simplified_variant_workflow_node_type_name import SimplifiedVariantWorkflowNodeTypeName
-from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="SimplifiedVariantWorkflowNode")
 
@@ -17,14 +16,14 @@ class SimplifiedVariantWorkflowNode:
     Attributes:
         type_name (SimplifiedVariantWorkflowNodeTypeName):
         next_node_ids (list[str]):
-        variant_id (str | Unset):
-        is_control (bool | Unset):
+        variant_id (str):
+        is_control (bool):
     """
 
     type_name: SimplifiedVariantWorkflowNodeTypeName
     next_node_ids: list[str]
-    variant_id: str | Unset = UNSET
-    is_control: bool | Unset = UNSET
+    variant_id: str
+    is_control: bool
 
     def to_dict(self) -> dict[str, Any]:
         type_name = self.type_name.value
@@ -41,12 +40,10 @@ class SimplifiedVariantWorkflowNode:
             {
                 "typeName": type_name,
                 "nextNodeIds": next_node_ids,
+                "variantId": variant_id,
+                "isControl": is_control,
             }
         )
-        if variant_id is not UNSET:
-            field_dict["variantId"] = variant_id
-        if is_control is not UNSET:
-            field_dict["isControl"] = is_control
 
         return field_dict
 
@@ -57,9 +54,9 @@ class SimplifiedVariantWorkflowNode:
 
         next_node_ids = cast(list[str], d.pop("nextNodeIds"))
 
-        variant_id = d.pop("variantId", UNSET)
+        variant_id = d.pop("variantId")
 
-        is_control = d.pop("isControl", UNSET)
+        is_control = d.pop("isControl")
 
         simplified_variant_workflow_node = cls(
             type_name=type_name,
