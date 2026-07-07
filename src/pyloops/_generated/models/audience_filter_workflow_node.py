@@ -23,6 +23,7 @@ class AudienceFilterWorkflowNode:
         workflow_id (str):
         type_name (AudienceFilterWorkflowNodeTypeName):
         next_node_ids (list[str]):
+        applies_downstream (bool):
         audience_filter (AudienceFilterType0 | None | Unset): A tree of audience conditions combined with `match`. Null
             when the campaign targets a mailing list or segment without an explicit filter.
         audience_segment_id (str | Unset):
@@ -32,6 +33,7 @@ class AudienceFilterWorkflowNode:
     workflow_id: str
     type_name: AudienceFilterWorkflowNodeTypeName
     next_node_ids: list[str]
+    applies_downstream: bool
     audience_filter: AudienceFilterType0 | None | Unset = UNSET
     audience_segment_id: str | Unset = UNSET
 
@@ -45,6 +47,8 @@ class AudienceFilterWorkflowNode:
         type_name = self.type_name.value
 
         next_node_ids = self.next_node_ids
+
+        applies_downstream = self.applies_downstream
 
         audience_filter: dict[str, Any] | None | Unset
         if isinstance(self.audience_filter, Unset):
@@ -64,6 +68,7 @@ class AudienceFilterWorkflowNode:
                 "workflowId": workflow_id,
                 "typeName": type_name,
                 "nextNodeIds": next_node_ids,
+                "appliesDownstream": applies_downstream,
             }
         )
         if audience_filter is not UNSET:
@@ -85,6 +90,8 @@ class AudienceFilterWorkflowNode:
         type_name = AudienceFilterWorkflowNodeTypeName(d.pop("typeName"))
 
         next_node_ids = cast(list[str], d.pop("nextNodeIds"))
+
+        applies_downstream = d.pop("appliesDownstream")
 
         def _parse_audience_filter(data: object) -> AudienceFilterType0 | None | Unset:
             if data is None:
@@ -110,6 +117,7 @@ class AudienceFilterWorkflowNode:
             workflow_id=workflow_id,
             type_name=type_name,
             next_node_ids=next_node_ids,
+            applies_downstream=applies_downstream,
             audience_filter=audience_filter,
             audience_segment_id=audience_segment_id,
         )

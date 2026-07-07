@@ -28,6 +28,7 @@ from .complete_upload_response import CompleteUploadResponse
 from .component import Component
 from .component_failure_response import ComponentFailureResponse
 from .component_response import ComponentResponse
+from .component_validation_failure_response import ComponentValidationFailureResponse
 from .contact import Contact
 from .contact_delete_request import ContactDeleteRequest
 from .contact_delete_response import ContactDeleteResponse
@@ -53,11 +54,14 @@ from .contact_update_request import ContactUpdateRequest
 from .contact_update_request_mailing_lists import ContactUpdateRequestMailingLists
 from .create_campaign_request import CreateCampaignRequest
 from .create_campaign_response import CreateCampaignResponse
+from .create_component_body import CreateComponentBody
 from .create_group_request import CreateGroupRequest
+from .create_theme_body import CreateThemeBody
 from .create_transactional_request import CreateTransactionalRequest
 from .create_upload_request import CreateUploadRequest
 from .create_upload_response import CreateUploadResponse
 from .email_message_failure_response import EmailMessageFailureResponse
+from .email_message_guardian_response import EmailMessageGuardianResponse
 from .email_message_preview_request import EmailMessagePreviewRequest
 from .email_message_preview_request_contact_properties import EmailMessagePreviewRequestContactProperties
 from .email_message_preview_request_data_variables import EmailMessagePreviewRequestDataVariables
@@ -86,6 +90,9 @@ from .get_v1_api_key_response_401 import GetV1ApiKeyResponse401
 from .get_v1_dedicated_sending_ips_response_500 import GetV1DedicatedSendingIpsResponse500
 from .group_failure_response import GroupFailureResponse
 from .group_response import GroupResponse
+from .guardian_rule import GuardianRule
+from .guardian_rule_items_item import GuardianRuleItemsItem
+from .guardian_rule_rule import GuardianRuleRule
 from .idempotency_key_failure_response import IdempotencyKeyFailureResponse
 from .list_audience_segments_response import ListAudienceSegmentsResponse
 from .list_audience_segments_response_pagination import ListAudienceSegmentsResponsePagination
@@ -143,6 +150,7 @@ from .simplified_variant_workflow_node import SimplifiedVariantWorkflowNode
 from .simplified_variant_workflow_node_type_name import SimplifiedVariantWorkflowNodeTypeName
 from .simplified_workflow import SimplifiedWorkflow
 from .simplified_workflow_nodes import SimplifiedWorkflowNodes
+from .simplified_workflow_status import SimplifiedWorkflowStatus
 from .theme import Theme
 from .theme_failure_response import ThemeFailureResponse
 from .theme_response import ThemeResponse
@@ -166,6 +174,8 @@ from .transactional_response import TransactionalResponse
 from .transactional_send_failure_response import TransactionalSendFailureResponse
 from .transactional_success_response import TransactionalSuccessResponse
 from .update_campaign_request import UpdateCampaignRequest
+from .update_component_body import UpdateComponentBody
+from .update_component_response import UpdateComponentResponse
 from .update_email_message_request import UpdateEmailMessageRequest
 from .update_email_message_request_contact_properties_fallbacks import (
     UpdateEmailMessageRequestContactPropertiesFallbacks,
@@ -174,6 +184,8 @@ from .update_email_message_request_data_variables_fallbacks import UpdateEmailMe
 from .update_email_message_request_email_format import UpdateEmailMessageRequestEmailFormat
 from .update_email_message_request_event_properties_fallbacks import UpdateEmailMessageRequestEventPropertiesFallbacks
 from .update_group_request import UpdateGroupRequest
+from .update_theme_body import UpdateThemeBody
+from .update_theme_response import UpdateThemeResponse
 from .update_transactional_request import UpdateTransactionalRequest
 from .upload_failure_response import UploadFailureResponse
 from .upload_limit_exceeded_failure_response import UploadLimitExceededFailureResponse
@@ -218,6 +230,7 @@ __all__ = (
     "Component",
     "ComponentFailureResponse",
     "ComponentResponse",
+    "ComponentValidationFailureResponse",
     "Contact",
     "ContactDeleteRequest",
     "ContactDeleteResponse",
@@ -243,11 +256,14 @@ __all__ = (
     "ContactUpdateRequestMailingLists",
     "CreateCampaignRequest",
     "CreateCampaignResponse",
+    "CreateComponentBody",
     "CreateGroupRequest",
+    "CreateThemeBody",
     "CreateTransactionalRequest",
     "CreateUploadRequest",
     "CreateUploadResponse",
     "EmailMessageFailureResponse",
+    "EmailMessageGuardianResponse",
     "EmailMessagePreviewRequest",
     "EmailMessagePreviewRequestContactProperties",
     "EmailMessagePreviewRequestDataVariables",
@@ -276,6 +292,9 @@ __all__ = (
     "GetV1DedicatedSendingIpsResponse500",
     "GroupFailureResponse",
     "GroupResponse",
+    "GuardianRule",
+    "GuardianRuleItemsItem",
+    "GuardianRuleRule",
     "IdempotencyKeyFailureResponse",
     "ListAudienceSegmentsResponse",
     "ListAudienceSegmentsResponsePagination",
@@ -331,6 +350,7 @@ __all__ = (
     "SimplifiedVariantWorkflowNodeTypeName",
     "SimplifiedWorkflow",
     "SimplifiedWorkflowNodes",
+    "SimplifiedWorkflowStatus",
     "Theme",
     "ThemeFailureResponse",
     "ThemeResponse",
@@ -354,12 +374,16 @@ __all__ = (
     "TransactionalSendFailureResponse",
     "TransactionalSuccessResponse",
     "UpdateCampaignRequest",
+    "UpdateComponentBody",
+    "UpdateComponentResponse",
     "UpdateEmailMessageRequest",
     "UpdateEmailMessageRequestContactPropertiesFallbacks",
     "UpdateEmailMessageRequestDataVariablesFallbacks",
     "UpdateEmailMessageRequestEmailFormat",
     "UpdateEmailMessageRequestEventPropertiesFallbacks",
     "UpdateGroupRequest",
+    "UpdateThemeBody",
+    "UpdateThemeResponse",
     "UpdateTransactionalRequest",
     "UploadFailureResponse",
     "UploadLimitExceededFailureResponse",
