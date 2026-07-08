@@ -1,0 +1,86 @@
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar
+
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
+
+from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.theme_styles import ThemeStyles
+
+
+T = TypeVar("T", bound="CreateThemeBody")
+
+
+@_attrs_define
+class CreateThemeBody:
+    """
+    Attributes:
+        name (str): The theme name.
+        styles (ThemeStyles | Unset): Flat map of style attributes, matching the attribute names accepted by the LMX
+            `<Style />` tag. All attributes are returned with the values stored on the theme.
+    """
+
+    name: str
+    styles: ThemeStyles | Unset = UNSET
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        name = self.name
+
+        styles: dict[str, Any] | Unset = UNSET
+        if not isinstance(self.styles, Unset):
+            styles = self.styles.to_dict()
+
+        field_dict: dict[str, Any] = {}
+        field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "name": name,
+            }
+        )
+        if styles is not UNSET:
+            field_dict["styles"] = styles
+
+        return field_dict
+
+    @classmethod
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.theme_styles import ThemeStyles
+
+        d = dict(src_dict)
+        name = d.pop("name")
+
+        _styles = d.pop("styles", UNSET)
+        styles: ThemeStyles | Unset
+        if isinstance(_styles, Unset):
+            styles = UNSET
+        else:
+            styles = ThemeStyles.from_dict(_styles)
+
+        create_theme_body = cls(
+            name=name,
+            styles=styles,
+        )
+
+        create_theme_body.additional_properties = d
+        return create_theme_body
+
+    @property
+    def additional_keys(self) -> list[str]:
+        return list(self.additional_properties.keys())
+
+    def __getitem__(self, key: str) -> Any:
+        return self.additional_properties[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.additional_properties[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self.additional_properties[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.additional_properties
