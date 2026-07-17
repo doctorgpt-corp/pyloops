@@ -19,7 +19,6 @@ class VariantWorkflowNode:
         workflow_id (str):
         type_name (VariantWorkflowNodeTypeName):
         next_node_ids (list[str]):
-        variant_id (str | Unset):
         is_control (bool | Unset):
     """
 
@@ -27,7 +26,6 @@ class VariantWorkflowNode:
     workflow_id: str
     type_name: VariantWorkflowNodeTypeName
     next_node_ids: list[str]
-    variant_id: str | Unset = UNSET
     is_control: bool | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
@@ -38,8 +36,6 @@ class VariantWorkflowNode:
         type_name = self.type_name.value
 
         next_node_ids = self.next_node_ids
-
-        variant_id = self.variant_id
 
         is_control = self.is_control
 
@@ -53,8 +49,6 @@ class VariantWorkflowNode:
                 "nextNodeIds": next_node_ids,
             }
         )
-        if variant_id is not UNSET:
-            field_dict["variantId"] = variant_id
         if is_control is not UNSET:
             field_dict["isControl"] = is_control
 
@@ -71,8 +65,6 @@ class VariantWorkflowNode:
 
         next_node_ids = cast(list[str], d.pop("nextNodeIds"))
 
-        variant_id = d.pop("variantId", UNSET)
-
         is_control = d.pop("isControl", UNSET)
 
         variant_workflow_node = cls(
@@ -80,7 +72,6 @@ class VariantWorkflowNode:
             workflow_id=workflow_id,
             type_name=type_name,
             next_node_ids=next_node_ids,
-            variant_id=variant_id,
             is_control=is_control,
         )
 
