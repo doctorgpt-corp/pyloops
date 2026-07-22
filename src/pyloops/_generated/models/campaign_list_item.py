@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.campaign_list_item_status import CampaignListItemStatus
+
 if TYPE_CHECKING:
     from ..models.audience_filter_type_0 import AudienceFilterType0
     from ..models.campaign_scheduling import CampaignScheduling
@@ -19,15 +21,15 @@ T = TypeVar("T", bound="CampaignListItem")
 class CampaignListItem:
     """
     Attributes:
-        id (str):
-        name (str):
-        status (str):
-        created_at (datetime.datetime):
-        updated_at (datetime.datetime):
-        email_message_id (None | str):
-        campaign_group_id (None | str):
-        mailing_list_id (None | str):
-        audience_segment_id (None | str):
+        id (str): The ID of the campaign.
+        name (str): The name of the campaign.
+        status (CampaignListItemStatus): The status of the campaign.
+        created_at (datetime.datetime): ISO 8601 timestamp for when the campaign was created.
+        updated_at (datetime.datetime): ISO 8601 timestamp for when the campaign was last updated.
+        email_message_id (None | str): The associated email message ID.
+        campaign_group_id (None | str): The ID of the campaign group this campaign belongs to..
+        mailing_list_id (None | str): The ID of the mailing list this campaign sends to, if set.
+        audience_segment_id (None | str): The ID of the audience segment this campaign targets, if set.
         audience_filter (AudienceFilterType0 | None): A tree of audience conditions combined with `match`. Null when the
             campaign targets a mailing list or segment without an explicit filter.
         scheduling (CampaignScheduling): When the campaign is scheduled to send.
@@ -35,7 +37,7 @@ class CampaignListItem:
 
     id: str
     name: str
-    status: str
+    status: CampaignListItemStatus
     created_at: datetime.datetime
     updated_at: datetime.datetime
     email_message_id: None | str
@@ -53,7 +55,7 @@ class CampaignListItem:
 
         name = self.name
 
-        status = self.status
+        status = self.status.value
 
         created_at = self.created_at.isoformat()
 
@@ -109,7 +111,7 @@ class CampaignListItem:
 
         name = d.pop("name")
 
-        status = d.pop("status")
+        status = CampaignListItemStatus(d.pop("status"))
 
         created_at = datetime.datetime.fromisoformat(d.pop("createdAt"))
 

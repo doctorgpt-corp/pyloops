@@ -9,7 +9,7 @@ from attrs import field as _attrs_field
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.contact_update_request_mailing_lists import ContactUpdateRequestMailingLists
+    from ..models.mailing_list_subscriptions import MailingListSubscriptions
 
 
 T = TypeVar("T", bound="ContactUpdateRequest")
@@ -19,23 +19,30 @@ T = TypeVar("T", bound="ContactUpdateRequest")
 class ContactUpdateRequest:
     """
     Attributes:
-        email (str | Unset):
-        first_name (str | Unset):
-        last_name (str | Unset):
-        subscribed (bool | Unset):
-        user_group (str | Unset):
-        user_id (str | Unset):
-        mailing_lists (ContactUpdateRequestMailingLists | Unset): An object of mailing list IDs and boolean subscription
-            statuses.
+        email (str | Unset): The contact's email address. **Required if `userId` is not provided.**
+        first_name (str | Unset): The contact's first name.
+        last_name (str | Unset): The contact's last name.
+        source (str | Unset): A custom source value to replace the default “API”.
+        subscribed (bool | Unset): Whether the contact will receive campaign and workflow emails. We recommend leaving
+            this field out of your update requests unless you specifically want to unsubscribe (`false`) or re-subscribe
+            (`true`) a contact. All new contacts are subscribed by default.
+        user_group (str | Unset): You can use groups to segment users when sending emails. Currently, a contact can only
+            be in one user group. [Read more](/contacts/properties#user-group)
+        user_id (str | Unset): The contact's unique user ID. **Required if `email` is not provided.**
+        mailing_lists (MailingListSubscriptions | Unset): Manage mailing list subscriptions.
+
+            Include key-value pairs of mailing list IDs and a `boolean` denoting if the contact should be added (`true`) or
+            removed (`false`) from the list.
     """
 
     email: str | Unset = UNSET
     first_name: str | Unset = UNSET
     last_name: str | Unset = UNSET
+    source: str | Unset = UNSET
     subscribed: bool | Unset = UNSET
     user_group: str | Unset = UNSET
     user_id: str | Unset = UNSET
-    mailing_lists: ContactUpdateRequestMailingLists | Unset = UNSET
+    mailing_lists: MailingListSubscriptions | Unset = UNSET
     additional_properties: dict[str, bool | float | str] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -44,6 +51,8 @@ class ContactUpdateRequest:
         first_name = self.first_name
 
         last_name = self.last_name
+
+        source = self.source
 
         subscribed = self.subscribed
 
@@ -66,6 +75,8 @@ class ContactUpdateRequest:
             field_dict["firstName"] = first_name
         if last_name is not UNSET:
             field_dict["lastName"] = last_name
+        if source is not UNSET:
+            field_dict["source"] = source
         if subscribed is not UNSET:
             field_dict["subscribed"] = subscribed
         if user_group is not UNSET:
@@ -79,7 +90,7 @@ class ContactUpdateRequest:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.contact_update_request_mailing_lists import ContactUpdateRequestMailingLists
+        from ..models.mailing_list_subscriptions import MailingListSubscriptions
 
         d = dict(src_dict)
         email = d.pop("email", UNSET)
@@ -88,6 +99,8 @@ class ContactUpdateRequest:
 
         last_name = d.pop("lastName", UNSET)
 
+        source = d.pop("source", UNSET)
+
         subscribed = d.pop("subscribed", UNSET)
 
         user_group = d.pop("userGroup", UNSET)
@@ -95,16 +108,17 @@ class ContactUpdateRequest:
         user_id = d.pop("userId", UNSET)
 
         _mailing_lists = d.pop("mailingLists", UNSET)
-        mailing_lists: ContactUpdateRequestMailingLists | Unset
+        mailing_lists: MailingListSubscriptions | Unset
         if isinstance(_mailing_lists, Unset):
             mailing_lists = UNSET
         else:
-            mailing_lists = ContactUpdateRequestMailingLists.from_dict(_mailing_lists)
+            mailing_lists = MailingListSubscriptions.from_dict(_mailing_lists)
 
         contact_update_request = cls(
             email=email,
             first_name=first_name,
             last_name=last_name,
+            source=source,
             subscribed=subscribed,
             user_group=user_group,
             user_id=user_id,

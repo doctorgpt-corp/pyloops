@@ -17,16 +17,18 @@ class AddToListTriggerWorkflowNode:
         id (str):
         workflow_id (str):
         type_name (AddToListTriggerWorkflowNodeTypeName):
-        next_node_ids (list[str]):
-        mailing_list_id (str):
-        re_eligible (bool):
+        next_node_ids (list[str]): The IDs of the nodes that are downstream of this node.
+        mailing_list_id (None | str):
+        re_eligible (bool): If `true`, the contacts will be able to enter this workflow every time the trigger is
+            matched. If `false`, contacts will only ever enter this workflow once. Matches the "Trigger frequency" option in
+            the UI.
     """
 
     id: str
     workflow_id: str
     type_name: AddToListTriggerWorkflowNodeTypeName
     next_node_ids: list[str]
-    mailing_list_id: str
+    mailing_list_id: None | str
     re_eligible: bool
 
     def to_dict(self) -> dict[str, Any]:
@@ -38,6 +40,7 @@ class AddToListTriggerWorkflowNode:
 
         next_node_ids = self.next_node_ids
 
+        mailing_list_id: None | str
         mailing_list_id = self.mailing_list_id
 
         re_eligible = self.re_eligible
@@ -68,7 +71,12 @@ class AddToListTriggerWorkflowNode:
 
         next_node_ids = cast(list[str], d.pop("nextNodeIds"))
 
-        mailing_list_id = d.pop("mailingListId")
+        def _parse_mailing_list_id(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        mailing_list_id = _parse_mailing_list_id(d.pop("mailingListId"))
 
         re_eligible = d.pop("reEligible")
 

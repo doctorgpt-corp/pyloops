@@ -8,7 +8,7 @@ from attrs import field as _attrs_field
 
 if TYPE_CHECKING:
     from ..models.list_transactionals_resource_response_pagination import ListTransactionalsResourceResponsePagination
-    from ..models.transactional_email_resource import TransactionalEmailResource
+    from ..models.transactional_resource import TransactionalResource
 
 
 T = TypeVar("T", bound="ListTransactionalsResourceResponse")
@@ -19,11 +19,11 @@ class ListTransactionalsResourceResponse:
     """
     Attributes:
         pagination (ListTransactionalsResourceResponsePagination):
-        data (list[TransactionalEmailResource]):
+        data (list[TransactionalResource]):
     """
 
     pagination: ListTransactionalsResourceResponsePagination
-    data: list[TransactionalEmailResource]
+    data: list[TransactionalResource]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -50,7 +50,7 @@ class ListTransactionalsResourceResponse:
         from ..models.list_transactionals_resource_response_pagination import (
             ListTransactionalsResourceResponsePagination,
         )
-        from ..models.transactional_email_resource import TransactionalEmailResource
+        from ..models.transactional_resource import TransactionalResource
 
         d = dict(src_dict)
         pagination = ListTransactionalsResourceResponsePagination.from_dict(d.pop("pagination"))
@@ -58,7 +58,7 @@ class ListTransactionalsResourceResponse:
         data = []
         _data = d.pop("data")
         for data_item_data in _data:
-            data_item = TransactionalEmailResource.from_dict(data_item_data)
+            data_item = TransactionalResource.from_dict(data_item_data)
 
             data.append(data_item)
 

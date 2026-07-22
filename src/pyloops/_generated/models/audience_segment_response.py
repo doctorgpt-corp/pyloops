@@ -17,9 +17,9 @@ T = TypeVar("T", bound="AudienceSegmentResponse")
 class AudienceSegmentResponse:
     """
     Attributes:
-        id (str):
-        name (str):
-        description (None | str):
+        id (str): The ID of the audience segment.
+        name (str): The name of the audience segment.
+        description (None | str): An optional description of the audience segment.
         created_at (str): ISO 8601 timestamp.
         updated_at (str): ISO 8601 timestamp.
         filter_ (AudienceFilterType0 | None): A tree of audience conditions combined with `match`. Null when the

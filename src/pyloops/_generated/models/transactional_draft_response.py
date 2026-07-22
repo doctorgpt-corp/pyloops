@@ -16,14 +16,15 @@ T = TypeVar("T", bound="TransactionalDraftResponse")
 class TransactionalDraftResponse:
     """
     Attributes:
-        id (str):
-        name (str):
-        draft_email_message_id (None | str):
+        id (str): The ID of the transactional email.
+        name (str): The name of the transactional email.
+        draft_email_message_id (None | str): The ID of the draft email message.
         draft_email_message_content_revision_id (None | str): The `contentRevisionId` of the draft email message. Pass
-            this as `expectedRevisionId` on your first update via `/email-messages/{emailMessageId}`.
-        published_email_message_id (None | str):
-        created_at (datetime.datetime):
-        updated_at (datetime.datetime):
+            this as `expectedRevisionId` on your first update via `POST /v1/email-messages/{emailMessageId}`.
+        published_email_message_id (None | str): The ID of the published email message. `null` if there is no published
+            version.
+        created_at (datetime.datetime): ISO 8601 timestamp for when the transactional email was created.
+        updated_at (datetime.datetime): ISO 8601 timestamp for when the transactional email was last updated.
         data_variables (list[str]): Data variable names used by the published email. Empty for unpublished transactional
             emails.
         transactional_group_id (None | str | Unset): The ID of the group this transactional email belongs to. Returned

@@ -13,49 +13,48 @@ T = TypeVar("T", bound="ThemeStyles")
 
 @_attrs_define
 class ThemeStyles:
-    """Flat map of style attributes, matching the attribute names accepted by the LMX `<Style />` tag. All attributes are
-    returned with the values stored on the theme.
+    """Flat map of style attributes, matching the attribute names accepted by the LMX `<Style />` tag.
 
-        Attributes:
-            background_color (str | Unset):
-            background_x_padding (float | Unset):
-            background_y_padding (float | Unset):
-            body_color (str | Unset):
-            body_x_padding (float | Unset):
-            body_y_padding (float | Unset):
-            body_font_family (str | Unset):
-            body_font_category (str | Unset):
-            border_color (str | Unset):
-            border_width (float | Unset):
-            border_radius (float | Unset):
-            button_body_color (str | Unset):
-            button_body_x_padding (float | Unset):
-            button_body_y_padding (float | Unset):
-            button_border_color (str | Unset):
-            button_border_width (float | Unset):
-            button_border_radius (float | Unset):
-            button_text_color (str | Unset):
-            button_text_format (float | Unset):
-            button_text_font_size (float | Unset):
-            divider_color (str | Unset):
-            divider_border_width (float | Unset):
-            text_base_color (str | Unset):
-            text_base_font_size (float | Unset):
-            text_base_line_height (float | Unset):
-            text_base_letter_spacing (float | Unset):
-            text_link_color (str | Unset):
-            heading_1_color (str | Unset):
-            heading_1_font_size (float | Unset):
-            heading_1_line_height (float | Unset):
-            heading_1_letter_spacing (float | Unset):
-            heading_2_color (str | Unset):
-            heading_2_font_size (float | Unset):
-            heading_2_line_height (float | Unset):
-            heading_2_letter_spacing (float | Unset):
-            heading_3_color (str | Unset):
-            heading_3_font_size (float | Unset):
-            heading_3_line_height (float | Unset):
-            heading_3_letter_spacing (float | Unset):
+    Attributes:
+        background_color (str | Unset):
+        background_x_padding (float | Unset):
+        background_y_padding (float | Unset):
+        body_color (str | Unset):
+        body_x_padding (float | Unset):
+        body_y_padding (float | Unset):
+        body_font_family (str | Unset):
+        body_font_category (str | Unset):
+        border_color (str | Unset):
+        border_width (float | Unset):
+        border_radius (float | Unset):
+        button_body_color (str | Unset):
+        button_body_x_padding (float | Unset):
+        button_body_y_padding (float | Unset):
+        button_border_color (str | Unset):
+        button_border_width (float | Unset):
+        button_border_radius (float | Unset):
+        button_text_color (str | Unset):
+        button_text_format (float | Unset):
+        button_text_font_size (float | Unset):
+        divider_color (str | Unset):
+        divider_border_width (float | Unset):
+        text_base_color (str | Unset):
+        text_base_font_size (float | Unset):
+        text_base_line_height (float | Unset):
+        text_base_letter_spacing (float | Unset):
+        text_link_color (str | Unset):
+        heading_1_color (str | Unset):
+        heading_1_font_size (float | Unset):
+        heading_1_line_height (float | Unset):
+        heading_1_letter_spacing (float | Unset):
+        heading_2_color (str | Unset):
+        heading_2_font_size (float | Unset):
+        heading_2_line_height (float | Unset):
+        heading_2_letter_spacing (float | Unset):
+        heading_3_color (str | Unset):
+        heading_3_font_size (float | Unset):
+        heading_3_line_height (float | Unset):
+        heading_3_letter_spacing (float | Unset):
     """
 
     background_color: str | Unset = UNSET

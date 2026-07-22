@@ -26,12 +26,12 @@ T = TypeVar("T", bound="EmailMessageResponse")
 class EmailMessageResponse:
     """
     Attributes:
-        id (str):
-        subject (str):
-        preview_text (str):
-        from_name (str):
-        from_email (str):
-        reply_to_email (str):
+        id (str): The ID of the email message.
+        subject (str): The email subject.
+        preview_text (str): The email preview text.
+        from_name (str): The email sender name.
+        from_email (str): The email sender email address.
+        reply_to_email (str): The email reply-to address.
         email_format (EmailMessageResponseEmailFormat): The rendering format of the email.
         lmx (str): The email body serialized as LMX.
         content_revision_id (None | str): The current content revision. Pass this as `expectedRevisionId` on your next
@@ -41,8 +41,8 @@ class EmailMessageResponse:
             a campaign (mutually exclusive with `transactionalId`).
         transactional_id (str | Unset): The transactional email this email message belongs to. Present only when the
             message belongs to a transactional email (mutually exclusive with `campaignId`).
-        cc_email (str | Unset): Only present when set.
-        bcc_email (str | Unset): Only present when set.
+        cc_email (str | Unset): The email CC address. Only present when set.
+        bcc_email (str | Unset): The email BCC address. Only present when set.
         language_code (str | Unset): Only present when set.
         contact_properties_fallbacks (EmailMessageResponseContactPropertiesFallbacks | Unset): Fallback values for
             contact properties. Only present when set.

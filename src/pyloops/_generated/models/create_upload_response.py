@@ -13,8 +13,8 @@ T = TypeVar("T", bound="CreateUploadResponse")
 class CreateUploadResponse:
     """
     Attributes:
-        email_asset_id (str): The ID of the created asset. Pass this as `id` to `/uploads/{id}/complete` once the file
-            has been uploaded.
+        email_asset_id (str): The ID of the created asset. Pass this as `emailAssetId` to
+            `/v1/uploads/{emailAssetId}/complete` once the file has been uploaded.
         presigned_url (str): The pre-signed URL to upload the file to with an HTTP `PUT` request. Send the same
             `Content-Type` and `Content-Length` used in the create request.
     """

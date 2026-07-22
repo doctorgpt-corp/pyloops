@@ -6,7 +6,6 @@ from typing import Any, TypeVar, cast
 from attrs import define as _attrs_define
 
 from ..models.simplified_send_email_action_workflow_node_type_name import SimplifiedSendEmailActionWorkflowNodeTypeName
-from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="SimplifiedSendEmailActionWorkflowNode")
 
@@ -16,21 +15,23 @@ class SimplifiedSendEmailActionWorkflowNode:
     """
     Attributes:
         type_name (SimplifiedSendEmailActionWorkflowNodeTypeName):
-        next_node_ids (list[str]):
-        email_message_id (str | Unset):
-        subject (str | Unset):
+        next_node_ids (list[str]): The IDs of the nodes that are downstream of this node.
+        email_message_id (None | str): The ID of the email message to send. To edit this email, use the `POST /v1/email-
+            messages/{emailMessageId}` endpoint.
+        subject (str): The subject of the email message (reference only).
     """
 
     type_name: SimplifiedSendEmailActionWorkflowNodeTypeName
     next_node_ids: list[str]
-    email_message_id: str | Unset = UNSET
-    subject: str | Unset = UNSET
+    email_message_id: None | str
+    subject: str
 
     def to_dict(self) -> dict[str, Any]:
         type_name = self.type_name.value
 
         next_node_ids = self.next_node_ids
 
+        email_message_id: None | str
         email_message_id = self.email_message_id
 
         subject = self.subject
@@ -41,12 +42,10 @@ class SimplifiedSendEmailActionWorkflowNode:
             {
                 "typeName": type_name,
                 "nextNodeIds": next_node_ids,
+                "emailMessageId": email_message_id,
+                "subject": subject,
             }
         )
-        if email_message_id is not UNSET:
-            field_dict["emailMessageId"] = email_message_id
-        if subject is not UNSET:
-            field_dict["subject"] = subject
 
         return field_dict
 
@@ -57,9 +56,14 @@ class SimplifiedSendEmailActionWorkflowNode:
 
         next_node_ids = cast(list[str], d.pop("nextNodeIds"))
 
-        email_message_id = d.pop("emailMessageId", UNSET)
+        def _parse_email_message_id(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
 
-        subject = d.pop("subject", UNSET)
+        email_message_id = _parse_email_message_id(d.pop("emailMessageId"))
+
+        subject = d.pop("subject")
 
         simplified_send_email_action_workflow_node = cls(
             type_name=type_name,

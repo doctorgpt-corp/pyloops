@@ -90,7 +90,7 @@ def sync_detailed(
 
     Args:
         campaign_group_id (str):
-        body (UpdateGroupRequest):
+        body (UpdateGroupRequest): At least one field must be provided.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -125,7 +125,7 @@ def sync(
 
     Args:
         campaign_group_id (str):
-        body (UpdateGroupRequest):
+        body (UpdateGroupRequest): At least one field must be provided.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -155,7 +155,7 @@ async def asyncio_detailed(
 
     Args:
         campaign_group_id (str):
-        body (UpdateGroupRequest):
+        body (UpdateGroupRequest): At least one field must be provided.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -188,7 +188,7 @@ async def asyncio(
 
     Args:
         campaign_group_id (str):
-        body (UpdateGroupRequest):
+        body (UpdateGroupRequest): At least one field must be provided.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

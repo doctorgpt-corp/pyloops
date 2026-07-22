@@ -71,9 +71,17 @@ def sync_detailed(
 ) -> Response[Any | ContactFailureResponse | ContactSuccessResponse]:
     """Update a contact
 
-     Update a contact by `email` or `userId`. You must provide one of these parameters.<br>If you want to
-    update a contact’s email address, the contact will first need a `userId` value. You can then make a
-    request containing the userId field along with an updated email address.
+     Update a contact by `email` or `userId`. You must provide one of these parameters.
+
+    If you want to update a contact's email address, the contact will first need a `userId` value. You
+    can then make a request containing the `userId` field along with an updated email address.
+
+    This endpoint will create a contact if a matching contact does not already exist in your audience.
+
+    Provide either `email` or `userId` to identify the contact you want to update. If both are provided,
+    the system will look for a contact with either a   matching `email` or `userId` value. If a contact
+    is found for one of the values (e.g. `email`), the other value (e.g. `userId`) will be updated. If a
+    contact is not found, a new contact will be created using both `email` and `userId` values.
 
     Args:
         body (ContactUpdateRequest):
@@ -104,9 +112,17 @@ def sync(
 ) -> Any | ContactFailureResponse | ContactSuccessResponse | None:
     """Update a contact
 
-     Update a contact by `email` or `userId`. You must provide one of these parameters.<br>If you want to
-    update a contact’s email address, the contact will first need a `userId` value. You can then make a
-    request containing the userId field along with an updated email address.
+     Update a contact by `email` or `userId`. You must provide one of these parameters.
+
+    If you want to update a contact's email address, the contact will first need a `userId` value. You
+    can then make a request containing the `userId` field along with an updated email address.
+
+    This endpoint will create a contact if a matching contact does not already exist in your audience.
+
+    Provide either `email` or `userId` to identify the contact you want to update. If both are provided,
+    the system will look for a contact with either a   matching `email` or `userId` value. If a contact
+    is found for one of the values (e.g. `email`), the other value (e.g. `userId`) will be updated. If a
+    contact is not found, a new contact will be created using both `email` and `userId` values.
 
     Args:
         body (ContactUpdateRequest):
@@ -132,9 +148,17 @@ async def asyncio_detailed(
 ) -> Response[Any | ContactFailureResponse | ContactSuccessResponse]:
     """Update a contact
 
-     Update a contact by `email` or `userId`. You must provide one of these parameters.<br>If you want to
-    update a contact’s email address, the contact will first need a `userId` value. You can then make a
-    request containing the userId field along with an updated email address.
+     Update a contact by `email` or `userId`. You must provide one of these parameters.
+
+    If you want to update a contact's email address, the contact will first need a `userId` value. You
+    can then make a request containing the `userId` field along with an updated email address.
+
+    This endpoint will create a contact if a matching contact does not already exist in your audience.
+
+    Provide either `email` or `userId` to identify the contact you want to update. If both are provided,
+    the system will look for a contact with either a   matching `email` or `userId` value. If a contact
+    is found for one of the values (e.g. `email`), the other value (e.g. `userId`) will be updated. If a
+    contact is not found, a new contact will be created using both `email` and `userId` values.
 
     Args:
         body (ContactUpdateRequest):
@@ -163,9 +187,17 @@ async def asyncio(
 ) -> Any | ContactFailureResponse | ContactSuccessResponse | None:
     """Update a contact
 
-     Update a contact by `email` or `userId`. You must provide one of these parameters.<br>If you want to
-    update a contact’s email address, the contact will first need a `userId` value. You can then make a
-    request containing the userId field along with an updated email address.
+     Update a contact by `email` or `userId`. You must provide one of these parameters.
+
+    If you want to update a contact's email address, the contact will first need a `userId` value. You
+    can then make a request containing the `userId` field along with an updated email address.
+
+    This endpoint will create a contact if a matching contact does not already exist in your audience.
+
+    Provide either `email` or `userId` to identify the contact you want to update. If both are provided,
+    the system will look for a contact with either a   matching `email` or `userId` value. If a contact
+    is found for one of the values (e.g. `email`), the other value (e.g. `userId`) will be updated. If a
+    contact is not found, a new contact will be created using both `email` and `userId` values.
 
     Args:
         body (ContactUpdateRequest):

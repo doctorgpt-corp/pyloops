@@ -68,7 +68,7 @@ def sync_detailed(
     client: AuthenticatedClient,
     list_: str | Unset = UNSET,
 ) -> Response[Any | list[ContactProperty]]:
-    r"""Get a list of contact properties
+    r"""List contact properties
 
      Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
     or \"custom\" properties.
@@ -100,7 +100,7 @@ def sync(
     client: AuthenticatedClient,
     list_: str | Unset = UNSET,
 ) -> Any | list[ContactProperty] | None:
-    r"""Get a list of contact properties
+    r"""List contact properties
 
      Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
     or \"custom\" properties.
@@ -127,7 +127,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     list_: str | Unset = UNSET,
 ) -> Response[Any | list[ContactProperty]]:
-    r"""Get a list of contact properties
+    r"""List contact properties
 
      Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
     or \"custom\" properties.
@@ -157,7 +157,7 @@ async def asyncio(
     client: AuthenticatedClient,
     list_: str | Unset = UNSET,
 ) -> Any | list[ContactProperty] | None:
-    r"""Get a list of contact properties
+    r"""List contact properties
 
      Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
     or \"custom\" properties.

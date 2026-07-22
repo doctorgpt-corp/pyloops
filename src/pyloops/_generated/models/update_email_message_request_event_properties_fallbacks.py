@@ -11,8 +11,8 @@ T = TypeVar("T", bound="UpdateEmailMessageRequestEventPropertiesFallbacks")
 
 @_attrs_define
 class UpdateEmailMessageRequestEventPropertiesFallbacks:
-    """Fallback values for event properties, keyed by property name. A null value deletes the fallback; a string value sets
-    it. This is a full replacement of the existing map.
+    """Fallback values for event properties, keyed by property name. Per-key merge: a string value sets the fallback, a
+    null value deletes it, and keys omitted from the map are left unchanged.
 
     """
 
