@@ -26,7 +26,14 @@ T = TypeVar("T", bound="SimplifiedWorkflowNodes")
 
 @_attrs_define
 class SimplifiedWorkflowNodes:
-    """ """
+    """A map of node IDs to simplified node objects. Each node includes `typeName` and `nextNodeIds`, plus type-specific
+    fields when present. To get the full node object, use the `GET /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint.
+
+        Example:
+            {'cf16k73gq014h3mmj5b6jdi9r': {'typeName': 'SignupTrigger', 'nextNodeIds': ['cf16k73gq014h3mmj5b4jdifg',
+                'cf16k73gq014h3mmj5b4jdifh']}}
+
+    """
 
     additional_properties: dict[
         str,

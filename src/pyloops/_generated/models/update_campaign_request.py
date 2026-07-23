@@ -8,7 +8,7 @@ from attrs import define as _attrs_define
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.audience_filter_type_0 import AudienceFilterType0
+    from ..models.audience_filter_in_request_type_0 import AudienceFilterInRequestType0
     from ..models.campaign_scheduling_request import CampaignSchedulingRequest
 
 
@@ -20,13 +20,15 @@ class UpdateCampaignRequest:
     """At least one field must be provided.
 
     Attributes:
-        name (str | Unset):
+        name (str | Unset): The updated campaign name.
         campaign_group_id (str | Unset): The ID of the group to move this campaign to.
         mailing_list_id (None | str | Unset): The ID of the mailing list to send to.
-        audience_segment_id (None | str | Unset): The ID of an audience segment. Setting this clears any
-            `audienceFilter`.
-        audience_filter (AudienceFilterType0 | None | Unset): A tree of audience conditions combined with `match`. Null
-            when the campaign targets a mailing list or segment without an explicit filter.
+        audience_segment_id (None | str | Unset): The ID of an audience segment. Setting this without also providing
+            `audienceFilter` clears any existing `audienceFilter`. If both are provided, the filter is applied on top of the
+            segment's filter.
+        audience_filter (AudienceFilterInRequestType0 | None | Unset): A tree of audience conditions combined with
+            `match`. Setting this without also providing `audienceSegmentId` clears any existing `audienceSegmentId`. When
+            both are provided, this filter is applied on top of the segment's filter.
         scheduling (CampaignSchedulingRequest | Unset): When the campaign should send. `timestamp` is required and must
             be in the future when `method` is `schedule`, and must be omitted when `method` is `now`.
     """
@@ -35,11 +37,11 @@ class UpdateCampaignRequest:
     campaign_group_id: str | Unset = UNSET
     mailing_list_id: None | str | Unset = UNSET
     audience_segment_id: None | str | Unset = UNSET
-    audience_filter: AudienceFilterType0 | None | Unset = UNSET
+    audience_filter: AudienceFilterInRequestType0 | None | Unset = UNSET
     scheduling: CampaignSchedulingRequest | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.audience_filter_type_0 import AudienceFilterType0
+        from ..models.audience_filter_in_request_type_0 import AudienceFilterInRequestType0
 
         name = self.name
 
@@ -60,7 +62,7 @@ class UpdateCampaignRequest:
         audience_filter: dict[str, Any] | None | Unset
         if isinstance(self.audience_filter, Unset):
             audience_filter = UNSET
-        elif isinstance(self.audience_filter, AudienceFilterType0):
+        elif isinstance(self.audience_filter, AudienceFilterInRequestType0):
             audience_filter = self.audience_filter.to_dict()
         else:
             audience_filter = self.audience_filter
@@ -89,7 +91,7 @@ class UpdateCampaignRequest:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.audience_filter_type_0 import AudienceFilterType0
+        from ..models.audience_filter_in_request_type_0 import AudienceFilterInRequestType0
         from ..models.campaign_scheduling_request import CampaignSchedulingRequest
 
         d = dict(src_dict)
@@ -115,7 +117,7 @@ class UpdateCampaignRequest:
 
         audience_segment_id = _parse_audience_segment_id(d.pop("audienceSegmentId", UNSET))
 
-        def _parse_audience_filter(data: object) -> AudienceFilterType0 | None | Unset:
+        def _parse_audience_filter(data: object) -> AudienceFilterInRequestType0 | None | Unset:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -123,12 +125,12 @@ class UpdateCampaignRequest:
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                componentsschemas_audience_filter_type_0 = AudienceFilterType0.from_dict(data)
+                componentsschemas_audience_filter_in_request_type_0 = AudienceFilterInRequestType0.from_dict(data)
 
-                return componentsschemas_audience_filter_type_0
+                return componentsschemas_audience_filter_in_request_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
                 pass
-            return cast(AudienceFilterType0 | None | Unset, data)
+            return cast(AudienceFilterInRequestType0 | None | Unset, data)
 
         audience_filter = _parse_audience_filter(d.pop("audienceFilter", UNSET))
 

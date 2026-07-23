@@ -17,7 +17,7 @@ T = TypeVar("T", bound="ContactSuppressionRemoveResponse")
 class ContactSuppressionRemoveResponse:
     """
     Attributes:
-        success (bool):
+        success (bool): Whether the suppression removal was successful.
         message (str):
         removal_quota (ContactSuppressionRemovalQuota):
     """

@@ -22,10 +22,13 @@ class EventTriggerWorkflowNode:
         id (str):
         workflow_id (str):
         type_name (EventTriggerWorkflowNodeTypeName):
-        next_node_ids (list[str]):
-        re_eligible (bool):
-        event_name (str | Unset):
-        event_properties (list[WorkflowEventProperty] | Unset):
+        next_node_ids (list[str]): The IDs of the nodes that are downstream of this node.
+        re_eligible (bool): If `true`, the contacts will be able to enter this workflow every time the trigger is
+            matched. If `false`, contacts will only ever enter this workflow once. Matches the "Trigger frequency" option in
+            the UI.
+        event_name (str | Unset): The name of the event pattern that triggers this node.
+        event_properties (list[WorkflowEventProperty] | Unset): The properties of the event pattern, which can be used
+            in emails.
     """
 
     id: str

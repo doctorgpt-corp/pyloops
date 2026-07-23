@@ -6,7 +6,6 @@ from typing import Any, TypeVar, cast
 from attrs import define as _attrs_define
 
 from ..models.send_email_action_workflow_node_type_name import SendEmailActionWorkflowNodeTypeName
-from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="SendEmailActionWorkflowNode")
 
@@ -18,9 +17,10 @@ class SendEmailActionWorkflowNode:
         id (str):
         workflow_id (str):
         type_name (SendEmailActionWorkflowNodeTypeName):
-        next_node_ids (list[str]):
-        email_message_id (str):
-        subject (str | Unset):
+        next_node_ids (list[str]): The IDs of the nodes that are downstream of this node.
+        email_message_id (str): The ID of the email message to send. To edit this email, use the `POST /v1/email-
+            messages/{emailMessageId}` endpoint.
+        subject (str):
     """
 
     id: str
@@ -28,7 +28,7 @@ class SendEmailActionWorkflowNode:
     type_name: SendEmailActionWorkflowNodeTypeName
     next_node_ids: list[str]
     email_message_id: str
-    subject: str | Unset = UNSET
+    subject: str
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
@@ -52,10 +52,9 @@ class SendEmailActionWorkflowNode:
                 "typeName": type_name,
                 "nextNodeIds": next_node_ids,
                 "emailMessageId": email_message_id,
+                "subject": subject,
             }
         )
-        if subject is not UNSET:
-            field_dict["subject"] = subject
 
         return field_dict
 
@@ -72,7 +71,7 @@ class SendEmailActionWorkflowNode:
 
         email_message_id = d.pop("emailMessageId")
 
-        subject = d.pop("subject", UNSET)
+        subject = d.pop("subject")
 
         send_email_action_workflow_node = cls(
             id=id,

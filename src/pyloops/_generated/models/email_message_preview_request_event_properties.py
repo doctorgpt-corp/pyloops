@@ -11,7 +11,12 @@ T = TypeVar("T", bound="EmailMessagePreviewRequestEventProperties")
 
 @_attrs_define
 class EmailMessagePreviewRequestEventProperties:
-    """Event property values to render. Accepted for workflow previews only."""
+    """Event property values to render. Accepted for workflow previews only.
+
+    Example:
+        {'planName': 'Pro'}
+
+    """
 
     additional_properties: dict[str, str] = _attrs_field(init=False, factory=dict)
 

@@ -8,7 +8,7 @@ from attrs import field as _attrs_field
 
 if TYPE_CHECKING:
     from ..models.group_response import GroupResponse
-    from ..models.list_groups_response_pagination import ListGroupsResponsePagination
+    from ..models.pagination import Pagination
 
 
 T = TypeVar("T", bound="ListGroupsResponse")
@@ -18,11 +18,11 @@ T = TypeVar("T", bound="ListGroupsResponse")
 class ListGroupsResponse:
     """
     Attributes:
-        pagination (ListGroupsResponsePagination):
+        pagination (Pagination):
         data (list[GroupResponse]):
     """
 
-    pagination: ListGroupsResponsePagination
+    pagination: Pagination
     data: list[GroupResponse]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -48,10 +48,10 @@ class ListGroupsResponse:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.group_response import GroupResponse
-        from ..models.list_groups_response_pagination import ListGroupsResponsePagination
+        from ..models.pagination import Pagination
 
         d = dict(src_dict)
-        pagination = ListGroupsResponsePagination.from_dict(d.pop("pagination"))
+        pagination = Pagination.from_dict(d.pop("pagination"))
 
         data = []
         _data = d.pop("data")

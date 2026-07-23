@@ -13,10 +13,19 @@ T = TypeVar("T", bound="WorkflowContactPropertyComparison")
 
 @_attrs_define
 class WorkflowContactPropertyComparison:
-    """
-    Attributes:
-        value (bool | float | str):
-        operator (WorkflowContactPropertyComparisonOperator):
+    """For Contact Updated triggers, the API validates `operator` against the selected contact property's type and the side
+    of the comparison. The `was` comparison can use any operator supported by the selected property type. The `is`
+    comparison uses the same operators, except number and boolean properties cannot use `empty`. String properties
+    support `any`, `equal`, `not_equal`, `contains`, `not_contains`, `empty`, and `not_empty`. Number properties support
+    `any`, `greater_than`, `less_than`, `numeric_equal`, `numeric_not_equal`, `empty`, and `not_empty`. Boolean
+    properties support `any`, `true`, `false`, `empty`, and `not_empty`. Date properties support `any`, `empty`,
+    `not_empty`, `after`, `before`, and `between`.
+
+        Attributes:
+            value (bool | float | str):
+            operator (WorkflowContactPropertyComparisonOperator): The comparison operator. It must be valid for the selected
+                contact property's type and for the `is` or `was` side of the comparison. Number and boolean properties allow
+                `empty` on `was`, but not on `is`.
     """
 
     value: bool | float | str

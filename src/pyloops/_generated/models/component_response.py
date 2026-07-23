@@ -13,8 +13,8 @@ T = TypeVar("T", bound="ComponentResponse")
 class ComponentResponse:
     """
     Attributes:
-        id (str):
-        name (str):
+        id (str): The ID of the component.
+        name (str): The name of the component.
         lmx (str): The component body serialized as LMX.
     """
 

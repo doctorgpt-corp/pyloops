@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -9,7 +9,7 @@ from attrs import field as _attrs_field
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.contact_request_mailing_lists import ContactRequestMailingLists
+    from ..models.mailing_list_subscriptions import MailingListSubscriptions
 
 
 T = TypeVar("T", bound="ContactRequest")
@@ -19,24 +19,29 @@ T = TypeVar("T", bound="ContactRequest")
 class ContactRequest:
     """
     Attributes:
-        email (str):
-        first_name (str | Unset):
-        last_name (str | Unset):
-        subscribed (bool | Unset):
-        user_group (str | Unset):
-        user_id (str | Unset):
-        mailing_lists (ContactRequestMailingLists | Unset): An object of mailing list IDs and boolean subscription
-            statuses.
+        email (str): The contact's email address.
+        first_name (str | Unset): The contact's first name.
+        last_name (str | Unset): The contact's last name.
+        source (str | Unset): A custom source value to replace the default “API”.
+        subscribed (bool | Unset): Whether the contact will receive campaign and workflow emails. All new contacts are
+            subscribed by default.
+        user_group (str | Unset): The contact's user group.
+        user_id (str | Unset): A unique user ID (for example, from an external application).
+        mailing_lists (MailingListSubscriptions | Unset): Manage mailing list subscriptions.
+
+            Include key-value pairs of mailing list IDs and a `boolean` denoting if the contact should be added (`true`) or
+            removed (`false`) from the list.
     """
 
     email: str
     first_name: str | Unset = UNSET
     last_name: str | Unset = UNSET
+    source: str | Unset = UNSET
     subscribed: bool | Unset = UNSET
     user_group: str | Unset = UNSET
     user_id: str | Unset = UNSET
-    mailing_lists: ContactRequestMailingLists | Unset = UNSET
-    additional_properties: dict[str, bool | float | str] = _attrs_field(init=False, factory=dict)
+    mailing_lists: MailingListSubscriptions | Unset = UNSET
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         email = self.email
@@ -44,6 +49,8 @@ class ContactRequest:
         first_name = self.first_name
 
         last_name = self.last_name
+
+        source = self.source
 
         subscribed = self.subscribed
 
@@ -56,9 +63,7 @@ class ContactRequest:
             mailing_lists = self.mailing_lists.to_dict()
 
         field_dict: dict[str, Any] = {}
-        for prop_name, prop in self.additional_properties.items():
-            field_dict[prop_name] = prop
-
+        field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "email": email,
@@ -68,6 +73,8 @@ class ContactRequest:
             field_dict["firstName"] = first_name
         if last_name is not UNSET:
             field_dict["lastName"] = last_name
+        if source is not UNSET:
+            field_dict["source"] = source
         if subscribed is not UNSET:
             field_dict["subscribed"] = subscribed
         if user_group is not UNSET:
@@ -81,7 +88,7 @@ class ContactRequest:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.contact_request_mailing_lists import ContactRequestMailingLists
+        from ..models.mailing_list_subscriptions import MailingListSubscriptions
 
         d = dict(src_dict)
         email = d.pop("email")
@@ -90,6 +97,8 @@ class ContactRequest:
 
         last_name = d.pop("lastName", UNSET)
 
+        source = d.pop("source", UNSET)
+
         subscribed = d.pop("subscribed", UNSET)
 
         user_group = d.pop("userGroup", UNSET)
@@ -97,43 +106,34 @@ class ContactRequest:
         user_id = d.pop("userId", UNSET)
 
         _mailing_lists = d.pop("mailingLists", UNSET)
-        mailing_lists: ContactRequestMailingLists | Unset
+        mailing_lists: MailingListSubscriptions | Unset
         if isinstance(_mailing_lists, Unset):
             mailing_lists = UNSET
         else:
-            mailing_lists = ContactRequestMailingLists.from_dict(_mailing_lists)
+            mailing_lists = MailingListSubscriptions.from_dict(_mailing_lists)
 
         contact_request = cls(
             email=email,
             first_name=first_name,
             last_name=last_name,
+            source=source,
             subscribed=subscribed,
             user_group=user_group,
             user_id=user_id,
             mailing_lists=mailing_lists,
         )
 
-        additional_properties = {}
-        for prop_name, prop_dict in d.items():
-
-            def _parse_additional_property(data: object) -> bool | float | str:
-                return cast(bool | float | str, data)
-
-            additional_property = _parse_additional_property(prop_dict)
-
-            additional_properties[prop_name] = additional_property
-
-        contact_request.additional_properties = additional_properties
+        contact_request.additional_properties = d
         return contact_request
 
     @property
     def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
-    def __getitem__(self, key: str) -> bool | float | str:
+    def __getitem__(self, key: str) -> Any:
         return self.additional_properties[key]
 
-    def __setitem__(self, key: str, value: bool | float | str) -> None:
+    def __setitem__(self, key: str, value: Any) -> None:
         self.additional_properties[key] = value
 
     def __delitem__(self, key: str) -> None:

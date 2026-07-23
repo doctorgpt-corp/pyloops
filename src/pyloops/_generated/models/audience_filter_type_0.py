@@ -18,12 +18,11 @@ T = TypeVar("T", bound="AudienceFilterType0")
 
 @_attrs_define
 class AudienceFilterType0:
-    """A tree of audience conditions combined with `match`. Null when the campaign targets a mailing list or segment
-    without an explicit filter.
+    """A tree of audience conditions combined with `match`.
 
-        Attributes:
-            match (AudienceFilterType0Match):
-            conditions (list[ActivityCondition | OptInCondition | PropertyCondition]):
+    Attributes:
+        match (AudienceFilterType0Match):
+        conditions (list[ActivityCondition | OptInCondition | PropertyCondition]):
     """
 
     match: AudienceFilterType0Match

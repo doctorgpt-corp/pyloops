@@ -21,9 +21,11 @@ class ContactPropertyTriggerWorkflowNode:
         id (str):
         workflow_id (str):
         type_name (ContactPropertyTriggerWorkflowNodeTypeName):
-        next_node_ids (list[str]):
+        next_node_ids (list[str]): The IDs of the nodes that are downstream of this node.
         contact_property_query (None | WorkflowContactPropertyQuery):
-        re_eligible (bool):
+        re_eligible (bool): If `true`, the contacts will be able to enter this workflow every time the trigger is
+            matched. If `false`, contacts will only ever enter this workflow once. Matches the "Trigger frequency" option in
+            the UI.
     """
 
     id: str

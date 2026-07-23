@@ -82,7 +82,7 @@ def sync_detailed(
 
      Request a pre-signed URL to upload an image asset. Upload the file with an HTTP `PUT` to the
     returned `presignedUrl` (sending the same `Content-Type` and `Content-Length`), then call
-    `/uploads/{id}/complete` to finalize the asset.
+    `/uploads/{emailAssetId}/complete` to finalize the asset.
 
     Args:
         body (CreateUploadRequest):
@@ -115,7 +115,7 @@ def sync(
 
      Request a pre-signed URL to upload an image asset. Upload the file with an HTTP `PUT` to the
     returned `presignedUrl` (sending the same `Content-Type` and `Content-Length`), then call
-    `/uploads/{id}/complete` to finalize the asset.
+    `/uploads/{emailAssetId}/complete` to finalize the asset.
 
     Args:
         body (CreateUploadRequest):
@@ -143,7 +143,7 @@ async def asyncio_detailed(
 
      Request a pre-signed URL to upload an image asset. Upload the file with an HTTP `PUT` to the
     returned `presignedUrl` (sending the same `Content-Type` and `Content-Length`), then call
-    `/uploads/{id}/complete` to finalize the asset.
+    `/uploads/{emailAssetId}/complete` to finalize the asset.
 
     Args:
         body (CreateUploadRequest):
@@ -174,7 +174,7 @@ async def asyncio(
 
      Request a pre-signed URL to upload an image asset. Upload the file with an HTTP `PUT` to the
     returned `presignedUrl` (sending the same `Content-Type` and `Content-Length`), then call
-    `/uploads/{id}/complete` to finalize the asset.
+    `/uploads/{emailAssetId}/complete` to finalize the asset.
 
     Args:
         body (CreateUploadRequest):

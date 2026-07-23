@@ -20,14 +20,20 @@ T = TypeVar("T", bound="TransactionalRequest")
 class TransactionalRequest:
     """
     Attributes:
-        email (str):
+        email (str): The recipient's email address.
         transactional_id (str): The ID of the transactional email to send.
         add_to_audience (bool | Unset): If `true`, a contact will be created in your audience using the `email` value
             (if a matching contact doesn't already exist).
-        data_variables (TransactionalRequestDataVariables | Unset): An object containing contact data as defined by the
-            data variables added to the transactional email template.
+        data_variables (TransactionalRequestDataVariables | Unset): An object containing data as defined by the data
+            variables added to the transactional email template. Values can be of type string or number.
+
+            If you have added optional data variables to your email, you can exclude them from the dataVariables object or
+            set the value to "".
+
+            If you have added an array data variable to your email, make sure to include an array matching the data
+            variables you added to your array block.
         attachments (list[TransactionalRequestAttachmentsItem] | Unset): A list containing file objects to be sent along
-            with an email message.
+            with an email message. Attachments must be enabled by Loops support before they can be used with the API.
     """
 
     email: str

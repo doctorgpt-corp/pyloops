@@ -7,7 +7,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 if TYPE_CHECKING:
-    from ..models.list_themes_response_pagination import ListThemesResponsePagination
+    from ..models.pagination import Pagination
     from ..models.theme import Theme
 
 
@@ -18,11 +18,11 @@ T = TypeVar("T", bound="ListThemesResponse")
 class ListThemesResponse:
     """
     Attributes:
-        pagination (ListThemesResponsePagination):
+        pagination (Pagination):
         data (list[Theme]):
     """
 
-    pagination: ListThemesResponsePagination
+    pagination: Pagination
     data: list[Theme]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -47,11 +47,11 @@ class ListThemesResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.list_themes_response_pagination import ListThemesResponsePagination
+        from ..models.pagination import Pagination
         from ..models.theme import Theme
 
         d = dict(src_dict)
-        pagination = ListThemesResponsePagination.from_dict(d.pop("pagination"))
+        pagination = Pagination.from_dict(d.pop("pagination"))
 
         data = []
         _data = d.pop("data")
