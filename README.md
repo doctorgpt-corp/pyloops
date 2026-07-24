@@ -105,13 +105,22 @@ client = pyloops.LoopsClient(api_key="your_api_key_here")
 
 ## Features
 
-This SDK provides access to all Loops.so API endpoints:
+The high-level `LoopsClient` wraps every Loops.so API endpoint:
 
-- **Contacts**: Create, update, find, and delete contacts
-- **Contact Properties**: Manage custom contact properties
+- **Contacts**: Create, upsert, find, and delete contacts
+- **Contact Properties**: List and create custom contact properties
+- **Contact Suppression**: Read and remove suppression status
 - **Mailing Lists**: View available mailing lists
 - **Events**: Trigger event-based emails
-- **Transactional Emails**: Send and list transactional emails
+- **Event Patterns**: List and look up triggerable event types
+- **Transactional Emails**: Send, list, and manage transactional templates (create, update, draft, publish)
+- **Campaigns & Campaign Groups**: List, get, create, and update
+- **Transactional Groups**: List, get, create, and update
+- **Themes & Components**: List, get, create, and update reusable branding/building blocks
+- **Email Messages**: Get, update, preview, and run Guardian content checks
+- **Workflows & Workflow Nodes**: Create and update workflows, change mailing lists, and build the node graph (create/update/branch/delete nodes)
+- **Audience Segments**: List, get, and create
+- **Uploads**: Create and complete asset uploads
 - **Sending IPs**: Retrieve dedicated sending IP addresses
 
 ## Safe Mode
@@ -225,7 +234,10 @@ async def test_handles_rate_limit(loops_api):
 
 ### Available mock routes
 
-All routes are accessible by name on the yielded router:
+Every Loops endpoint the client supports has a matching mock route, accessible
+by name on the yielded router. Route names mirror the client method names, so a
+call to `client.create_workflow(...)` is recorded under `api["create_workflow"]`.
+Common routes:
 
 | Name | Method | Endpoint |
 |------|--------|----------|
@@ -241,6 +253,11 @@ All routes are accessible by name on the yielded router:
 | `send_event` | POST | `/events/send` |
 | `list_mailing_lists` | GET | `/lists` |
 | `list_sending_ips` | GET | `/dedicated-sending-ips` |
+
+Additional families are mocked too — campaigns, campaign/transactional groups,
+transactional templates, themes, components, email messages (incl. preview and
+Guardian), uploads, audience segments, event patterns, and workflows/workflow
+nodes. See `EXPECTED_ROUTE_NAMES` in `tests/test_testing.py` for the full list.
 
 ### Testing with safe mode
 
@@ -259,7 +276,7 @@ For detailed API documentation, visit the [Loops.so API docs](https://loops.so/d
 
 ## Automated Updates
 
-This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.21.2**).
+This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.21.2.1**). A three-segment version (e.g. `1.21.2`) tracks the Loops API version directly; a fourth segment (e.g. `1.21.2.1`) denotes a client-wrapper update built on top of that API version.
 
 A GitHub Action checks for API updates daily and creates a pull request when changes are detected. After review and merge, a new version is automatically published to PyPI.
 
