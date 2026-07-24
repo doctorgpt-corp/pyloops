@@ -57,7 +57,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 ) -> Response[Any | list[MailingList]]:
-    """Get a list of mailing lists
+    """List mailing lists
 
      Retrieve a list of your account's mailing lists.
 
@@ -82,7 +82,7 @@ def sync(
     *,
     client: AuthenticatedClient,
 ) -> Any | list[MailingList] | None:
-    """Get a list of mailing lists
+    """List mailing lists
 
      Retrieve a list of your account's mailing lists.
 
@@ -103,7 +103,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 ) -> Response[Any | list[MailingList]]:
-    """Get a list of mailing lists
+    """List mailing lists
 
      Retrieve a list of your account's mailing lists.
 
@@ -126,7 +126,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
 ) -> Any | list[MailingList] | None:
-    """Get a list of mailing lists
+    """List mailing lists
 
      Retrieve a list of your account's mailing lists.
 

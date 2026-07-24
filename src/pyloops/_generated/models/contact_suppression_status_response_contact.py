@@ -13,9 +13,9 @@ T = TypeVar("T", bound="ContactSuppressionStatusResponseContact")
 class ContactSuppressionStatusResponseContact:
     """
     Attributes:
-        id (str):
-        email (str):
-        user_id (None | str):
+        id (str): The contact's Loops ID.
+        email (str): The contact's email address.
+        user_id (None | str): The contact's unique user ID.
     """
 
     id: str

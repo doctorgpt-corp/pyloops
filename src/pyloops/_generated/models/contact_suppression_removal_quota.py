@@ -13,8 +13,8 @@ T = TypeVar("T", bound="ContactSuppressionRemovalQuota")
 class ContactSuppressionRemovalQuota:
     """
     Attributes:
-        limit (float):
-        remaining (float):
+        limit (float): The number of suppression removals allowed in a rolling 30 day period.
+        remaining (float): The remaining number of suppression removals left in the current 30 day period.
     """
 
     limit: float

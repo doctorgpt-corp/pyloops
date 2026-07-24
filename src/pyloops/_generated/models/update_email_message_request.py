@@ -27,13 +27,12 @@ T = TypeVar("T", bound="UpdateEmailMessageRequest")
 class UpdateEmailMessageRequest:
     """
     Attributes:
-        expected_revision_id (str | Unset): The `contentRevisionId` you last fetched. Used for optimistic concurrency —
-            the request is rejected with 409 if the server's revision has advanced.
+        expected_revision_id (str | Unset): The `contentRevisionId` you last fetched, or the
+            `emailMessageContentRevisionId` you received when creating the campaign.
         subject (str | Unset):
         preview_text (str | Unset):
         from_name (str | Unset):
-        from_email (str | Unset): The sender username (without `@` or domain). The team's sending domain is appended
-            automatically.
+        from_email (str | Unset): The email sender email address, without the team's sending domain.
         reply_to_email (str | Unset): Reply-to email. Must be empty or a valid email address.
         cc_email (str | Unset): CC email address. Requires the team to have CC/BCC enabled.
         bcc_email (str | Unset): BCC email address. Requires the team to have CC/BCC enabled.
@@ -41,14 +40,14 @@ class UpdateEmailMessageRequest:
         email_format (UpdateEmailMessageRequestEmailFormat | Unset): The rendering format of the email.
         lmx (str | Unset): The email body serialized as LMX. Styles must be embedded in the LMX `<Style />` tag.
         contact_properties_fallbacks (UpdateEmailMessageRequestContactPropertiesFallbacks | Unset): Fallback values for
-            contact properties, keyed by property name. A null value deletes the fallback; a string value sets it. This is a
-            full replacement of the existing map.
+            contact properties, keyed by property name. Per-key merge: a string value sets the fallback, a null value
+            deletes it, and keys omitted from the map are left unchanged.
         event_properties_fallbacks (UpdateEmailMessageRequestEventPropertiesFallbacks | Unset): Fallback values for
-            event properties, keyed by property name. A null value deletes the fallback; a string value sets it. This is a
-            full replacement of the existing map.
+            event properties, keyed by property name. Per-key merge: a string value sets the fallback, a null value deletes
+            it, and keys omitted from the map are left unchanged.
         data_variables_fallbacks (UpdateEmailMessageRequestDataVariablesFallbacks | Unset): Fallback values for data
-            variables, keyed by variable name. A null value deletes the fallback; a string value sets it. This is a full
-            replacement of the existing map.
+            variables, keyed by variable name. Per-key merge: a string value sets the fallback, a null value deletes it, and
+            keys omitted from the map are left unchanged.
     """
 
     expected_revision_id: str | Unset = UNSET

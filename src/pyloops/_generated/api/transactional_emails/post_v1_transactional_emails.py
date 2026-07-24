@@ -76,9 +76,9 @@ def sync_detailed(
     """Create a transactional email
 
      Create a new transactional email. An empty draft email message is created automatically and its
-    `draftEmailMessageId` is returned. Use the `/api/v1/email-messages/{emailMessageId}` endpoint to set
-    subject, sender, preview text, and LMX content, then call `/api/v1/transactional-
-    emails/{transactionalId}/publish` to publish.
+    `draftEmailMessageId` is returned. Use the `POST /v1/email-messages/{emailMessageId}` endpoint along
+    with the returned `draftEmailMessageContentRevisionId` to set subject, sender, preview text, and LMX
+    content, then call `POST /v1/transactional-emails/{transactionalId}/publish` to publish the draft.
 
     Args:
         body (CreateTransactionalRequest):
@@ -110,9 +110,9 @@ def sync(
     """Create a transactional email
 
      Create a new transactional email. An empty draft email message is created automatically and its
-    `draftEmailMessageId` is returned. Use the `/api/v1/email-messages/{emailMessageId}` endpoint to set
-    subject, sender, preview text, and LMX content, then call `/api/v1/transactional-
-    emails/{transactionalId}/publish` to publish.
+    `draftEmailMessageId` is returned. Use the `POST /v1/email-messages/{emailMessageId}` endpoint along
+    with the returned `draftEmailMessageContentRevisionId` to set subject, sender, preview text, and LMX
+    content, then call `POST /v1/transactional-emails/{transactionalId}/publish` to publish the draft.
 
     Args:
         body (CreateTransactionalRequest):
@@ -139,9 +139,9 @@ async def asyncio_detailed(
     """Create a transactional email
 
      Create a new transactional email. An empty draft email message is created automatically and its
-    `draftEmailMessageId` is returned. Use the `/api/v1/email-messages/{emailMessageId}` endpoint to set
-    subject, sender, preview text, and LMX content, then call `/api/v1/transactional-
-    emails/{transactionalId}/publish` to publish.
+    `draftEmailMessageId` is returned. Use the `POST /v1/email-messages/{emailMessageId}` endpoint along
+    with the returned `draftEmailMessageContentRevisionId` to set subject, sender, preview text, and LMX
+    content, then call `POST /v1/transactional-emails/{transactionalId}/publish` to publish the draft.
 
     Args:
         body (CreateTransactionalRequest):
@@ -171,9 +171,9 @@ async def asyncio(
     """Create a transactional email
 
      Create a new transactional email. An empty draft email message is created automatically and its
-    `draftEmailMessageId` is returned. Use the `/api/v1/email-messages/{emailMessageId}` endpoint to set
-    subject, sender, preview text, and LMX content, then call `/api/v1/transactional-
-    emails/{transactionalId}/publish` to publish.
+    `draftEmailMessageId` is returned. Use the `POST /v1/email-messages/{emailMessageId}` endpoint along
+    with the returned `draftEmailMessageContentRevisionId` to set subject, sender, preview text, and LMX
+    content, then call `POST /v1/transactional-emails/{transactionalId}/publish` to publish the draft.
 
     Args:
         body (CreateTransactionalRequest):

@@ -17,7 +17,7 @@ class SignupTriggerWorkflowNode:
         id (str):
         workflow_id (str):
         type_name (SignupTriggerWorkflowNodeTypeName):
-        next_node_ids (list[str]):
+        next_node_ids (list[str]): The IDs of the nodes that are downstream of this node.
     """
 
     id: str

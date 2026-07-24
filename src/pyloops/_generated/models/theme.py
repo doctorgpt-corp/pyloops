@@ -17,13 +17,13 @@ T = TypeVar("T", bound="Theme")
 class Theme:
     """
     Attributes:
-        id (str):
-        name (str):
+        id (str): The ID of the theme.
+        name (str): The name of the theme.
         styles (ThemeStyles): Flat map of style attributes, matching the attribute names accepted by the LMX `<Style />`
-            tag. All attributes are returned with the values stored on the theme.
+            tag.
         is_default (bool): Whether this theme is the team's default.
-        created_at (str): ISO 8601 timestamp.
-        updated_at (str): ISO 8601 timestamp.
+        created_at (str): ISO 8601 timestamp for when the theme was created.
+        updated_at (str): ISO 8601 timestamp for when the theme was last updated.
     """
 
     id: str

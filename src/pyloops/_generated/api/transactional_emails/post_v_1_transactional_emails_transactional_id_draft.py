@@ -77,7 +77,7 @@ def sync_detailed(
 
      Ensure the transactional email has a draft email message. If a draft already exists it is returned
     unchanged; otherwise a new empty draft is created (seeded from the most recent published version
-    when present). Use `/v1/email-messages/{emailMessageId}` to edit the draft's content.
+    when present). Use `POST /v1/email-messages/{emailMessageId}` to edit the draft's content.
 
     Args:
         transactional_id (str):
@@ -110,7 +110,7 @@ def sync(
 
      Ensure the transactional email has a draft email message. If a draft already exists it is returned
     unchanged; otherwise a new empty draft is created (seeded from the most recent published version
-    when present). Use `/v1/email-messages/{emailMessageId}` to edit the draft's content.
+    when present). Use `POST /v1/email-messages/{emailMessageId}` to edit the draft's content.
 
     Args:
         transactional_id (str):
@@ -138,7 +138,7 @@ async def asyncio_detailed(
 
      Ensure the transactional email has a draft email message. If a draft already exists it is returned
     unchanged; otherwise a new empty draft is created (seeded from the most recent published version
-    when present). Use `/v1/email-messages/{emailMessageId}` to edit the draft's content.
+    when present). Use `POST /v1/email-messages/{emailMessageId}` to edit the draft's content.
 
     Args:
         transactional_id (str):
@@ -169,7 +169,7 @@ async def asyncio(
 
      Ensure the transactional email has a draft email message. If a draft already exists it is returned
     unchanged; otherwise a new empty draft is created (seeded from the most recent published version
-    when present). Use `/v1/email-messages/{emailMessageId}` to edit the draft's content.
+    when present). Use `POST /v1/email-messages/{emailMessageId}` to edit the draft's content.
 
     Args:
         transactional_id (str):

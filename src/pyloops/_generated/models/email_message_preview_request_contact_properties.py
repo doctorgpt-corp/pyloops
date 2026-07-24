@@ -11,7 +11,12 @@ T = TypeVar("T", bound="EmailMessagePreviewRequestContactProperties")
 
 @_attrs_define
 class EmailMessagePreviewRequestContactProperties:
-    """Contact property values to render. Accepted for campaign and workflow previews."""
+    """Contact property values to render. Accepted for campaign and workflow previews.
+
+    Example:
+        {'firstName': 'Alex'}
+
+    """
 
     additional_properties: dict[str, str] = _attrs_field(init=False, factory=dict)
 

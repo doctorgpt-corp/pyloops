@@ -172,6 +172,10 @@ def sync_detailed(
      Send a transactional email to a contact.<br>Please [email us](mailto:help@loops.so) to enable
     attachments on your account before using them with the API.
 
+    To set dynamic Subject, From, Reply to, CC, BCC email header fields, add data variables to those
+    fields in the editor, then include data for each variable in the API request. Read our transactional
+    email guide for more details.
+
     Args:
         idempotency_key (str | Unset):
         body (TransactionalRequest):
@@ -218,6 +222,10 @@ def sync(
      Send a transactional email to a contact.<br>Please [email us](mailto:help@loops.so) to enable
     attachments on your account before using them with the API.
 
+    To set dynamic Subject, From, Reply to, CC, BCC email header fields, add data variables to those
+    fields in the editor, then include data for each variable in the API request. Read our transactional
+    email guide for more details.
+
     Args:
         idempotency_key (str | Unset):
         body (TransactionalRequest):
@@ -257,6 +265,10 @@ async def asyncio_detailed(
 
      Send a transactional email to a contact.<br>Please [email us](mailto:help@loops.so) to enable
     attachments on your account before using them with the API.
+
+    To set dynamic Subject, From, Reply to, CC, BCC email header fields, add data variables to those
+    fields in the editor, then include data for each variable in the API request. Read our transactional
+    email guide for more details.
 
     Args:
         idempotency_key (str | Unset):
@@ -301,6 +313,10 @@ async def asyncio(
 
      Send a transactional email to a contact.<br>Please [email us](mailto:help@loops.so) to enable
     attachments on your account before using them with the API.
+
+    To set dynamic Subject, From, Reply to, CC, BCC email header fields, add data variables to those
+    fields in the editor, then include data for each variable in the API request. Read our transactional
+    email guide for more details.
 
     Args:
         idempotency_key (str | Unset):

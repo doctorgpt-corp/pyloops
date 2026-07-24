@@ -19,7 +19,7 @@ class ContactSuppressionStatusResponse:
     """
     Attributes:
         contact (ContactSuppressionStatusResponseContact):
-        is_suppressed (bool):
+        is_suppressed (bool): Whether the contact is suppressed.
         removal_quota (ContactSuppressionRemovalQuota):
     """
 

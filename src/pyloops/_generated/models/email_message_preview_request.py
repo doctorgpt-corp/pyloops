@@ -22,11 +22,11 @@ class EmailMessagePreviewRequest:
     Attributes:
         emails (list[str]): One or more addresses to send the preview to.
         contact_properties (EmailMessagePreviewRequestContactProperties | Unset): Contact property values to render.
-            Accepted for campaign and workflow previews.
+            Accepted for campaign and workflow previews. Example: {'firstName': 'Alex'}.
         event_properties (EmailMessagePreviewRequestEventProperties | Unset): Event property values to render. Accepted
-            for workflow previews only.
+            for workflow previews only. Example: {'planName': 'Pro'}.
         data_variables (EmailMessagePreviewRequestDataVariables | Unset): Transactional data variables to render.
-            Accepted for transactional previews only.
+            Accepted for transactional previews only. Example: {'loginUrl': 'https://app.company.com/login'}.
     """
 
     emails: list[str]

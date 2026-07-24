@@ -17,13 +17,12 @@ T = TypeVar("T", bound="AudienceSegmentResponse")
 class AudienceSegmentResponse:
     """
     Attributes:
-        id (str):
-        name (str):
-        description (None | str):
-        created_at (str): ISO 8601 timestamp.
-        updated_at (str): ISO 8601 timestamp.
-        filter_ (AudienceFilterType0 | None): A tree of audience conditions combined with `match`. Null when the
-            campaign targets a mailing list or segment without an explicit filter.
+        id (str): The ID of the audience segment.
+        name (str): The name of the audience segment.
+        description (None | str): An optional description of the audience segment.
+        created_at (str): ISO 8601 timestamp for when the audience segment was created.
+        updated_at (str): ISO 8601 timestamp for when the audience segment was last updated.
+        filter_ (AudienceFilterType0 | None): A tree of audience conditions combined with `match`.
     """
 
     id: str

@@ -15,7 +15,7 @@ class SimplifiedExitActionWorkflowNode:
     """
     Attributes:
         type_name (SimplifiedExitActionWorkflowNodeTypeName):
-        next_node_ids (list[str]):
+        next_node_ids (list[str]): The IDs of the nodes that are downstream of this node.
     """
 
     type_name: SimplifiedExitActionWorkflowNodeTypeName

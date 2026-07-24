@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.simplified_workflow_status import SimplifiedWorkflowStatus
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
@@ -19,28 +20,41 @@ T = TypeVar("T", bound="SimplifiedWorkflow")
 class SimplifiedWorkflow:
     """
     Attributes:
-        id (str):
-        root_node_id (None | str):
-        nodes (SimplifiedWorkflowNodes):
-        name (str | Unset):
-        description (str | Unset):
-        emoji (str | Unset):
-        mailing_list_id (None | str | Unset):
+        id (str): The ID of the workflow.
+        workflow_revision_id (None | str): The current workflow revision token. Pass the latest value as
+            `expectedRevisionId` on the next workflow mutation. Will be `null` for workflows without a revision token yet.
+        status (SimplifiedWorkflowStatus):
+        mailing_list_id (None | str): The ID of the mailing list the workflow sends to.
+        root_node_id (str): The ID of the root node in the workflow graph.
+        nodes (SimplifiedWorkflowNodes): A map of node IDs to simplified node objects. Each node includes `typeName` and
+            `nextNodeIds`, plus type-specific fields when present. To get the full node object, use the `GET
+            /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint. Example: {'cf16k73gq014h3mmj5b6jdi9r': {'typeName':
+            'SignupTrigger', 'nextNodeIds': ['cf16k73gq014h3mmj5b4jdifg', 'cf16k73gq014h3mmj5b4jdifh']}}.
+        name (str | Unset): The name of the workflow.
+        description (str | Unset): The description of the workflow.
     """
 
     id: str
-    root_node_id: None | str
+    workflow_revision_id: None | str
+    status: SimplifiedWorkflowStatus
+    mailing_list_id: None | str
+    root_node_id: str
     nodes: SimplifiedWorkflowNodes
     name: str | Unset = UNSET
     description: str | Unset = UNSET
-    emoji: str | Unset = UNSET
-    mailing_list_id: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
 
-        root_node_id: None | str
+        workflow_revision_id: None | str
+        workflow_revision_id = self.workflow_revision_id
+
+        status = self.status.value
+
+        mailing_list_id: None | str
+        mailing_list_id = self.mailing_list_id
+
         root_node_id = self.root_node_id
 
         nodes = self.nodes.to_dict()
@@ -49,19 +63,14 @@ class SimplifiedWorkflow:
 
         description = self.description
 
-        emoji = self.emoji
-
-        mailing_list_id: None | str | Unset
-        if isinstance(self.mailing_list_id, Unset):
-            mailing_list_id = UNSET
-        else:
-            mailing_list_id = self.mailing_list_id
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "id": id,
+                "workflowRevisionId": workflow_revision_id,
+                "status": status,
+                "mailingListId": mailing_list_id,
                 "rootNodeId": root_node_id,
                 "nodes": nodes,
             }
@@ -70,10 +79,6 @@ class SimplifiedWorkflow:
             field_dict["name"] = name
         if description is not UNSET:
             field_dict["description"] = description
-        if emoji is not UNSET:
-            field_dict["emoji"] = emoji
-        if mailing_list_id is not UNSET:
-            field_dict["mailingListId"] = mailing_list_id
 
         return field_dict
 
@@ -84,12 +89,23 @@ class SimplifiedWorkflow:
         d = dict(src_dict)
         id = d.pop("id")
 
-        def _parse_root_node_id(data: object) -> None | str:
+        def _parse_workflow_revision_id(data: object) -> None | str:
             if data is None:
                 return data
             return cast(None | str, data)
 
-        root_node_id = _parse_root_node_id(d.pop("rootNodeId"))
+        workflow_revision_id = _parse_workflow_revision_id(d.pop("workflowRevisionId"))
+
+        status = SimplifiedWorkflowStatus(d.pop("status"))
+
+        def _parse_mailing_list_id(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        mailing_list_id = _parse_mailing_list_id(d.pop("mailingListId"))
+
+        root_node_id = d.pop("rootNodeId")
 
         nodes = SimplifiedWorkflowNodes.from_dict(d.pop("nodes"))
 
@@ -97,25 +113,15 @@ class SimplifiedWorkflow:
 
         description = d.pop("description", UNSET)
 
-        emoji = d.pop("emoji", UNSET)
-
-        def _parse_mailing_list_id(data: object) -> None | str | Unset:
-            if data is None:
-                return data
-            if isinstance(data, Unset):
-                return data
-            return cast(None | str | Unset, data)
-
-        mailing_list_id = _parse_mailing_list_id(d.pop("mailingListId", UNSET))
-
         simplified_workflow = cls(
             id=id,
+            workflow_revision_id=workflow_revision_id,
+            status=status,
+            mailing_list_id=mailing_list_id,
             root_node_id=root_node_id,
             nodes=nodes,
             name=name,
             description=description,
-            emoji=emoji,
-            mailing_list_id=mailing_list_id,
         )
 
         simplified_workflow.additional_properties = d

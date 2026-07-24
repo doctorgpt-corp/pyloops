@@ -15,11 +15,29 @@ T = TypeVar("T", bound="WorkflowContactPropertyQuery")
 
 @_attrs_define
 class WorkflowContactPropertyQuery:
-    """
-    Attributes:
-        key (str):
-        is_ (WorkflowContactPropertyComparison):
-        was (WorkflowContactPropertyComparison):
+    """Define the contact property change that triggers the workflow. In update requests, `key` must resolve to an existing
+    contact property that is available for Contact Updated triggers. Hidden or unsupported fields, such as `createdAt`,
+    `notes`, and computed contact properties, are rejected.
+
+        Attributes:
+            key (str): The camel-cased `key` of the contact property to query. The property must exist for the team and must
+                be available for Contact Updated triggers.
+            is_ (WorkflowContactPropertyComparison): For Contact Updated triggers, the API validates `operator` against the
+                selected contact property's type and the side of the comparison. The `was` comparison can use any operator
+                supported by the selected property type. The `is` comparison uses the same operators, except number and boolean
+                properties cannot use `empty`. String properties support `any`, `equal`, `not_equal`, `contains`,
+                `not_contains`, `empty`, and `not_empty`. Number properties support `any`, `greater_than`, `less_than`,
+                `numeric_equal`, `numeric_not_equal`, `empty`, and `not_empty`. Boolean properties support `any`, `true`,
+                `false`, `empty`, and `not_empty`. Date properties support `any`, `empty`, `not_empty`, `after`, `before`, and
+                `between`.
+            was (WorkflowContactPropertyComparison): For Contact Updated triggers, the API validates `operator` against the
+                selected contact property's type and the side of the comparison. The `was` comparison can use any operator
+                supported by the selected property type. The `is` comparison uses the same operators, except number and boolean
+                properties cannot use `empty`. String properties support `any`, `equal`, `not_equal`, `contains`,
+                `not_contains`, `empty`, and `not_empty`. Number properties support `any`, `greater_than`, `less_than`,
+                `numeric_equal`, `numeric_not_equal`, `empty`, and `not_empty`. Boolean properties support `any`, `true`,
+                `false`, `empty`, and `not_empty`. Date properties support `any`, `empty`, `not_empty`, `after`, `before`, and
+                `between`.
     """
 
     key: str
