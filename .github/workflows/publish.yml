@@ -17,9 +17,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-          fetch-depth: 2
+          # Full history + all tags so the release check below can see every
+          # published version, not just the tip commit.
+          fetch-depth: 0
+          fetch-tags: true
 
-      - name: Check if version changed
+      - name: Check if version needs publishing
         id: version-check
         run: |
           # Get current version
@@ -38,23 +41,19 @@ jobs:
             echo "is_client_update=false" >> $GITHUB_OUTPUT
           fi
 
-          # Check if this is the first commit or if version changed in last commit
-          if git rev-parse HEAD~1 >/dev/null 2>&1; then
-            PREVIOUS_VERSION=$(git show HEAD~1:pyproject.toml | grep '^version = ' | head -1 | sed 's/version = "\(.*\)"/\1/')
-            echo "previous_version=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
-
-            if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
-              echo "should_publish=true" >> $GITHUB_OUTPUT
-              echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION - will publish"
-            else
-              echo "should_publish=false" >> $GITHUB_OUTPUT
-              echo "Version unchanged - skipping publish"
-            fi
+          # Publish when this version has not been released yet, detected by the
+          # absence of a matching git tag. This is deliberately NOT a HEAD~1 diff:
+          # when a version bump and follow-up commits land on main in a single
+          # push, the bump isn't in the tip commit and a one-commit-back diff
+          # silently skips the release. The release step below creates the
+          # v<version> tag, so once published this check skips re-runs and any
+          # later pushes that don't change the version.
+          if git rev-parse -q --verify "refs/tags/v${CURRENT_VERSION}" >/dev/null; then
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            echo "Tag v${CURRENT_VERSION} already exists - nothing to publish"
           else
-            # First commit, publish
             echo "should_publish=true" >> $GITHUB_OUTPUT
-            echo "previous_version=0.0.0" >> $GITHUB_OUTPUT
-            echo "First commit - will publish"
+            echo "No tag v${CURRENT_VERSION} yet - will publish"
           fi
 
       - name: Set up Python
@@ -74,6 +73,10 @@ jobs:
       - name: Publish to PyPI
         if: steps.version-check.outputs.should_publish == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # Don't fail the run if a file for this version is already on PyPI
+          # (e.g. a re-run after the release/tag step failed).
+          skip-existing: true
 
       - name: Download and prepare OpenAPI spec
         if: steps.version-check.outputs.should_publish == 'true'
