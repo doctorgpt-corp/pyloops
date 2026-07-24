@@ -18,9 +18,10 @@ class TimerActionWorkflowNode:
         id (str):
         workflow_id (str):
         type_name (TimerActionWorkflowNodeTypeName):
-        next_node_ids (list[str]):
-        amount (float):
-        unit (WorkflowTimerUnit):
+        next_node_ids (list[str]): The IDs of the nodes that are downstream of this node.
+        amount (float): The amount of time to wait before triggering the next node. Set to `0` to move to the next node
+            immediately.
+        unit (WorkflowTimerUnit): The unit of time for the timer action node. m = minutes, h = hours, d = days.
     """
 
     id: str

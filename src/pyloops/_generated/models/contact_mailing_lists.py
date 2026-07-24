@@ -11,7 +11,7 @@ T = TypeVar("T", bound="ContactMailingLists")
 
 @_attrs_define
 class ContactMailingLists:
-    """An object of mailing list IDs and boolean subscription statuses."""
+    """Mailing lists the contact is subscribed to, represented by key-value pairs of mailing list IDs and `true`."""
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -13,15 +13,15 @@ T = TypeVar("T", bound="MailingList")
 class MailingList:
     """
     Attributes:
-        id (str):
-        name (str):
-        description (str):
-        is_public (bool):
+        id (str): The ID of the mailing list.
+        name (str): The name of the mailing list.
+        description (None | str): The description of the mailing list. `null` if no description is set.
+        is_public (bool): Whether the mailing list is public (`true`) or private (`false`).
     """
 
     id: str
     name: str
-    description: str
+    description: None | str
     is_public: bool
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -30,6 +30,7 @@ class MailingList:
 
         name = self.name
 
+        description: None | str
         description = self.description
 
         is_public = self.is_public
@@ -54,7 +55,12 @@ class MailingList:
 
         name = d.pop("name")
 
-        description = d.pop("description")
+        def _parse_description(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        description = _parse_description(d.pop("description"))
 
         is_public = d.pop("isPublic")
 

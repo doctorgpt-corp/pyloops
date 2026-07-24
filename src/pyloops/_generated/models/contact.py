@@ -22,17 +22,19 @@ T = TypeVar("T", bound="Contact")
 class Contact:
     """
     Attributes:
-        id (str | Unset):
-        email (str | Unset):
-        first_name (None | str | Unset):
-        last_name (None | str | Unset):
-        source (str | Unset):
-        subscribed (bool | Unset):
-        user_group (str | Unset):
-        user_id (None | str | Unset):
-        mailing_lists (ContactMailingLists | Unset): An object of mailing list IDs and boolean subscription statuses.
+        id (str | Unset): The contact's Loops ID.
+        email (str | Unset): The contact's email address.
+        first_name (None | str | Unset): The contact's first name.
+        last_name (None | str | Unset): The contact's last name.
+        source (str | Unset): The source the contact was created from.
+        subscribed (bool | Unset): Whether the contact will receive campaign and workflow emails.
+        user_group (str | Unset): The contact's user group.
+        user_id (None | str | Unset): The contact's unique user ID.
+        mailing_lists (ContactMailingLists | Unset): Mailing lists the contact is subscribed to, represented by key-
+            value pairs of mailing list IDs and `true`.
         opt_in_status (ContactOptInStatusType1 | ContactOptInStatusType2Type1 | ContactOptInStatusType3Type1 | None |
-            Unset): Double opt-in status.
+            Unset): Double opt-in status. This will be `null` for contacts unless they are created via a form while double
+            opt-in is enabled.
     """
 
     id: str | Unset = UNSET

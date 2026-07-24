@@ -14,10 +14,10 @@ T = TypeVar("T", bound="WorkflowSummary")
 class WorkflowSummary:
     """
     Attributes:
-        id (str):
-        name (str):
-        created_at (datetime.datetime):
-        updated_at (datetime.datetime):
+        id (str): The ID of the workflow.
+        name (str): The name of the workflow.
+        created_at (datetime.datetime): ISO 8601 timestamp for when the workflow was created.
+        updated_at (datetime.datetime): ISO 8601 timestamp for when the workflow was last updated.
     """
 
     id: str

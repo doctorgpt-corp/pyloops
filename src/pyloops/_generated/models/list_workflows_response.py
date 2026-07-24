@@ -7,7 +7,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 if TYPE_CHECKING:
-    from ..models.list_workflows_response_pagination import ListWorkflowsResponsePagination
+    from ..models.pagination import Pagination
     from ..models.workflow_summary import WorkflowSummary
 
 
@@ -18,11 +18,11 @@ T = TypeVar("T", bound="ListWorkflowsResponse")
 class ListWorkflowsResponse:
     """
     Attributes:
-        pagination (ListWorkflowsResponsePagination):
+        pagination (Pagination):
         data (list[WorkflowSummary]):
     """
 
-    pagination: ListWorkflowsResponsePagination
+    pagination: Pagination
     data: list[WorkflowSummary]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -47,11 +47,11 @@ class ListWorkflowsResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.list_workflows_response_pagination import ListWorkflowsResponsePagination
+        from ..models.pagination import Pagination
         from ..models.workflow_summary import WorkflowSummary
 
         d = dict(src_dict)
-        pagination = ListWorkflowsResponsePagination.from_dict(d.pop("pagination"))
+        pagination = Pagination.from_dict(d.pop("pagination"))
 
         data = []
         _data = d.pop("data")

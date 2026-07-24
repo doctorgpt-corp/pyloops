@@ -11,7 +11,16 @@ T = TypeVar("T", bound="TransactionalRequestDataVariables")
 
 @_attrs_define
 class TransactionalRequestDataVariables:
-    """An object containing contact data as defined by the data variables added to the transactional email template."""
+    """An object containing data as defined by the data variables added to the transactional email template. Values can be
+    of type string or number.
+
+    If you have added optional data variables to your email, you can exclude them from the dataVariables object or set
+    the value to "".
+
+    If you have added an array data variable to your email, make sure to include an array matching the data variables
+    you added to your array block.
+
+    """
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 

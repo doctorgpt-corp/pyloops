@@ -71,10 +71,12 @@ def sync_detailed(
 ) -> Response[Any | ContactPropertyFailureResponse | ContactPropertySuccessResponse]:
     """Create a contact property
 
-     Add a contact property to your team.
+     Create a custom contact property.
 
     Args:
-        body (ContactPropertyCreateRequest):
+        body (ContactPropertyCreateRequest): There are a few [reserved
+            names](https://loops.so/docs/contacts/properties#reserved-names) that you cannot use for
+            contact properties.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -102,10 +104,12 @@ def sync(
 ) -> Any | ContactPropertyFailureResponse | ContactPropertySuccessResponse | None:
     """Create a contact property
 
-     Add a contact property to your team.
+     Create a custom contact property.
 
     Args:
-        body (ContactPropertyCreateRequest):
+        body (ContactPropertyCreateRequest): There are a few [reserved
+            names](https://loops.so/docs/contacts/properties#reserved-names) that you cannot use for
+            contact properties.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -128,10 +132,12 @@ async def asyncio_detailed(
 ) -> Response[Any | ContactPropertyFailureResponse | ContactPropertySuccessResponse]:
     """Create a contact property
 
-     Add a contact property to your team.
+     Create a custom contact property.
 
     Args:
-        body (ContactPropertyCreateRequest):
+        body (ContactPropertyCreateRequest): There are a few [reserved
+            names](https://loops.so/docs/contacts/properties#reserved-names) that you cannot use for
+            contact properties.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -157,10 +163,12 @@ async def asyncio(
 ) -> Any | ContactPropertyFailureResponse | ContactPropertySuccessResponse | None:
     """Create a contact property
 
-     Add a contact property to your team.
+     Create a custom contact property.
 
     Args:
-        body (ContactPropertyCreateRequest):
+        body (ContactPropertyCreateRequest): There are a few [reserved
+            names](https://loops.so/docs/contacts/properties#reserved-names) that you cannot use for
+            contact properties.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

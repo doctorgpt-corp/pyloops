@@ -6,25 +6,29 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.contact_property_create_request_type import ContactPropertyCreateRequestType
+
 T = TypeVar("T", bound="ContactPropertyCreateRequest")
 
 
 @_attrs_define
 class ContactPropertyCreateRequest:
-    """
-    Attributes:
-        name (str):
-        type_ (str):
+    """There are a few [reserved names](https://loops.so/docs/contacts/properties#reserved-names) that you cannot use for
+    contact properties.
+
+        Attributes:
+            name (str): The name of the property. This should be in camelCase, like `planName` or `importDate`.
+            type_ (ContactPropertyCreateRequestType): The type of property.
     """
 
     name: str
-    type_: str
+    type_: ContactPropertyCreateRequestType
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         name = self.name
 
-        type_ = self.type_
+        type_ = self.type_.value
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -42,7 +46,7 @@ class ContactPropertyCreateRequest:
         d = dict(src_dict)
         name = d.pop("name")
 
-        type_ = d.pop("type")
+        type_ = ContactPropertyCreateRequestType(d.pop("type"))
 
         contact_property_create_request = cls(
             name=name,

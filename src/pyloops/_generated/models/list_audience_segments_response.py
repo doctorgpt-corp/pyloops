@@ -8,7 +8,7 @@ from attrs import field as _attrs_field
 
 if TYPE_CHECKING:
     from ..models.audience_segment import AudienceSegment
-    from ..models.list_audience_segments_response_pagination import ListAudienceSegmentsResponsePagination
+    from ..models.pagination import Pagination
 
 
 T = TypeVar("T", bound="ListAudienceSegmentsResponse")
@@ -18,11 +18,11 @@ T = TypeVar("T", bound="ListAudienceSegmentsResponse")
 class ListAudienceSegmentsResponse:
     """
     Attributes:
-        pagination (ListAudienceSegmentsResponsePagination):
+        pagination (Pagination):
         data (list[AudienceSegment]):
     """
 
-    pagination: ListAudienceSegmentsResponsePagination
+    pagination: Pagination
     data: list[AudienceSegment]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -48,10 +48,10 @@ class ListAudienceSegmentsResponse:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.audience_segment import AudienceSegment
-        from ..models.list_audience_segments_response_pagination import ListAudienceSegmentsResponsePagination
+        from ..models.pagination import Pagination
 
         d = dict(src_dict)
-        pagination = ListAudienceSegmentsResponsePagination.from_dict(d.pop("pagination"))
+        pagination = Pagination.from_dict(d.pop("pagination"))
 
         data = []
         _data = d.pop("data")

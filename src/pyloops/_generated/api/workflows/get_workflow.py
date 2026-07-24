@@ -73,7 +73,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 ) -> Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]:
-    """Get a simplified workflow
+    """Get a workflow
 
      Retrieve a workflow graph with node type names, connections, and selected display fields.
 
@@ -104,7 +104,7 @@ def sync(
     *,
     client: AuthenticatedClient,
 ) -> Any | SimplifiedWorkflow | WorkflowFailureResponse | None:
-    """Get a simplified workflow
+    """Get a workflow
 
      Retrieve a workflow graph with node type names, connections, and selected display fields.
 
@@ -130,7 +130,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 ) -> Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]:
-    """Get a simplified workflow
+    """Get a workflow
 
      Retrieve a workflow graph with node type names, connections, and selected display fields.
 
@@ -159,7 +159,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
 ) -> Any | SimplifiedWorkflow | WorkflowFailureResponse | None:
-    """Get a simplified workflow
+    """Get a workflow
 
      Retrieve a workflow graph with node type names, connections, and selected display fields.
 

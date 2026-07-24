@@ -12,7 +12,8 @@ T = TypeVar("T", bound="UpdateGroupRequest")
 
 @_attrs_define
 class UpdateGroupRequest:
-    """
+    """At least one field must be provided.
+
     Attributes:
         name (str | Unset): The group name. Cannot be the reserved name "Unsorted".
         description (str | Unset): A description for the group.

@@ -15,7 +15,7 @@ class SimplifiedBlankTriggerWorkflowNode:
     """
     Attributes:
         type_name (SimplifiedBlankTriggerWorkflowNodeTypeName):
-        next_node_ids (list[str]):
+        next_node_ids (list[str]): The IDs of the nodes that are downstream of this node.
     """
 
     type_name: SimplifiedBlankTriggerWorkflowNodeTypeName

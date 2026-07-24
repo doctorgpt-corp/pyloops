@@ -14,11 +14,11 @@ T = TypeVar("T", bound="GroupResponse")
 class GroupResponse:
     """
     Attributes:
-        id (str):
-        name (str):
-        description (str):
-        created_at (datetime.datetime):
-        updated_at (datetime.datetime):
+        id (str): The ID of the group.
+        name (str): The name of the group.
+        description (str): The description of the group.
+        created_at (datetime.datetime): ISO 8601 timestamp for when the group was created.
+        updated_at (datetime.datetime): ISO 8601 timestamp for when the group was last updated.
     """
 
     id: str

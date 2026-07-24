@@ -13,7 +13,7 @@ T = TypeVar("T", bound="CompleteUploadResponse")
 class CompleteUploadResponse:
     """
     Attributes:
-        email_asset_id (str):
+        email_asset_id (str): The ID of the created asset.
         final_url (str): The public URL of the uploaded asset.
     """
 

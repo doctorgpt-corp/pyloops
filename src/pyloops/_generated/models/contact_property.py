@@ -6,6 +6,8 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.contact_property_type import ContactPropertyType
+
 T = TypeVar("T", bound="ContactProperty")
 
 
@@ -13,14 +15,14 @@ T = TypeVar("T", bound="ContactProperty")
 class ContactProperty:
     """
     Attributes:
-        key (str):
-        label (str):
-        type_ (str):
+        key (str): The key of the contact property.
+        label (str): The human-friendly label for this property.
+        type_ (ContactPropertyType): The type of property.
     """
 
     key: str
     label: str
-    type_: str
+    type_: ContactPropertyType
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -28,7 +30,7 @@ class ContactProperty:
 
         label = self.label
 
-        type_ = self.type_
+        type_ = self.type_.value
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -49,7 +51,7 @@ class ContactProperty:
 
         label = d.pop("label")
 
-        type_ = d.pop("type")
+        type_ = ContactPropertyType(d.pop("type"))
 
         contact_property = cls(
             key=key,
