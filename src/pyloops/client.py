@@ -8,6 +8,7 @@ from pyloops._generated.api.api_key import get_v1_api_key
 from pyloops._generated.api.audience_segments import (
     get_v1_audience_segments,
     get_v_1_audience_segments_audience_segment_id,
+    post_v1_audience_segments,
 )
 from pyloops._generated.api.campaign_groups import (
     get_v1_campaign_groups,
@@ -21,7 +22,13 @@ from pyloops._generated.api.campaigns import (
     post_v1_campaigns,
     post_v_1_campaigns_campaign_id,
 )
-from pyloops._generated.api.components import get_v1_components, get_v_1_components_component_id
+from pyloops._generated.api.components import (
+    get_v1_components,
+    get_v_1_components_component_id,
+    post_v1_components,
+    post_v_1_components_component_id,
+)
+from pyloops._generated.api.configuration import get_v1_dedicated_sending_ips
 from pyloops._generated.api.contact_properties import (
     get_v1_contacts_properties,
     post_v1_contacts_properties,
@@ -34,15 +41,25 @@ from pyloops._generated.api.contacts import (
     post_v1_contacts_delete,
     put_v1_contacts_update,
 )
-from pyloops._generated.api.dedicated_sending_i_ps import get_v1_dedicated_sending_ips
 from pyloops._generated.api.email_messages import (
     get_v_1_email_messages_email_message_id,
+    get_v_1_email_messages_email_message_id_guardian,
     post_v_1_email_messages_email_message_id,
     post_v_1_email_messages_email_message_id_preview,
 )
+from pyloops._generated.api.event_patterns import (
+    get_event_pattern,
+    get_event_pattern_by_name,
+    list_event_patterns,
+)
 from pyloops._generated.api.events import post_v1_events_send
 from pyloops._generated.api.mailing_lists import get_v1_lists
-from pyloops._generated.api.themes import get_v1_themes, get_v_1_themes_theme_id
+from pyloops._generated.api.themes import (
+    get_v1_themes,
+    get_v_1_themes_theme_id,
+    post_v1_themes,
+    post_v_1_themes_theme_id,
+)
 from pyloops._generated.api.transactional_emails import (
     get_v1_transactional,
     get_v1_transactional_emails,
@@ -59,36 +76,65 @@ from pyloops._generated.api.transactional_groups import (
     post_v1_transactional_groups,
     post_v_1_transactional_groups_transactional_group_id,
 )
-from pyloops._generated.api.uploads import post_v1_uploads, post_v1_uploads_id_complete
-from pyloops._generated.api.workflows import get_workflow, get_workflow_node, list_workflows
+from pyloops._generated.api.uploads import post_v1_uploads, post_v_1_uploads_email_asset_id_complete
+from pyloops._generated.api.workflow_nodes import (
+    add_workflow_branch,
+    create_workflow_node,
+    delete_workflow_node,
+    delete_workflow_node_recursively,
+    get_workflow_node,
+    update_workflow_node,
+)
+from pyloops._generated.api.workflows import (
+    change_workflow_mailing_list,
+    create_workflow,
+    get_workflow,
+    list_workflows,
+    update_workflow_properties,
+)
 from pyloops._generated.client import AuthenticatedClient
 from pyloops._generated.models import (
+    AddWorkflowBranchRequest,
+    AddWorkflowBranchResponse,
     AudienceSegmentFailureResponse,
     AudienceSegmentResponse,
     CampaignFailureResponse,
     CampaignResponse,
+    ChangeWorkflowMailingListRequest,
     CompleteUploadResponse,
     ComponentFailureResponse,
     ComponentResponse,
+    ComponentValidationFailureResponse,
     Contact,
     ContactDeleteRequest,
     ContactFailureResponse,
     ContactProperty,
     ContactPropertyCreateRequest,
+    ContactPropertyCreateRequestType,
     ContactRequest,
-    ContactRequestMailingLists,
     ContactSuccessResponse,
     ContactSuppressionRemoveResponse,
     ContactSuppressionStatusResponse,
     ContactUpdateRequest,
-    ContactUpdateRequestMailingLists,
+    CreateAudienceSegmentRequest,
+    CreateAudienceSegmentRequestFilter,
     CreateCampaignRequest,
     CreateCampaignResponse,
+    CreateComponentBody,
     CreateGroupRequest,
+    CreateThemeBody,
     CreateTransactionalRequest,
     CreateUploadRequest,
     CreateUploadResponse,
+    CreateWorkflowNodeBeforeRequest,
+    CreateWorkflowNodeBeforeRequestInsertMode,
+    CreateWorkflowNodeBetweenRequest,
+    CreateWorkflowNodeBetweenRequestInsertMode,
+    CreateWorkflowNodeTypeName,
+    CreateWorkflowRequest,
+    DeleteWorkflowNodeRequest,
     EmailMessageFailureResponse,
+    EmailMessageGuardianResponse,
     EmailMessagePreviewRequest,
     EmailMessagePreviewRequestContactProperties,
     EmailMessagePreviewRequestDataVariables,
@@ -96,26 +142,27 @@ from pyloops._generated.models import (
     EmailMessagePreviewResponse,
     EmailMessageResponse,
     EventFailureResponse,
-    EventRequest,
-    EventRequestEventProperties,
-    EventRequestMailingLists,
+    EventPattern,
+    EventPatternFailureResponse,
     EventSuccessResponse,
     GetV1ApiKeyResponse401,
-    GetV1DedicatedSendingIpsResponse500,
     GroupFailureResponse,
     GroupResponse,
     IdempotencyKeyFailureResponse,
     ListAudienceSegmentsResponse,
     ListCampaignsResponse,
     ListComponentsResponse,
+    ListEventPatternsResponse,
     ListGroupsResponse,
     ListThemesResponse,
     ListTransactionalsResourceResponse,
     ListWorkflowsResponse,
     MailingList,
+    MailingListSubscriptions,
     SimplifiedWorkflow,
     ThemeFailureResponse,
     ThemeResponse,
+    ThemeStyles,
     TransactionalDraftResponse,
     TransactionalFailure2Response,
     TransactionalFailure3Response,
@@ -125,15 +172,25 @@ from pyloops._generated.models import (
     TransactionalRequest,
     TransactionalRequestAttachmentsItem,
     TransactionalRequestDataVariables,
-    TransactionalResponse,
+    TransactionalResource,
     TransactionalSendFailureResponse,
     TransactionalSuccessResponse,
     UpdateCampaignRequest,
+    UpdateComponentBody,
+    UpdateComponentResponse,
     UpdateEmailMessageRequest,
     UpdateGroupRequest,
+    UpdateThemeBody,
+    UpdateThemeResponse,
     UpdateTransactionalRequest,
+    UpdateWorkflowNodeRequest,
     UploadFailureResponse,
+    WorkflowDeletedResponse,
     WorkflowFailureResponse,
+    WorkflowMailingListPreview,
+    WorkflowMailingListUpdatedResponse,
+    WorkflowQueuedContactDeletePreview,
+    WorkflowQueuedContactPolicy,
 )
 from pyloops._generated.types import UNSET, Response
 from pyloops.config import get_config
@@ -341,7 +398,7 @@ class LoopsClient:
             subscribed=subscribed if subscribed is not None else UNSET,
             user_group=user_group if user_group else UNSET,
             user_id=user_id if user_id else UNSET,
-            mailing_lists=ContactRequestMailingLists.from_dict(mailing_lists) if mailing_lists else UNSET,
+            mailing_lists=MailingListSubscriptions.from_dict(mailing_lists) if mailing_lists else UNSET,
         )
 
         # NOTE: `source` is not specified in the specification
@@ -425,7 +482,7 @@ class LoopsClient:
             last_name=last_name if last_name else UNSET,
             subscribed=subscribed if subscribed is not None else UNSET,
             user_group=user_group if user_group else UNSET,
-            mailing_lists=ContactUpdateRequestMailingLists.from_dict(mailing_lists) if mailing_lists else UNSET,
+            mailing_lists=MailingListSubscriptions.from_dict(mailing_lists) if mailing_lists else UNSET,
         )
 
         # Add source to custom properties if provided (not in generated model yet)
@@ -564,7 +621,7 @@ class LoopsClient:
         Raises:
             LoopsError: If the request fails
         """
-        body = ContactPropertyCreateRequest(name=name, type_=property_type)
+        body = ContactPropertyCreateRequest(name=name, type_=ContactPropertyCreateRequestType(property_type))
 
         response = await post_v1_contacts_properties.asyncio_detailed(client=self._client, body=body)
         result = self._handle_response(response)
@@ -656,22 +713,24 @@ class LoopsClient:
         if idempotency_key is None:
             idempotency_key = str(uuid.uuid4())
 
-        # Build the request
-        request = EventRequest(
-            event_name=event_name,
-            email=email if email else UNSET,
-            user_id=user_id if user_id else UNSET,
-            event_properties=EventRequestEventProperties.from_dict(event_properties) if event_properties else UNSET,
-            mailing_lists=EventRequestMailingLists.from_dict(mailing_lists) if mailing_lists else UNSET,
-        )
-
-        # Set additional contact properties
+        # The events endpoint has an untyped request schema in the spec, so the
+        # generated client sends the body dict as-is. Keys must be camelCase, and
+        # contact properties are merged in at the top level (as with the old model).
+        body: dict[str, Any] = {"eventName": event_name}
+        if email:
+            body["email"] = email
+        if user_id:
+            body["userId"] = user_id
+        if event_properties:
+            body["eventProperties"] = event_properties
+        if mailing_lists:
+            body["mailingLists"] = mailing_lists
         if additional_properties:
-            request.additional_properties = additional_properties
+            body.update(additional_properties)
 
         response = await post_v1_events_send.asyncio_detailed(
             client=self._client,
-            body=request,
+            body=body,
             idempotency_key=idempotency_key,
         )
         result = self._handle_response(response)
@@ -832,18 +891,11 @@ class LoopsClient:
             List of IP address strings
 
         Raises:
-            LoopsError: If the request fails (500)
+            LoopsError: If the request fails
             LoopsRateLimitError: If rate limit is exceeded
         """
         response = await get_v1_dedicated_sending_ips.asyncio_detailed(client=self._client)
         result = self._handle_response(response)
-
-        if isinstance(result, GetV1DedicatedSendingIpsResponse500):
-            raise LoopsError(
-                "Server error retrieving sending IPs",
-                status_code=500,
-                response_data=result,
-            )
 
         if isinstance(result, list):
             return result
@@ -1063,6 +1115,71 @@ class LoopsClient:
 
         raise LoopsError("Failed to get component", status_code=None, response_data=result)
 
+    async def create_component(self, name: str, lmx: str) -> ComponentResponse:
+        """Create a new component.
+
+        Args:
+            name: Component name
+            lmx: Component body as LMX (Loops markup)
+
+        Returns:
+            ComponentResponse
+
+        Raises:
+            LoopsError: If the request fails (e.g. invalid LMX)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = CreateComponentBody(name=name, lmx=lmx)
+        response = await post_v1_components.asyncio_detailed(client=self._client, body=body)
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=ComponentResponse,
+            failure=ComponentFailureResponse,
+            action="create component",
+        )
+
+    async def update_component(
+        self,
+        component_id: str,
+        name: str | None = None,
+        lmx: str | None = None,
+    ) -> UpdateComponentResponse:
+        """Update a component's name and/or body.
+
+        Args:
+            component_id: The component ID
+            name: New component name
+            lmx: New component body as LMX. Changing the body updates every email
+                that uses the component; the count is returned as
+                ``affectedEmailCount``.
+
+        Returns:
+            UpdateComponentResponse (includes ``affected_email_count``)
+
+        Raises:
+            LoopsError: If not found (404), the LMX is invalid, or the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = UpdateComponentBody(
+            name=name if name is not None else UNSET,
+            lmx=lmx if lmx is not None else UNSET,
+        )
+        response = await post_v_1_components_component_id.asyncio_detailed(
+            component_id=component_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=UpdateComponentResponse,
+            failure=(ComponentFailureResponse, ComponentValidationFailureResponse),
+            action="update component",
+        )
+
     # ------------------------------------------------------------------
     # Themes
     # ------------------------------------------------------------------
@@ -1136,6 +1253,77 @@ class LoopsClient:
             return result
 
         raise LoopsError("Failed to get theme", status_code=None, response_data=result)
+
+    async def create_theme(self, name: str, styles: dict[str, Any] | None = None) -> ThemeResponse:
+        """Create a new theme.
+
+        Args:
+            name: Theme name
+            styles: Optional dictionary of styling preferences mirroring the LMX
+                ``<Style />`` attributes (e.g. ``{"bodyColor": "#ffffff",
+                "textBaseFontSize": "16px"}``). See the Loops docs for the full
+                list of supported keys.
+
+        Returns:
+            ThemeResponse
+
+        Raises:
+            LoopsError: If the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = CreateThemeBody(
+            name=name,
+            styles=ThemeStyles.from_dict(styles) if styles else UNSET,
+        )
+        response = await post_v1_themes.asyncio_detailed(client=self._client, body=body)
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=ThemeResponse,
+            failure=ThemeFailureResponse,
+            action="create theme",
+        )
+
+    async def update_theme(
+        self,
+        theme_id: str,
+        name: str | None = None,
+        styles: dict[str, Any] | None = None,
+    ) -> UpdateThemeResponse:
+        """Update a theme's name and/or styles.
+
+        Args:
+            theme_id: The theme ID
+            name: New theme name
+            styles: New dictionary of styling preferences (see ``create_theme``).
+                Changing styles updates every email using the theme; the count is
+                returned as ``affectedEmailCount``.
+
+        Returns:
+            UpdateThemeResponse (includes ``affected_email_count``)
+
+        Raises:
+            LoopsError: If not found (404) or the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = UpdateThemeBody(
+            name=name if name is not None else UNSET,
+            styles=ThemeStyles.from_dict(styles) if styles else UNSET,
+        )
+        response = await post_v_1_themes_theme_id.asyncio_detailed(
+            theme_id=theme_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=UpdateThemeResponse,
+            failure=ThemeFailureResponse,
+            action="update theme",
+        )
 
     # ------------------------------------------------------------------
     # Email Messages
@@ -1231,6 +1419,38 @@ class LoopsClient:
             return result
 
         raise LoopsError("Failed to update email message", status_code=None, response_data=result)
+
+    async def get_email_message_guardian(self, email_message_id: str) -> EmailMessageGuardianResponse:
+        """Run Guardian content checks against a saved email message.
+
+        Guardian runs the same validation the Loops editor performs (missing or
+        invalid hrefs, unsupported contact/event properties, malformed buttons,
+        missing required data variables, and so on).
+
+        Note: Guardian does not support MJML email messages.
+
+        Args:
+            email_message_id: The email message ID to check
+
+        Returns:
+            EmailMessageGuardianResponse with ``errors`` and ``warnings`` lists
+
+        Raises:
+            LoopsError: If not found (404) or the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_v_1_email_messages_email_message_id_guardian.asyncio_detailed(
+            email_message_id=email_message_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=EmailMessageGuardianResponse,
+            failure=EmailMessageFailureResponse,
+            action="get email message guardian checks",
+        )
 
     # ------------------------------------------------------------------
     # Contact Suppression
@@ -1347,6 +1567,35 @@ class LoopsClient:
             return result
         raise LoopsError(f"Failed to {action}", status_code=None, response_data=result)
 
+    def _unwrap_raw(
+        self,
+        result: Any,
+        response: Response[Any],
+        *,
+        failure: type | tuple[type, ...],
+        action: str,
+    ) -> Any:
+        """Return the raw JSON body for endpoints whose success payload is untyped.
+
+        Some Loops endpoints (e.g. the workflow node reads/writes) expose an
+        unstructured success schema, so ``openapi-python-client`` does not emit a
+        parse branch for the 2xx response and ``response.parsed`` is ``None``.
+        For those we decode ``response.content`` directly and return the parsed
+        JSON, mirroring how ``list_transactional_emails`` handles its response.
+        """
+        if isinstance(result, failure):
+            raise LoopsError(
+                f"Failed to {action}: {getattr(result, 'message', 'Unknown error')}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+        if 200 <= response.status_code < 300:
+            try:
+                return json.loads(response.content)
+            except (json.JSONDecodeError, ValueError) as exc:
+                raise LoopsError(f"Failed to parse {action} response: {exc}", status_code=response.status_code)
+        raise LoopsError(f"Failed to {action}", status_code=response.status_code, response_data=result)
+
     # ------------------------------------------------------------------
     # Transactional email templates (1.14.x)
     # ------------------------------------------------------------------
@@ -1383,14 +1632,14 @@ class LoopsClient:
             action="list transactional templates",
         )
 
-    async def get_transactional_template(self, transactional_id: str) -> TransactionalResponse:
+    async def get_transactional_template(self, transactional_id: str) -> TransactionalResource:
         """Retrieve a single transactional email template by ID.
 
         Args:
             transactional_id: The transactional email template ID
 
         Returns:
-            TransactionalResponse
+            TransactionalResource
 
         Raises:
             LoopsError: If not found (404) or request fails
@@ -1404,7 +1653,7 @@ class LoopsClient:
         return self._unwrap(
             result,
             response,
-            success=TransactionalResponse,
+            success=TransactionalResource,
             failure=TransactionalFailureResponse,
             action="get transactional template",
         )
@@ -1446,7 +1695,7 @@ class LoopsClient:
         transactional_id: str,
         name: str | None = None,
         transactional_group_id: str | None = None,
-    ) -> TransactionalResponse:
+    ) -> TransactionalResource:
         """Update a transactional email template.
 
         Args:
@@ -1455,7 +1704,7 @@ class LoopsClient:
             transactional_group_id: New transactional group ID
 
         Returns:
-            TransactionalResponse
+            TransactionalResource
 
         Raises:
             LoopsError: If not found (404) or request fails
@@ -1474,7 +1723,7 @@ class LoopsClient:
         return self._unwrap(
             result,
             response,
-            success=TransactionalResponse,
+            success=TransactionalResource,
             failure=TransactionalFailureResponse,
             action="update transactional template",
         )
@@ -1505,14 +1754,14 @@ class LoopsClient:
             action="draft transactional template",
         )
 
-    async def publish_transactional_template(self, transactional_id: str) -> TransactionalResponse:
+    async def publish_transactional_template(self, transactional_id: str) -> TransactionalResource:
         """Publish a transactional email template.
 
         Args:
             transactional_id: The transactional email template ID
 
         Returns:
-            TransactionalResponse
+            TransactionalResource
 
         Raises:
             LoopsError: If not found (404) or request fails
@@ -1526,7 +1775,7 @@ class LoopsClient:
         return self._unwrap(
             result,
             response,
-            success=TransactionalResponse,
+            success=TransactionalResource,
             failure=TransactionalFailureResponse,
             action="publish transactional template",
         )
@@ -1576,7 +1825,9 @@ class LoopsClient:
         # Note: the upload-limit-exceeded response uses HTTP 429, which
         # _handle_response already surfaces as LoopsRateLimitError before we get
         # here — so UploadLimitExceededFailureResponse is handled as a rate limit.
-        response = await post_v1_uploads_id_complete.asyncio_detailed(id=upload_id, client=self._client)
+        response = await post_v_1_uploads_email_asset_id_complete.asyncio_detailed(
+            email_asset_id=upload_id, client=self._client
+        )
         result = self._handle_response(response)
         return self._unwrap(
             result,
@@ -1645,7 +1896,7 @@ class LoopsClient:
             action="get workflow",
         )
 
-    async def get_workflow_node(self, workflow_id: str, node_id: str) -> Any:
+    async def get_workflow_node(self, workflow_id: str, node_id: str) -> dict[str, Any]:
         """Retrieve a single node within a workflow.
 
         Args:
@@ -1653,7 +1904,9 @@ class LoopsClient:
             node_id: The node ID
 
         Returns:
-            The parsed workflow node (one of the workflow node model types)
+            The workflow node as a dictionary. Node payloads are polymorphic
+            (the shape depends on ``typeName``), so the raw JSON body is
+            returned rather than a single typed model.
 
         Raises:
             LoopsError: If not found (404) or request fails
@@ -1665,15 +1918,446 @@ class LoopsClient:
             client=self._client,
         )
         result = self._handle_response(response)
+        return self._unwrap_raw(
+            result,
+            response,
+            failure=WorkflowFailureResponse,
+            action="get workflow node",
+        )
+
+    async def create_workflow(
+        self,
+        name: str,
+        description: str | None = None,
+        mailing_list_id: str | None = None,
+    ) -> SimplifiedWorkflow:
+        """Create a new (draft) workflow.
+
+        The workflow is created with a blank trigger and an exit node; use the
+        workflow node methods to build out its graph.
+
+        Args:
+            name: Workflow name
+            description: Optional workflow description
+            mailing_list_id: Optional mailing list to associate with the workflow
+
+        Returns:
+            SimplifiedWorkflow
+
+        Raises:
+            LoopsError: If the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = CreateWorkflowRequest(
+            name=name,
+            description=description if description is not None else UNSET,
+            mailing_list_id=mailing_list_id if mailing_list_id is not None else UNSET,
+        )
+        response = await create_workflow.asyncio_detailed(client=self._client, body=body)
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=SimplifiedWorkflow,
+            failure=WorkflowFailureResponse,
+            action="create workflow",
+        )
+
+    async def update_workflow(
+        self,
+        workflow_id: str,
+        expected_revision_id: str | None,
+        name: str | None = None,
+        description: str | None = None,
+    ) -> SimplifiedWorkflow:
+        """Update a workflow's name and/or description.
+
+        Args:
+            workflow_id: The workflow ID
+            expected_revision_id: Optimistic concurrency token. Pass the latest
+                ``workflow_revision_id`` (or ``None`` for pre-revision workflows);
+                a stale value raises a 409 conflict.
+            name: New workflow name
+            description: New workflow description
+
+        Returns:
+            SimplifiedWorkflow
+
+        Raises:
+            LoopsError: If not found (404) or a revision conflict occurs (409)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        # This endpoint's request schema is untyped in the spec, so the generated
+        # client sends the body dict as-is (no model). Keys must be camelCase.
+        body: dict[str, Any] = {"expectedRevisionId": expected_revision_id}
+        if name is not None:
+            body["name"] = name
+        if description is not None:
+            body["description"] = description
+        response = await update_workflow_properties.asyncio_detailed(
+            workflow_id=workflow_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=SimplifiedWorkflow,
+            failure=WorkflowFailureResponse,
+            action="update workflow",
+        )
+
+    async def change_workflow_mailing_list(
+        self,
+        workflow_id: str,
+        expected_revision_id: str | None,
+        mailing_list_id: str | None,
+        dry_run: bool | None = None,
+        queued_contact_policy: str | None = None,
+    ) -> WorkflowMailingListUpdatedResponse | WorkflowMailingListPreview:
+        """Change (or clear) the mailing list associated with a workflow.
+
+        Args:
+            workflow_id: The workflow ID
+            expected_revision_id: Optimistic concurrency token (see ``update_workflow``)
+            mailing_list_id: The mailing list to associate, or ``None`` to clear it
+            dry_run: If True, validate the change without applying it. The response
+                is a ``WorkflowMailingListPreview`` describing what would happen.
+            queued_contact_policy: How to handle contacts currently queued in the
+                workflow: ``"fail"`` (default) or ``"discard"``.
+
+        Returns:
+            WorkflowMailingListUpdatedResponse when applied, or
+            WorkflowMailingListPreview for a dry run / when queued contacts are found.
+
+        Raises:
+            LoopsError: If not found (404) or a revision conflict occurs (409)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = ChangeWorkflowMailingListRequest(
+            expected_revision_id=expected_revision_id,
+            mailing_list_id=mailing_list_id,
+            dry_run=dry_run if dry_run is not None else UNSET,
+            queued_contact_policy=WorkflowQueuedContactPolicy(queued_contact_policy)
+            if queued_contact_policy is not None
+            else UNSET,
+        )
+        response = await change_workflow_mailing_list.asyncio_detailed(
+            workflow_id=workflow_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=(WorkflowMailingListUpdatedResponse, WorkflowMailingListPreview),
+            failure=WorkflowFailureResponse,
+            action="change workflow mailing list",
+        )
+
+    # ------------------------------------------------------------------
+    # Workflow nodes (1.21.x)
+    # ------------------------------------------------------------------
+
+    async def create_workflow_node(
+        self,
+        workflow_id: str,
+        node_type_name: str,
+        expected_revision_id: str | None,
+        from_node_id: str | None = None,
+        to_node_id: str | None = None,
+        before_node_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Add a node to a workflow.
+
+        Nodes are inserted either *between* an existing edge (pass ``from_node_id``
+        and ``to_node_id``) or *before* an existing node (pass ``before_node_id``).
+        New nodes are created with default settings; call ``update_workflow_node``
+        afterwards to configure them.
+
+        Args:
+            workflow_id: The workflow ID
+            node_type_name: The node type to create, one of ``AudienceFilter``,
+                ``BranchNode``, ``ExperimentBranchNode``, ``TimerAction``,
+                ``SendEmailAction`` or ``VariantNode`` (triggers and exit nodes
+                cannot be created).
+            expected_revision_id: Optimistic concurrency token (see ``update_workflow``)
+            from_node_id: Source node of the edge to insert into (``between`` mode)
+            to_node_id: Target node of the edge to insert into (``between`` mode)
+            before_node_id: Node to insert before (``before`` mode)
+
+        Returns:
+            The API response as a dictionary containing the created ``node`` and the
+            updated ``workflow``.
+
+        Raises:
+            LoopsError: If the arguments are inconsistent, the workflow/node is not
+                found (404), or a revision conflict occurs (409)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        node_type = CreateWorkflowNodeTypeName(node_type_name)
+        body: CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest
+        if before_node_id is not None:
+            if from_node_id is not None or to_node_id is not None:
+                raise LoopsError("Pass before_node_id for 'before' inserts or from/to_node_id for 'between', not both")
+            body = CreateWorkflowNodeBeforeRequest(
+                expected_revision_id=expected_revision_id,
+                insert_mode=CreateWorkflowNodeBeforeRequestInsertMode.BEFORE,
+                node_type_name=node_type,
+                before_node_id=before_node_id,
+            )
+        elif from_node_id is not None and to_node_id is not None:
+            body = CreateWorkflowNodeBetweenRequest(
+                expected_revision_id=expected_revision_id,
+                insert_mode=CreateWorkflowNodeBetweenRequestInsertMode.BETWEEN,
+                node_type_name=node_type,
+                from_node_id=from_node_id,
+                to_node_id=to_node_id,
+            )
+        else:
+            raise LoopsError(
+                "Provide either before_node_id ('before' insert) or both from_node_id and to_node_id ('between' insert)"
+            )
+        response = await create_workflow_node.asyncio_detailed(
+            workflow_id=workflow_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+        return self._unwrap_raw(
+            result,
+            response,
+            failure=WorkflowFailureResponse,
+            action="create workflow node",
+        )
+
+    async def update_workflow_node(
+        self,
+        workflow_id: str,
+        node_id: str,
+        expected_revision_id: str | None,
+        payload: dict[str, Any],
+    ) -> Any:
+        """Update the settings of a workflow node.
+
+        Args:
+            workflow_id: The workflow ID
+            node_id: The node ID
+            expected_revision_id: Optimistic concurrency token (see ``update_workflow``)
+            payload: The node-type-specific settings as a dictionary. The accepted
+                keys depend on the node's type (e.g. ``{"amount": 2, "unit": "d"}``
+                for a TimerAction, ``{"emailMessageId": "...", "subject": "..."}`` for
+                a SendEmailAction). See the Loops docs for each node type's payload.
+
+        Returns:
+            The updated node (one of the workflow mutation node models).
+
+        Raises:
+            LoopsError: If not found (404), a revision conflict occurs (409), or the
+                node type does not support updates (501)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = UpdateWorkflowNodeRequest.from_dict({"expectedRevisionId": expected_revision_id, "payload": payload})
+        response = await update_workflow_node.asyncio_detailed(
+            workflow_id=workflow_id,
+            node_id=node_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
         if isinstance(result, WorkflowFailureResponse):
             raise LoopsError(
-                f"Failed to get workflow node: {getattr(result, 'message', 'Unknown error')}",
+                f"Failed to update workflow node: {getattr(result, 'message', 'Unknown error')}",
                 status_code=response.status_code,
                 response_data=result,
             )
         if result is None:
-            raise LoopsError("Failed to get workflow node", status_code=response.status_code)
+            raise LoopsError("Failed to update workflow node", status_code=response.status_code)
         return result
+
+    async def add_workflow_branch(
+        self,
+        workflow_id: str,
+        node_id: str,
+        expected_revision_id: str | None,
+    ) -> AddWorkflowBranchResponse:
+        """Add a branch to a BranchNode or ExperimentBranchNode.
+
+        The new branch is created unconfigured; call ``update_workflow_node`` on the
+        returned child to configure it.
+
+        Args:
+            workflow_id: The workflow ID
+            node_id: The BranchNode or ExperimentBranchNode ID
+            expected_revision_id: Optimistic concurrency token (see ``update_workflow``)
+
+        Returns:
+            AddWorkflowBranchResponse with the created ``node`` and updated ``workflow``
+
+        Raises:
+            LoopsError: If not found (404) or a revision conflict occurs (409)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = AddWorkflowBranchRequest(expected_revision_id=expected_revision_id)
+        response = await add_workflow_branch.asyncio_detailed(
+            workflow_id=workflow_id,
+            node_id=node_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=AddWorkflowBranchResponse,
+            failure=WorkflowFailureResponse,
+            action="add workflow branch",
+        )
+
+    async def delete_workflow_node(
+        self,
+        workflow_id: str,
+        node_id: str,
+        expected_revision_id: str | None,
+        dry_run: bool | None = None,
+        queued_contact_policy: str | None = None,
+        recursive: bool = False,
+    ) -> WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview:
+        """Delete a node from a workflow.
+
+        Args:
+            workflow_id: The workflow ID
+            node_id: The node ID to delete
+            expected_revision_id: Optimistic concurrency token (see ``update_workflow``)
+            dry_run: If True, report what would be deleted without applying it.
+            queued_contact_policy: How to handle contacts currently queued at the
+                node: ``"fail"`` (default) or ``"discard"``.
+            recursive: If True, also delete the node's entire downstream subtree;
+                otherwise only the single node is removed and its edge re-linked.
+
+        Returns:
+            WorkflowDeletedResponse when applied, or WorkflowQueuedContactDeletePreview
+            for a dry run / when queued contacts are found.
+
+        Raises:
+            LoopsError: If not found (404) or a revision conflict occurs (409)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = DeleteWorkflowNodeRequest(
+            expected_revision_id=expected_revision_id,
+            dry_run=dry_run if dry_run is not None else UNSET,
+            queued_contact_policy=WorkflowQueuedContactPolicy(queued_contact_policy)
+            if queued_contact_policy is not None
+            else UNSET,
+        )
+        endpoint = delete_workflow_node_recursively if recursive else delete_workflow_node
+        response = await endpoint.asyncio_detailed(
+            workflow_id=workflow_id,
+            node_id=node_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=(WorkflowDeletedResponse, WorkflowQueuedContactDeletePreview),
+            failure=WorkflowFailureResponse,
+            action="delete workflow node",
+        )
+
+    # ------------------------------------------------------------------
+    # Event patterns (1.21.x)
+    # ------------------------------------------------------------------
+
+    async def list_event_patterns(
+        self,
+        per_page: int | None = None,
+        cursor: str | None = None,
+    ) -> ListEventPatternsResponse:
+        """Retrieve a paginated list of event patterns.
+
+        Event patterns are the triggerable event types available for workflow
+        automation (custom events or events from integrated webhook platforms).
+
+        Args:
+            per_page: Results per page (10-50). Default: 20
+            cursor: Pagination cursor
+
+        Returns:
+            ListEventPatternsResponse with pagination and data
+
+        Raises:
+            LoopsError: If the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await list_event_patterns.asyncio_detailed(
+            client=self._client,
+            per_page=str(per_page) if per_page is not None else UNSET,
+            cursor=cursor if cursor else UNSET,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=ListEventPatternsResponse,
+            failure=EventPatternFailureResponse,
+            action="list event patterns",
+        )
+
+    async def get_event_pattern(self, event_pattern_id: str) -> EventPattern:
+        """Retrieve a single event pattern by ID.
+
+        Args:
+            event_pattern_id: The event pattern ID
+
+        Returns:
+            EventPattern (includes ``event_properties``)
+
+        Raises:
+            LoopsError: If not found (404) or the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_event_pattern.asyncio_detailed(
+            event_pattern_id=event_pattern_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=EventPattern,
+            failure=EventPatternFailureResponse,
+            action="get event pattern",
+        )
+
+    async def get_event_pattern_by_name(self, event_name: str) -> EventPattern:
+        """Retrieve a single event pattern by its event name.
+
+        Args:
+            event_name: The event name (case-sensitive)
+
+        Returns:
+            EventPattern (includes ``event_properties``)
+
+        Raises:
+            LoopsError: If not found (404) or the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_event_pattern_by_name.asyncio_detailed(
+            event_name=event_name,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=EventPattern,
+            failure=EventPatternFailureResponse,
+            action="get event pattern by name",
+        )
 
     # ------------------------------------------------------------------
     # Audience segments (1.14.x)
@@ -1735,6 +2419,45 @@ class LoopsClient:
             success=AudienceSegmentResponse,
             failure=AudienceSegmentFailureResponse,
             action="get audience segment",
+        )
+
+    async def create_audience_segment(
+        self,
+        name: str,
+        filter: dict[str, Any],
+        description: str | None = None,
+    ) -> AudienceSegmentResponse:
+        """Create a new audience segment.
+
+        Args:
+            name: Segment name (must be unique within the team)
+            filter: The segment's condition tree as a dictionary, e.g.
+                ``{"match": "all", "conditions": [{"type": "property", "key": "plan",
+                "operator": "equals", "value": "pro"}]}``. ``match`` is ``"all"`` or
+                ``"any"``; each condition is a ``property``, ``optIn`` or ``activity``
+                condition (see the Loops docs for the full grammar).
+            description: Optional segment description
+
+        Returns:
+            AudienceSegmentResponse
+
+        Raises:
+            LoopsError: If the request fails (e.g. duplicate name, invalid filter)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = CreateAudienceSegmentRequest(
+            name=name,
+            filter_=CreateAudienceSegmentRequestFilter.from_dict(filter),
+            description=description if description is not None else UNSET,
+        )
+        response = await post_v1_audience_segments.asyncio_detailed(client=self._client, body=body)
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=AudienceSegmentResponse,
+            failure=AudienceSegmentFailureResponse,
+            action="create audience segment",
         )
 
     # ------------------------------------------------------------------

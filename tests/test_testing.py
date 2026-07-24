@@ -196,6 +196,24 @@ EXPECTED_ROUTE_NAMES = [
     "create_transactional_group",
     "update_transactional_group",
     "preview_email_message",
+    # 1.21.x
+    "create_audience_segment",
+    "create_component",
+    "update_component",
+    "create_theme",
+    "update_theme",
+    "get_email_message_guardian",
+    "list_event_patterns",
+    "get_event_pattern",
+    "get_event_pattern_by_name",
+    "create_workflow",
+    "update_workflow",
+    "change_workflow_mailing_list",
+    "create_workflow_node",
+    "update_workflow_node",
+    "add_workflow_branch",
+    "delete_workflow_node",
+    "delete_workflow_node_recursively",
 ]
 
 
@@ -756,7 +774,7 @@ async def test_get_workflow_node():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_workflow_node("mock-workflow-id", "mock-node-id")
-        assert result.id == "mock-node-id"
+        assert result["id"] == "mock-node-id"
         assert api["get_workflow_node"].called
 
 
@@ -869,6 +887,232 @@ async def test_preview_email_message():
         assert body["dataVariables"] == {"name": "Jan"}
 
 
+# ---------------------------------------------------------------------------
+# Happy-path coverage for the new 1.21.x wrappers
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_create_audience_segment():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_audience_segment(
+            name="Pro users",
+            filter={
+                "match": "all",
+                "conditions": [{"type": "property", "key": "plan", "operator": "equals", "value": "pro"}],
+            },
+            description="desc",
+        )
+        assert result.id == "mock-segment-id"
+        body = json.loads(api["create_audience_segment"].calls[0].request.content)
+        assert body["name"] == "Pro users"
+        assert body["filter"]["match"] == "all"
+        assert body["description"] == "desc"
+
+
+@pytest.mark.asyncio
+async def test_create_component():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_component(name="Hero", lmx="<Text>Hi</Text>")
+        assert result.id == "mock-component-id"
+        body = json.loads(api["create_component"].calls[0].request.content)
+        assert body["name"] == "Hero"
+        assert body["lmx"] == "<Text>Hi</Text>"
+
+
+@pytest.mark.asyncio
+async def test_update_component():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_component("mock-component-id", lmx="<Text>Bye</Text>")
+        assert result.affected_email_count == 0
+        body = json.loads(api["update_component"].calls[0].request.content)
+        assert body["lmx"] == "<Text>Bye</Text>"
+        assert "name" not in body
+
+
+@pytest.mark.asyncio
+async def test_create_theme():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_theme(name="Brand", styles={"bodyColor": "#fff"})
+        assert result.id == "mock-theme-id"
+        body = json.loads(api["create_theme"].calls[0].request.content)
+        assert body["name"] == "Brand"
+        assert body["styles"]["bodyColor"] == "#fff"
+
+
+@pytest.mark.asyncio
+async def test_update_theme():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_theme("mock-theme-id", name="Brand 2")
+        assert result.affected_email_count == 0
+        body = json.loads(api["update_theme"].calls[0].request.content)
+        assert body["name"] == "Brand 2"
+
+
+@pytest.mark.asyncio
+async def test_get_email_message_guardian():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_email_message_guardian("mock-email-message-id")
+        assert result.errors == []
+        assert result.warnings == []
+        assert api["get_email_message_guardian"].called
+
+
+@pytest.mark.asyncio
+async def test_list_event_patterns():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_event_patterns()
+        assert result.data == []
+        assert api["list_event_patterns"].called
+
+
+@pytest.mark.asyncio
+async def test_get_event_pattern():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_event_pattern("mock-event-pattern-id")
+        assert result.id == "mock-event-pattern-id"
+        assert result.event_name == "signup"
+        assert api["get_event_pattern"].called
+
+
+@pytest.mark.asyncio
+async def test_get_event_pattern_by_name():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_event_pattern_by_name("signup")
+        assert result.event_name == "signup"
+        assert api["get_event_pattern_by_name"].called
+
+
+@pytest.mark.asyncio
+async def test_create_workflow():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_workflow(name="Onboarding", description="desc", mailing_list_id="list-1")
+        assert result.id == "mock-workflow-id"
+        body = json.loads(api["create_workflow"].calls[0].request.content)
+        assert body["name"] == "Onboarding"
+        assert body["mailingListId"] == "list-1"
+
+
+@pytest.mark.asyncio
+async def test_update_workflow():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_workflow("mock-workflow-id", "rev-1", name="Renamed")
+        assert result.id == "mock-workflow-id"
+        body = json.loads(api["update_workflow"].calls[0].request.content)
+        assert body["expectedRevisionId"] == "rev-1"
+        assert body["name"] == "Renamed"
+
+
+@pytest.mark.asyncio
+async def test_change_workflow_mailing_list():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.change_workflow_mailing_list("mock-workflow-id", "rev-1", "list-1")
+        assert result.mailing_list_id == "mock-list-id"
+        body = json.loads(api["change_workflow_mailing_list"].calls[0].request.content)
+        assert body["expectedRevisionId"] == "rev-1"
+        assert body["mailingListId"] == "list-1"
+
+
+@pytest.mark.asyncio
+async def test_create_workflow_node_between():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_workflow_node(
+            "mock-workflow-id",
+            "TimerAction",
+            "rev-1",
+            from_node_id="n1",
+            to_node_id="n2",
+        )
+        assert result["workflow"]["id"] == "mock-workflow-id"
+        body = json.loads(api["create_workflow_node"].calls[0].request.content)
+        assert body["nodeTypeName"] == "TimerAction"
+        assert body["insertMode"] == "between"
+        assert body["fromNodeId"] == "n1"
+        assert body["toNodeId"] == "n2"
+
+
+@pytest.mark.asyncio
+async def test_create_workflow_node_requires_insert_target():
+    with loops_respx_mock():
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="before_node_id"):
+            await client.create_workflow_node("wf", "TimerAction", "rev")
+
+
+@pytest.mark.asyncio
+async def test_update_workflow_node():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_workflow_node(
+            "mock-workflow-id",
+            "mock-node-id",
+            "rev-1",
+            payload={"typeName": "SignupTrigger"},
+        )
+        assert result.id == "mock-node-id"
+        body = json.loads(api["update_workflow_node"].calls[0].request.content)
+        assert body["expectedRevisionId"] == "rev-1"
+        assert body["payload"]["typeName"] == "SignupTrigger"
+
+
+@pytest.mark.asyncio
+async def test_add_workflow_branch():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.add_workflow_branch("mock-workflow-id", "mock-node-id", "rev-1")
+        assert result.workflow.id == "mock-workflow-id"
+        body = json.loads(api["add_workflow_branch"].calls[0].request.content)
+        assert body["expectedRevisionId"] == "rev-1"
+
+
+@pytest.mark.asyncio
+async def test_delete_workflow_node():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.delete_workflow_node("mock-workflow-id", "mock-node-id", "rev-1")
+        assert result.node_ids == ["mock-node-id"]
+        assert api["delete_workflow_node"].called
+
+
+@pytest.mark.asyncio
+async def test_delete_workflow_node_recursively():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.delete_workflow_node("mock-workflow-id", "mock-node-id", "rev-1", recursive=True)
+        assert result.node_ids == ["mock-node-id"]
+        assert api["delete_workflow_node_recursively"].called
+        assert not api["delete_workflow_node"].called
+
+
+@pytest.mark.asyncio
+async def test_create_workflow_rate_limit():
+    with loops_respx_mock() as api:
+        api["create_workflow"].mock(
+            return_value=Response(
+                429,
+                json={"success": False},
+                headers={"x-ratelimit-limit": "10", "x-ratelimit-remaining": "0"},
+            )
+        )
+        client = pyloops.get_client()
+        with pytest.raises(LoopsRateLimitError) as exc_info:
+            await client.create_workflow(name="x")
+        assert exc_info.value.limit == 10
+
+
 @pytest.mark.asyncio
 async def test_get_workflow_not_found():
     with loops_respx_mock() as api:
@@ -931,6 +1175,36 @@ _NEW_WRAPPER_ERROR_CASES = [
     ("create_transactional_group", lambda c: c.create_transactional_group(name="x")),
     ("update_transactional_group", lambda c: c.update_transactional_group("x", name="y")),
     ("preview_email_message", lambda c: c.preview_email_message("x", emails=["user@test.com"])),
+    # 1.21.x
+    (
+        "create_audience_segment",
+        lambda c: c.create_audience_segment(name="x", filter={"match": "all", "conditions": []}),
+    ),
+    ("create_component", lambda c: c.create_component(name="x", lmx="<Text>x</Text>")),
+    ("update_component", lambda c: c.update_component("x", name="y")),
+    ("create_theme", lambda c: c.create_theme(name="x")),
+    ("update_theme", lambda c: c.update_theme("x", name="y")),
+    ("get_email_message_guardian", lambda c: c.get_email_message_guardian("x")),
+    ("list_event_patterns", lambda c: c.list_event_patterns()),
+    ("get_event_pattern", lambda c: c.get_event_pattern("x")),
+    ("get_event_pattern_by_name", lambda c: c.get_event_pattern_by_name("signup")),
+    ("create_workflow", lambda c: c.create_workflow(name="x")),
+    ("update_workflow", lambda c: c.update_workflow("wf", "rev", name="y")),
+    ("change_workflow_mailing_list", lambda c: c.change_workflow_mailing_list("wf", "rev", "list-id")),
+    (
+        "create_workflow_node",
+        lambda c: c.create_workflow_node("wf", "TimerAction", "rev", before_node_id="n1"),
+    ),
+    (
+        "update_workflow_node",
+        lambda c: c.update_workflow_node("wf", "n1", "rev", payload={"typeName": "SignupTrigger"}),
+    ),
+    ("add_workflow_branch", lambda c: c.add_workflow_branch("wf", "n1", "rev")),
+    ("delete_workflow_node", lambda c: c.delete_workflow_node("wf", "n1", "rev")),
+    (
+        "delete_workflow_node_recursively",
+        lambda c: c.delete_workflow_node("wf", "n1", "rev", recursive=True),
+    ),
 ]
 
 

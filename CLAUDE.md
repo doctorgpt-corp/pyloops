@@ -33,7 +33,7 @@ Tests run with pytest and require no real API key — all HTTP is intercepted at
 ```
 tests/
   test_safe_mode.py   # 40 tests — safe mode email domain validation
-  test_testing.py     # 74 tests — mock utility + every client method
+  test_testing.py     # 130 tests — mock utility + every client method
   test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
 ```
 
@@ -153,6 +153,23 @@ All routes are accessible by name on the yielded router.
 | `create_transactional_group` | `POST /v1/transactional-groups` |
 | `update_transactional_group` | `POST /v1/transactional-groups/{id}` |
 | `preview_email_message` | `POST /v1/email-messages/{id}/preview` |
+| `create_audience_segment` | `POST /v1/audience-segments` |
+| `create_component` | `POST /v1/components` |
+| `update_component` | `POST /v1/components/{id}` |
+| `create_theme` | `POST /v1/themes` |
+| `update_theme` | `POST /v1/themes/{id}` |
+| `get_email_message_guardian` | `GET /v1/email-messages/{id}/guardian` |
+| `list_event_patterns` | `GET /v1/event-patterns` |
+| `get_event_pattern` | `GET /v1/event-patterns/{id}` |
+| `get_event_pattern_by_name` | `GET /v1/event-patterns/by-name/{name}` |
+| `create_workflow` | `POST /v1/workflows` |
+| `update_workflow` | `POST /v1/workflows/{id}` |
+| `change_workflow_mailing_list` | `POST /v1/workflows/{id}/mailing-list` |
+| `create_workflow_node` | `POST /v1/workflows/{id}/nodes` |
+| `update_workflow_node` | `POST /v1/workflows/{id}/nodes/{node_id}` |
+| `add_workflow_branch` | `POST /v1/workflows/{id}/nodes/{node_id}/add-branch` |
+| `delete_workflow_node` | `DELETE /v1/workflows/{id}/nodes/{node_id}` |
+| `delete_workflow_node_recursively` | `DELETE /v1/workflows/{id}/nodes/{node_id}/recursive` |
 
 ### Simulating errors
 

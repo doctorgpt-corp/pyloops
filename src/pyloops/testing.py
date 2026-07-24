@@ -184,7 +184,14 @@ def loops_respx_mock(
         )
 
         # Campaigns
-        _pagination = {"totalResults": 0, "returnedResults": 0, "perPage": 20, "totalPages": 0, "nextCursor": None}
+        _pagination = {
+            "totalResults": 0,
+            "returnedResults": 0,
+            "perPage": 20,
+            "totalPages": 0,
+            "nextCursor": None,
+            "nextPage": None,
+        }
         # Fields added to campaign responses in the Loops API v1.14.x update.
         _campaign_targeting = {
             "campaignGroupId": None,
@@ -202,7 +209,7 @@ def loops_respx_mock(
                 json={
                     "id": "mock-campaign-id",
                     "name": "Mock Campaign",
-                    "status": "draft",
+                    "status": "Draft",
                     "createdAt": "2024-01-01T00:00:00.000Z",
                     "updatedAt": "2024-01-01T00:00:00.000Z",
                     "emailMessageId": None,
@@ -216,7 +223,7 @@ def loops_respx_mock(
                 json={
                     "id": "mock-campaign-id",
                     "name": "Mock Campaign",
-                    "status": "draft",
+                    "status": "Draft",
                     "createdAt": "2024-01-01T00:00:00.000Z",
                     "updatedAt": "2024-01-01T00:00:00.000Z",
                     "emailMessageId": "mock-email-message-id",
@@ -231,7 +238,7 @@ def loops_respx_mock(
                 json={
                     "id": "mock-campaign-id",
                     "name": "Updated Campaign",
-                    "status": "draft",
+                    "status": "Draft",
                     "createdAt": "2024-01-01T00:00:00.000Z",
                     "updatedAt": "2024-01-02T00:00:00.000Z",
                     "emailMessageId": None,
@@ -389,11 +396,80 @@ def loops_respx_mock(
                 },
             )
         )
-        router.get(url__regex=r"/v1/workflows/[^/]+$", name="get_workflow").mock(
+        _workflow_json = {
+            "id": "mock-workflow-id",
+            "workflowRevisionId": "mock-revision-id",
+            "status": "Draft",
+            "name": "Mock Workflow",
+            "description": None,
+            "mailingListId": None,
+            "rootNodeId": "mock-node-id",
+            "nodes": {},
+        }
+        router.post("/v1/workflows", name="create_workflow").mock(
+            return_value=respx.MockResponse(200, json=_workflow_json)
+        )
+        router.post(url__regex=r"/v1/workflows/[^/]+/mailing-list$", name="change_workflow_mailing_list").mock(
             return_value=respx.MockResponse(
                 200,
-                json={"id": "mock-workflow-id", "rootNodeId": "mock-node-id", "nodes": {}},
+                json={
+                    "status": "updated",
+                    "mailingListId": "mock-list-id",
+                    "workflowRevisionId": "mock-revision-id",
+                    "queuedContactCount": 0,
+                    "queuedContactLimitReached": False,
+                },
             )
+        )
+        # Workflow node mutations (create/update/add-branch/delete). Registered
+        # before the bare "/workflows/{id}" route so the more specific /nodes
+        # paths match first.
+        _mutation_node = {
+            "id": "mock-node-id",
+            "typeName": "SignupTrigger",
+            "nextNodeIds": [],
+            "workflowRevisionId": "mock-revision-id",
+        }
+        router.post(url__regex=r"/v1/workflows/[^/]+/nodes/[^/]+/add-branch$", name="add_workflow_branch").mock(
+            return_value=respx.MockResponse(200, json={"node": _mutation_node, "workflow": _workflow_json})
+        )
+        router.post(url__regex=r"/v1/workflows/[^/]+/nodes/[^/]+$", name="update_workflow_node").mock(
+            return_value=respx.MockResponse(200, json=_mutation_node)
+        )
+        router.post(url__regex=r"/v1/workflows/[^/]+/nodes$", name="create_workflow_node").mock(
+            return_value=respx.MockResponse(200, json={"node": _mutation_node, "workflow": _workflow_json})
+        )
+        router.delete(
+            url__regex=r"/v1/workflows/[^/]+/nodes/[^/]+/recursive$", name="delete_workflow_node_recursively"
+        ).mock(
+            return_value=respx.MockResponse(
+                200,
+                json={
+                    "status": "deleted",
+                    "nodeIds": ["mock-node-id"],
+                    "workflowRevisionId": "mock-revision-id",
+                    "queuedContactCount": 0,
+                    "queuedContactLimitReached": False,
+                },
+            )
+        )
+        router.delete(url__regex=r"/v1/workflows/[^/]+/nodes/[^/]+$", name="delete_workflow_node").mock(
+            return_value=respx.MockResponse(
+                200,
+                json={
+                    "status": "deleted",
+                    "nodeIds": ["mock-node-id"],
+                    "workflowRevisionId": "mock-revision-id",
+                    "queuedContactCount": 0,
+                    "queuedContactLimitReached": False,
+                },
+            )
+        )
+        router.get(url__regex=r"/v1/workflows/[^/]+$", name="get_workflow").mock(
+            return_value=respx.MockResponse(200, json=_workflow_json)
+        )
+        router.post(url__regex=r"/v1/workflows/[^/]+$", name="update_workflow").mock(
+            return_value=respx.MockResponse(200, json=_workflow_json)
         )
 
         # Audience segments
@@ -450,6 +526,96 @@ def loops_respx_mock(
         # Email message preview
         router.post(url__regex=r"/v1/email-messages/[^/]+/preview$", name="preview_email_message").mock(
             return_value=respx.MockResponse(200, json={"id": "mock-preview-id"})
+        )
+
+        # ------------------------------------------------------------------
+        # New endpoint families (Loops API v1.21.x)
+        # ------------------------------------------------------------------
+
+        # Audience segment create
+        router.post("/v1/audience-segments", name="create_audience_segment").mock(
+            return_value=respx.MockResponse(
+                200,
+                json={
+                    "id": "mock-segment-id",
+                    "name": "Mock Segment",
+                    "description": None,
+                    "createdAt": "2024-01-01T00:00:00.000Z",
+                    "updatedAt": "2024-01-01T00:00:00.000Z",
+                    "filter": None,
+                },
+            )
+        )
+
+        # Component create/update
+        router.post("/v1/components", name="create_component").mock(
+            return_value=respx.MockResponse(
+                201,
+                json={"id": "mock-component-id", "name": "Mock Component", "lmx": "<Text>Hello</Text>"},
+            )
+        )
+        router.post(url__regex=r"/v1/components/[^/]+$", name="update_component").mock(
+            return_value=respx.MockResponse(
+                200,
+                json={
+                    "id": "mock-component-id",
+                    "name": "Mock Component",
+                    "lmx": "<Text>Hello</Text>",
+                    "affectedEmailCount": 0,
+                },
+            )
+        )
+
+        # Theme create/update
+        router.post("/v1/themes", name="create_theme").mock(
+            return_value=respx.MockResponse(
+                201,
+                json={
+                    "id": "mock-theme-id",
+                    "name": "Mock Theme",
+                    "styles": {},
+                    "isDefault": False,
+                    "createdAt": "2024-01-01T00:00:00.000Z",
+                    "updatedAt": "2024-01-01T00:00:00.000Z",
+                },
+            )
+        )
+        router.post(url__regex=r"/v1/themes/[^/]+$", name="update_theme").mock(
+            return_value=respx.MockResponse(
+                200,
+                json={
+                    "id": "mock-theme-id",
+                    "name": "Mock Theme",
+                    "styles": {},
+                    "isDefault": False,
+                    "createdAt": "2024-01-01T00:00:00.000Z",
+                    "updatedAt": "2024-01-02T00:00:00.000Z",
+                    "affectedEmailCount": 0,
+                },
+            )
+        )
+
+        # Email message Guardian checks
+        router.get(url__regex=r"/v1/email-messages/[^/]+/guardian$", name="get_email_message_guardian").mock(
+            return_value=respx.MockResponse(200, json={"errors": [], "warnings": []})
+        )
+
+        # Event patterns. The by-name route is registered before the by-id route
+        # so it matches first.
+        _event_pattern = {
+            "id": "mock-event-pattern-id",
+            "eventName": "signup",
+            "eventProperties": [],
+            "incomingWebhookPlatform": "null",
+        }
+        router.get("/v1/event-patterns", name="list_event_patterns").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
+        )
+        router.get(url__regex=r"/v1/event-patterns/by-name/[^/]+$", name="get_event_pattern_by_name").mock(
+            return_value=respx.MockResponse(200, json=_event_pattern)
+        )
+        router.get(url__regex=r"/v1/event-patterns/[^/]+$", name="get_event_pattern").mock(
+            return_value=respx.MockResponse(200, json=_event_pattern)
         )
 
         try:
