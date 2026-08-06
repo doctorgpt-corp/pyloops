@@ -91,7 +91,8 @@ def sync_detailed(
     """Update a campaign
 
      Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
-    At least one field must be provided. Campaigns can only be updated while in draft status.
+    At least one field must be provided. Once a campaign has been sent, only its `name` and
+    `campaignGroupId` can be updated.
 
     Args:
         campaign_id (str):
@@ -126,7 +127,8 @@ def sync(
     """Update a campaign
 
      Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
-    At least one field must be provided. Campaigns can only be updated while in draft status.
+    At least one field must be provided. Once a campaign has been sent, only its `name` and
+    `campaignGroupId` can be updated.
 
     Args:
         campaign_id (str):
@@ -156,7 +158,8 @@ async def asyncio_detailed(
     """Update a campaign
 
      Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
-    At least one field must be provided. Campaigns can only be updated while in draft status.
+    At least one field must be provided. Once a campaign has been sent, only its `name` and
+    `campaignGroupId` can be updated.
 
     Args:
         campaign_id (str):
@@ -189,7 +192,8 @@ async def asyncio(
     """Update a campaign
 
      Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
-    At least one field must be provided. Campaigns can only be updated while in draft status.
+    At least one field must be provided. Once a campaign has been sent, only its `name` and
+    `campaignGroupId` can be updated.
 
     Args:
         campaign_id (str):

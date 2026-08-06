@@ -97,9 +97,12 @@ def sync_detailed(
     create their default paths too: `BranchNode` creates two `AudienceFilter` children, and
     `ExperimentBranchNode` creates two regular `VariantNode` children plus one control `VariantNode`.
     Public workflows can have up to 300 nodes. Generated children count toward that limit, so a normal
-    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a new branch or
-    experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-branch` endpoint
-    instead.
+    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a sibling child
+    path to a branch or experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-
+    branch` endpoint. Branch paths can be edited with create-node, but a workflow cannot be started
+    unless each direct `BranchNode` child is an `AudienceFilter`. For experiments, use create-node only
+    to insert a missing `VariantNode` before non-variant content; use add-branch for another variant
+    path.
 
     Args:
         workflow_id (str):
@@ -144,9 +147,12 @@ def sync(
     create their default paths too: `BranchNode` creates two `AudienceFilter` children, and
     `ExperimentBranchNode` creates two regular `VariantNode` children plus one control `VariantNode`.
     Public workflows can have up to 300 nodes. Generated children count toward that limit, so a normal
-    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a new branch or
-    experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-branch` endpoint
-    instead.
+    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a sibling child
+    path to a branch or experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-
+    branch` endpoint. Branch paths can be edited with create-node, but a workflow cannot be started
+    unless each direct `BranchNode` child is an `AudienceFilter`. For experiments, use create-node only
+    to insert a missing `VariantNode` before non-variant content; use add-branch for another variant
+    path.
 
     Args:
         workflow_id (str):
@@ -186,9 +192,12 @@ async def asyncio_detailed(
     create their default paths too: `BranchNode` creates two `AudienceFilter` children, and
     `ExperimentBranchNode` creates two regular `VariantNode` children plus one control `VariantNode`.
     Public workflows can have up to 300 nodes. Generated children count toward that limit, so a normal
-    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a new branch or
-    experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-branch` endpoint
-    instead.
+    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a sibling child
+    path to a branch or experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-
+    branch` endpoint. Branch paths can be edited with create-node, but a workflow cannot be started
+    unless each direct `BranchNode` child is an `AudienceFilter`. For experiments, use create-node only
+    to insert a missing `VariantNode` before non-variant content; use add-branch for another variant
+    path.
 
     Args:
         workflow_id (str):
@@ -231,9 +240,12 @@ async def asyncio(
     create their default paths too: `BranchNode` creates two `AudienceFilter` children, and
     `ExperimentBranchNode` creates two regular `VariantNode` children plus one control `VariantNode`.
     Public workflows can have up to 300 nodes. Generated children count toward that limit, so a normal
-    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a new branch or
-    experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-branch` endpoint
-    instead.
+    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a sibling child
+    path to a branch or experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-
+    branch` endpoint. Branch paths can be edited with create-node, but a workflow cannot be started
+    unless each direct `BranchNode` child is an `AudienceFilter`. For experiments, use create-node only
+    to insert a missing `VariantNode` before non-variant content; use add-branch for another variant
+    path.
 
     Args:
         workflow_id (str):

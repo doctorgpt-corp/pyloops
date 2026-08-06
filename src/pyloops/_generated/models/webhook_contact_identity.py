@@ -1,37 +1,43 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="GetV1ApiKeyResponse200")
+T = TypeVar("T", bound="WebhookContactIdentity")
 
 
 @_attrs_define
-class GetV1ApiKeyResponse200:
+class WebhookContactIdentity:
     """
     Attributes:
-        success (bool):
-        team_name (str): The name of the team the API key belongs to.
+        id (str):
+        email (str):
+        user_id (None | str):
     """
 
-    success: bool
-    team_name: str
+    id: str
+    email: str
+    user_id: None | str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
+        id = self.id
 
-        team_name = self.team_name
+        email = self.email
+
+        user_id: None | str
+        user_id = self.user_id
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "success": success,
-                "teamName": team_name,
+                "id": id,
+                "email": email,
+                "userId": user_id,
             }
         )
 
@@ -40,17 +46,25 @@ class GetV1ApiKeyResponse200:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        success = d.pop("success")
+        id = d.pop("id")
 
-        team_name = d.pop("teamName")
+        email = d.pop("email")
 
-        get_v1_api_key_response_200 = cls(
-            success=success,
-            team_name=team_name,
+        def _parse_user_id(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        user_id = _parse_user_id(d.pop("userId"))
+
+        webhook_contact_identity = cls(
+            id=id,
+            email=email,
+            user_id=user_id,
         )
 
-        get_v1_api_key_response_200.additional_properties = d
-        return get_v1_api_key_response_200
+        webhook_contact_identity.additional_properties = d
+        return webhook_contact_identity
 
     @property
     def additional_keys(self) -> list[str]:

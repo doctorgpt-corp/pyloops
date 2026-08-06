@@ -13,17 +13,21 @@ T = TypeVar("T", bound="CreateWorkflowNodeBetweenRequest")
 
 @_attrs_define
 class CreateWorkflowNodeBetweenRequest:
-    """Insert a new node between two existing nodes, `fromNodeId` and `toNodeId`.
+    """Insert a new node between two existing nodes, `fromNodeId` and `toNodeId`. When `fromNodeId` is an
+    `ExperimentBranchNode`, `nodeTypeName` must be `VariantNode`, and `toNodeId` cannot already be a `VariantNode`; use
+    add-branch to add sibling variants. Branch paths can be edited with create-node, but a workflow cannot be started
+    unless each direct `BranchNode` child is an `AudienceFilter`.
 
-    Attributes:
-        expected_revision_id (None | str): The workflow revision token returned by the latest workflow read or mutation.
-            Older workflows may return `null` before their first revision-aware mutation; pass `null` back as
-            `expectedRevisionId` in that case. If the token is stale, the API returns a `409 Conflict` error.
-        insert_mode (CreateWorkflowNodeBetweenRequestInsertMode):
-        node_type_name (CreateWorkflowNodeTypeName): Node types that can be created with the API. `*Trigger` nodes and
-            `ExitAction` nodes cannot be created.
-        from_node_id (str): The node to insert after. This node must currently point to `toNodeId`.
-        to_node_id (str): The node to insert before.
+        Attributes:
+            expected_revision_id (None | str): The workflow revision token returned by the latest workflow read or mutation.
+                Older workflows may return `null` before their first revision-aware mutation; pass `null` back as
+                `expectedRevisionId` in that case. If the token is stale, the API returns a `409 Conflict` error.
+            insert_mode (CreateWorkflowNodeBetweenRequestInsertMode):
+            node_type_name (CreateWorkflowNodeTypeName): Node types that can be created with the API. `*Trigger` nodes and
+                `ExitAction` nodes cannot be created.
+            from_node_id (str): The node to insert after. This node must currently point to `toNodeId`. If this is an
+                `ExperimentBranchNode`, `nodeTypeName` must be `VariantNode` and `toNodeId` cannot already be a `VariantNode`.
+            to_node_id (str): The node to insert before.
     """
 
     expected_revision_id: None | str

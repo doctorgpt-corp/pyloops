@@ -13,17 +13,18 @@ T = TypeVar("T", bound="CreateWorkflowNodeBeforeRequest")
 
 @_attrs_define
 class CreateWorkflowNodeBeforeRequest:
-    """Insert a new node before `beforeNodeId`.
+    """Insert a new node before `beforeNodeId`. `VariantNode` cannot use `insertMode: "before"`; to restore a missing
+    variant path, use `insertMode: "between"` with the experiment branch as `fromNodeId`.
 
-    Attributes:
-        expected_revision_id (None | str): The workflow revision token returned by the latest workflow read or mutation.
-            Older workflows may return `null` before their first revision-aware mutation; pass `null` back as
-            `expectedRevisionId` in that case. If the token is stale, the API returns a `409 Conflict` error.
-        insert_mode (CreateWorkflowNodeBeforeRequestInsertMode):
-        node_type_name (CreateWorkflowNodeTypeName): Node types that can be created with the API. `*Trigger` nodes and
-            `ExitAction` nodes cannot be created.
-        before_node_id (str): The node to insert before. The target must have at least one incoming parent and cannot be
-            a trigger node.
+        Attributes:
+            expected_revision_id (None | str): The workflow revision token returned by the latest workflow read or mutation.
+                Older workflows may return `null` before their first revision-aware mutation; pass `null` back as
+                `expectedRevisionId` in that case. If the token is stale, the API returns a `409 Conflict` error.
+            insert_mode (CreateWorkflowNodeBeforeRequestInsertMode):
+            node_type_name (CreateWorkflowNodeTypeName): Node types that can be created with the API. `*Trigger` nodes and
+                `ExitAction` nodes cannot be created.
+            before_node_id (str): The node to insert before. The target must have at least one incoming parent and cannot be
+                a trigger node.
     """
 
     expected_revision_id: None | str
