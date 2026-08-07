@@ -1,66 +1,70 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-from ..types import UNSET, Unset
-
-T = TypeVar("T", bound="GetV1ApiKeyResponse401")
+T = TypeVar("T", bound="WebhookContactIdentity")
 
 
 @_attrs_define
-class GetV1ApiKeyResponse401:
+class WebhookContactIdentity:
     """
     Attributes:
-        success (bool | Unset):
-        message (str | Unset):
-        error (str | Unset):
+        id (str):
+        email (str):
+        user_id (None | str):
     """
 
-    success: bool | Unset = UNSET
-    message: str | Unset = UNSET
-    error: str | Unset = UNSET
+    id: str
+    email: str
+    user_id: None | str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
+        id = self.id
 
-        message = self.message
+        email = self.email
 
-        error = self.error
+        user_id: None | str
+        user_id = self.user_id
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({})
-        if success is not UNSET:
-            field_dict["success"] = success
-        if message is not UNSET:
-            field_dict["message"] = message
-        if error is not UNSET:
-            field_dict["error"] = error
+        field_dict.update(
+            {
+                "id": id,
+                "email": email,
+                "userId": user_id,
+            }
+        )
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        success = d.pop("success", UNSET)
+        id = d.pop("id")
 
-        message = d.pop("message", UNSET)
+        email = d.pop("email")
 
-        error = d.pop("error", UNSET)
+        def _parse_user_id(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
 
-        get_v1_api_key_response_401 = cls(
-            success=success,
-            message=message,
-            error=error,
+        user_id = _parse_user_id(d.pop("userId"))
+
+        webhook_contact_identity = cls(
+            id=id,
+            email=email,
+            user_id=user_id,
         )
 
-        get_v1_api_key_response_401.additional_properties = d
-        return get_v1_api_key_response_401
+        webhook_contact_identity.additional_properties = d
+        return webhook_contact_identity
 
     @property
     def additional_keys(self) -> list[str]:

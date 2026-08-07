@@ -36,7 +36,7 @@ class UpdateEmailMessageRequest:
         reply_to_email (str | Unset): Reply-to email. Must be empty or a valid email address.
         cc_email (str | Unset): CC email address. Requires the team to have CC/BCC enabled.
         bcc_email (str | Unset): BCC email address. Requires the team to have CC/BCC enabled.
-        language_code (str | Unset): Language code for the email. Requires translation to be enabled for the team.
+        language_code (str | Unset): ISO 639-1 language code for the email, e.g. `en` or `fr`.
         email_format (UpdateEmailMessageRequestEmailFormat | Unset): The rendering format of the email.
         lmx (str | Unset): The email body serialized as LMX. Styles must be embedded in the LMX `<Style />` tag.
         contact_properties_fallbacks (UpdateEmailMessageRequestContactPropertiesFallbacks | Unset): Fallback values for

@@ -114,7 +114,8 @@ def sync_detailed(
 
      Delete a single workflow node. If contacts are queued at the node, Loops returns with `\"status\":
     \"queuedContactsFound\"` instead of deleting. Retry with `queuedContactPolicy: \"discard\"` to
-    delete the node and discard those queued contacts.
+    delete the node and discard those queued contacts. Confirmed deletion responses include the
+    simplified workflow after the node is removed.
 
     Args:
         workflow_id (str):
@@ -153,7 +154,8 @@ def sync(
 
      Delete a single workflow node. If contacts are queued at the node, Loops returns with `\"status\":
     \"queuedContactsFound\"` instead of deleting. Retry with `queuedContactPolicy: \"discard\"` to
-    delete the node and discard those queued contacts.
+    delete the node and discard those queued contacts. Confirmed deletion responses include the
+    simplified workflow after the node is removed.
 
     Args:
         workflow_id (str):
@@ -187,7 +189,8 @@ async def asyncio_detailed(
 
      Delete a single workflow node. If contacts are queued at the node, Loops returns with `\"status\":
     \"queuedContactsFound\"` instead of deleting. Retry with `queuedContactPolicy: \"discard\"` to
-    delete the node and discard those queued contacts.
+    delete the node and discard those queued contacts. Confirmed deletion responses include the
+    simplified workflow after the node is removed.
 
     Args:
         workflow_id (str):
@@ -224,7 +227,8 @@ async def asyncio(
 
      Delete a single workflow node. If contacts are queued at the node, Loops returns with `\"status\":
     \"queuedContactsFound\"` instead of deleting. Retry with `queuedContactPolicy: \"discard\"` to
-    delete the node and discard those queued contacts.
+    delete the node and discard those queued contacts. Confirmed deletion responses include the
+    simplified workflow after the node is removed.
 
     Args:
         workflow_id (str):
