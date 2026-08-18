@@ -6,23 +6,24 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.campaign_failure_response import CampaignFailureResponse
-from ...models.campaign_response import CampaignResponse
-from ...models.update_campaign_request import UpdateCampaignRequest
+from ...models.reroute_node_connection_request import RerouteNodeConnectionRequest
+from ...models.workflow_failure_response import WorkflowFailureResponse
 from ...types import Response
 
 
 def _get_kwargs(
-    campaign_id: str,
+    workflow_id: str,
+    node_id: str,
     *,
-    body: UpdateCampaignRequest,
+    body: RerouteNodeConnectionRequest,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/v1/campaigns/{campaign_id}".format(
-            campaign_id=quote(str(campaign_id), safe=""),
+        "url": "/v1/workflows/{workflow_id}/nodes/{node_id}/reroute".format(
+            workflow_id=quote(str(workflow_id), safe=""),
+            node_id=quote(str(node_id), safe=""),
         ),
     }
 
@@ -36,14 +37,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | CampaignFailureResponse | CampaignResponse | None:
-    if response.status_code == 200:
-        response_200 = CampaignResponse.from_dict(response.json())
-
-        return response_200
-
+) -> Any | WorkflowFailureResponse | None:
     if response.status_code == 400:
-        response_400 = CampaignFailureResponse.from_dict(response.json())
+        response_400 = WorkflowFailureResponse.from_dict(response.json())
 
         return response_400
 
@@ -52,7 +48,7 @@ def _parse_response(
         return response_401
 
     if response.status_code == 404:
-        response_404 = CampaignFailureResponse.from_dict(response.json())
+        response_404 = WorkflowFailureResponse.from_dict(response.json())
 
         return response_404
 
@@ -61,7 +57,7 @@ def _parse_response(
         return response_405
 
     if response.status_code == 409:
-        response_409 = CampaignFailureResponse.from_dict(response.json())
+        response_409 = WorkflowFailureResponse.from_dict(response.json())
 
         return response_409
 
@@ -73,7 +69,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | CampaignFailureResponse | CampaignResponse]:
+) -> Response[Any | WorkflowFailureResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -83,30 +79,34 @@ def _build_response(
 
 
 def sync_detailed(
-    campaign_id: str,
+    workflow_id: str,
+    node_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateCampaignRequest,
-) -> Response[Any | CampaignFailureResponse | CampaignResponse]:
-    """Update a campaign
+    body: RerouteNodeConnectionRequest,
+) -> Response[Any | WorkflowFailureResponse]:
+    """Reroute a node connection
 
-     Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
-    At least one field must be provided. Campaigns can only be updated while in draft status.
+     Reroute the source node's existing connection to another valid target node. Returns the updated
+    source node and the latest workflow.
 
     Args:
-        campaign_id (str):
-        body (UpdateCampaignRequest): At least one field must be provided.
+        workflow_id (str):
+        node_id (str):
+        body (RerouteNodeConnectionRequest): Reroute the source node's only outgoing connection to
+            `newTargetNodeId`.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | CampaignFailureResponse | CampaignResponse]
+        Response[Any | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
-        campaign_id=campaign_id,
+        workflow_id=workflow_id,
+        node_id=node_id,
         body=body,
     )
 
@@ -118,60 +118,68 @@ def sync_detailed(
 
 
 def sync(
-    campaign_id: str,
+    workflow_id: str,
+    node_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateCampaignRequest,
-) -> Any | CampaignFailureResponse | CampaignResponse | None:
-    """Update a campaign
+    body: RerouteNodeConnectionRequest,
+) -> Any | WorkflowFailureResponse | None:
+    """Reroute a node connection
 
-     Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
-    At least one field must be provided. Campaigns can only be updated while in draft status.
+     Reroute the source node's existing connection to another valid target node. Returns the updated
+    source node and the latest workflow.
 
     Args:
-        campaign_id (str):
-        body (UpdateCampaignRequest): At least one field must be provided.
+        workflow_id (str):
+        node_id (str):
+        body (RerouteNodeConnectionRequest): Reroute the source node's only outgoing connection to
+            `newTargetNodeId`.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | CampaignFailureResponse | CampaignResponse
+        Any | WorkflowFailureResponse
     """
 
     return sync_detailed(
-        campaign_id=campaign_id,
+        workflow_id=workflow_id,
+        node_id=node_id,
         client=client,
         body=body,
     ).parsed
 
 
 async def asyncio_detailed(
-    campaign_id: str,
+    workflow_id: str,
+    node_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateCampaignRequest,
-) -> Response[Any | CampaignFailureResponse | CampaignResponse]:
-    """Update a campaign
+    body: RerouteNodeConnectionRequest,
+) -> Response[Any | WorkflowFailureResponse]:
+    """Reroute a node connection
 
-     Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
-    At least one field must be provided. Campaigns can only be updated while in draft status.
+     Reroute the source node's existing connection to another valid target node. Returns the updated
+    source node and the latest workflow.
 
     Args:
-        campaign_id (str):
-        body (UpdateCampaignRequest): At least one field must be provided.
+        workflow_id (str):
+        node_id (str):
+        body (RerouteNodeConnectionRequest): Reroute the source node's only outgoing connection to
+            `newTargetNodeId`.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | CampaignFailureResponse | CampaignResponse]
+        Response[Any | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
-        campaign_id=campaign_id,
+        workflow_id=workflow_id,
+        node_id=node_id,
         body=body,
     )
 
@@ -181,31 +189,35 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    campaign_id: str,
+    workflow_id: str,
+    node_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateCampaignRequest,
-) -> Any | CampaignFailureResponse | CampaignResponse | None:
-    """Update a campaign
+    body: RerouteNodeConnectionRequest,
+) -> Any | WorkflowFailureResponse | None:
+    """Reroute a node connection
 
-     Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
-    At least one field must be provided. Campaigns can only be updated while in draft status.
+     Reroute the source node's existing connection to another valid target node. Returns the updated
+    source node and the latest workflow.
 
     Args:
-        campaign_id (str):
-        body (UpdateCampaignRequest): At least one field must be provided.
+        workflow_id (str):
+        node_id (str):
+        body (RerouteNodeConnectionRequest): Reroute the source node's only outgoing connection to
+            `newTargetNodeId`.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | CampaignFailureResponse | CampaignResponse
+        Any | WorkflowFailureResponse
     """
 
     return (
         await asyncio_detailed(
-            campaign_id=campaign_id,
+            workflow_id=workflow_id,
+            node_id=node_id,
             client=client,
             body=body,
         )

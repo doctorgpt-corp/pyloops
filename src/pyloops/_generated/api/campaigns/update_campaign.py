@@ -6,24 +6,23 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.update_workflow_node_request import UpdateWorkflowNodeRequest
-from ...models.workflow_failure_response import WorkflowFailureResponse
+from ...models.campaign_failure_response import CampaignFailureResponse
+from ...models.campaign_response import CampaignResponse
+from ...models.update_campaign_request import UpdateCampaignRequest
 from ...types import Response
 
 
 def _get_kwargs(
-    workflow_id: str,
-    node_id: str,
+    campaign_id: str,
     *,
-    body: UpdateWorkflowNodeRequest,
+    body: UpdateCampaignRequest,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/v1/workflows/{workflow_id}/nodes/{node_id}".format(
-            workflow_id=quote(str(workflow_id), safe=""),
-            node_id=quote(str(node_id), safe=""),
+        "url": "/v1/campaigns/{campaign_id}".format(
+            campaign_id=quote(str(campaign_id), safe=""),
         ),
     }
 
@@ -37,9 +36,14 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | WorkflowFailureResponse | None:
+) -> Any | CampaignFailureResponse | CampaignResponse | None:
+    if response.status_code == 200:
+        response_200 = CampaignResponse.from_dict(response.json())
+
+        return response_200
+
     if response.status_code == 400:
-        response_400 = WorkflowFailureResponse.from_dict(response.json())
+        response_400 = CampaignFailureResponse.from_dict(response.json())
 
         return response_400
 
@@ -48,7 +52,7 @@ def _parse_response(
         return response_401
 
     if response.status_code == 404:
-        response_404 = WorkflowFailureResponse.from_dict(response.json())
+        response_404 = CampaignFailureResponse.from_dict(response.json())
 
         return response_404
 
@@ -57,14 +61,9 @@ def _parse_response(
         return response_405
 
     if response.status_code == 409:
-        response_409 = WorkflowFailureResponse.from_dict(response.json())
+        response_409 = CampaignFailureResponse.from_dict(response.json())
 
         return response_409
-
-    if response.status_code == 501:
-        response_501 = WorkflowFailureResponse.from_dict(response.json())
-
-        return response_501
 
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
@@ -74,7 +73,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | WorkflowFailureResponse]:
+) -> Response[Any | CampaignFailureResponse | CampaignResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -84,33 +83,31 @@ def _build_response(
 
 
 def sync_detailed(
-    workflow_id: str,
-    node_id: str,
+    campaign_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateWorkflowNodeRequest,
-) -> Response[Any | WorkflowFailureResponse]:
-    """Update a workflow node
+    body: UpdateCampaignRequest,
+) -> Response[Any | CampaignFailureResponse | CampaignResponse]:
+    """Update a campaign
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
+    At least one field must be provided. Once a campaign has been sent, only its `name` and
+    `campaignGroupId` can be updated.
 
     Args:
-        workflow_id (str):
-        node_id (str):
-        body (UpdateWorkflowNodeRequest):
+        campaign_id (str):
+        body (UpdateCampaignRequest): At least one field must be provided.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | WorkflowFailureResponse]
+        Response[Any | CampaignFailureResponse | CampaignResponse]
     """
 
     kwargs = _get_kwargs(
-        workflow_id=workflow_id,
-        node_id=node_id,
+        campaign_id=campaign_id,
         body=body,
     )
 
@@ -122,66 +119,62 @@ def sync_detailed(
 
 
 def sync(
-    workflow_id: str,
-    node_id: str,
+    campaign_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateWorkflowNodeRequest,
-) -> Any | WorkflowFailureResponse | None:
-    """Update a workflow node
+    body: UpdateCampaignRequest,
+) -> Any | CampaignFailureResponse | CampaignResponse | None:
+    """Update a campaign
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
+    At least one field must be provided. Once a campaign has been sent, only its `name` and
+    `campaignGroupId` can be updated.
 
     Args:
-        workflow_id (str):
-        node_id (str):
-        body (UpdateWorkflowNodeRequest):
+        campaign_id (str):
+        body (UpdateCampaignRequest): At least one field must be provided.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | WorkflowFailureResponse
+        Any | CampaignFailureResponse | CampaignResponse
     """
 
     return sync_detailed(
-        workflow_id=workflow_id,
-        node_id=node_id,
+        campaign_id=campaign_id,
         client=client,
         body=body,
     ).parsed
 
 
 async def asyncio_detailed(
-    workflow_id: str,
-    node_id: str,
+    campaign_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateWorkflowNodeRequest,
-) -> Response[Any | WorkflowFailureResponse]:
-    """Update a workflow node
+    body: UpdateCampaignRequest,
+) -> Response[Any | CampaignFailureResponse | CampaignResponse]:
+    """Update a campaign
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
+    At least one field must be provided. Once a campaign has been sent, only its `name` and
+    `campaignGroupId` can be updated.
 
     Args:
-        workflow_id (str):
-        node_id (str):
-        body (UpdateWorkflowNodeRequest):
+        campaign_id (str):
+        body (UpdateCampaignRequest): At least one field must be provided.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | WorkflowFailureResponse]
+        Response[Any | CampaignFailureResponse | CampaignResponse]
     """
 
     kwargs = _get_kwargs(
-        workflow_id=workflow_id,
-        node_id=node_id,
+        campaign_id=campaign_id,
         body=body,
     )
 
@@ -191,34 +184,32 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    workflow_id: str,
-    node_id: str,
+    campaign_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateWorkflowNodeRequest,
-) -> Any | WorkflowFailureResponse | None:
-    """Update a workflow node
+    body: UpdateCampaignRequest,
+) -> Any | CampaignFailureResponse | CampaignResponse | None:
+    """Update a campaign
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update a draft campaign's name, group, audience (mailing list, segment, or filter), or scheduling.
+    At least one field must be provided. Once a campaign has been sent, only its `name` and
+    `campaignGroupId` can be updated.
 
     Args:
-        workflow_id (str):
-        node_id (str):
-        body (UpdateWorkflowNodeRequest):
+        campaign_id (str):
+        body (UpdateCampaignRequest): At least one field must be provided.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | WorkflowFailureResponse
+        Any | CampaignFailureResponse | CampaignResponse
     """
 
     return (
         await asyncio_detailed(
-            workflow_id=workflow_id,
-            node_id=node_id,
+            campaign_id=campaign_id,
             client=client,
             body=body,
         )

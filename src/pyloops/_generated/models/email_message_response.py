@@ -43,7 +43,7 @@ class EmailMessageResponse:
             message belongs to a transactional email (mutually exclusive with `campaignId`).
         cc_email (str | Unset): The email CC address. Only present when set.
         bcc_email (str | Unset): The email BCC address. Only present when set.
-        language_code (str | Unset): Only present when set.
+        language_code (str | Unset): ISO 639-1 language code for the email, e.g. `en` or `fr`. Only present when set.
         contact_properties_fallbacks (EmailMessageResponseContactPropertiesFallbacks | Unset): Fallback values for
             contact properties. Only present when set.
         event_properties_fallbacks (EmailMessageResponseEventPropertiesFallbacks | Unset): Fallback values for event

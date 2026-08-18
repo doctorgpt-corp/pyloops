@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..models.workflow_deleted_response_status import WorkflowDeletedResponseStatus
+
+if TYPE_CHECKING:
+    from ..models.simplified_workflow import SimplifiedWorkflow
+
 
 T = TypeVar("T", bound="WorkflowDeletedResponse")
 
@@ -21,12 +25,14 @@ class WorkflowDeletedResponse:
             on the next workflow mutation.
         queued_contact_count (float): The number of queued contacts that were removed from the workflow due to the node
             deletion.
+        workflow (SimplifiedWorkflow):
     """
 
     status: WorkflowDeletedResponseStatus
     node_ids: list[str]
     workflow_revision_id: str
     queued_contact_count: float
+    workflow: SimplifiedWorkflow
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -39,6 +45,8 @@ class WorkflowDeletedResponse:
 
         queued_contact_count = self.queued_contact_count
 
+        workflow = self.workflow.to_dict()
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -47,6 +55,7 @@ class WorkflowDeletedResponse:
                 "nodeIds": node_ids,
                 "workflowRevisionId": workflow_revision_id,
                 "queuedContactCount": queued_contact_count,
+                "workflow": workflow,
             }
         )
 
@@ -54,6 +63,8 @@ class WorkflowDeletedResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.simplified_workflow import SimplifiedWorkflow
+
         d = dict(src_dict)
         status = WorkflowDeletedResponseStatus(d.pop("status"))
 
@@ -66,11 +77,14 @@ class WorkflowDeletedResponse:
 
         queued_contact_count = d.pop("queuedContactCount")
 
+        workflow = SimplifiedWorkflow.from_dict(d.pop("workflow"))
+
         workflow_deleted_response = cls(
             status=status,
             node_ids=node_ids,
             workflow_revision_id=workflow_revision_id,
             queued_contact_count=queued_contact_count,
+            workflow=workflow,
         )
 
         workflow_deleted_response.additional_properties = d
