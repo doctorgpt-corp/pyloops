@@ -1658,6 +1658,26 @@ class LoopsClient:
             action="get transactional template",
         )
 
+    async def get_transactional_variables(self, transactional_id: str) -> list[str]:
+        """Return the data variable names a transactional email template expects.
+
+        Convenience wrapper around :meth:`get_transactional_template` for callers that
+        only need the names to build the ``data_variables`` mapping passed to
+        :meth:`send_transactional_email`.
+
+        Args:
+            transactional_id: The transactional email template ID
+
+        Returns:
+            The template's data variable names. Empty for unpublished templates.
+
+        Raises:
+            LoopsError: If not found (404) or the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        template = await self.get_transactional_template(transactional_id)
+        return list(template.data_variables)
+
     async def create_transactional_template(
         self,
         name: str,
