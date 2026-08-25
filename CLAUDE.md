@@ -16,6 +16,33 @@ Supporting modules:
 - `src/pyloops/responses.py` — hand-written response models for endpoints where the generated model is insufficient (e.g. `TransactionalEmailsResponse`)
 - `src/pyloops/testing.py` — testing utilities (see below)
 
+## Git conventions
+
+Commit subjects **and PR titles** follow [Conventional Commits](https://www.conventionalcommits.org/):
+`type(optional-scope): summary`, imperative mood, no trailing period.
+
+| Type | Use for |
+|---|---|
+| `feat` | A new client wrapper, endpoint, or user-visible capability |
+| `fix` | A bug fix in the hand-written layer |
+| `chore` | Regenerating `_generated/`, version bumps, dependency changes |
+| `refactor` | Restructuring that does not change behaviour |
+| `docs` | README, CLAUDE.md, docstrings |
+| `ci` | Anything under `.github/workflows/` |
+| `test` | Test-only changes |
+
+Append `!` before the colon when the change breaks consumers (`feat!:`,
+`chore!:`) and explain the break in the body. On this SDK, breaking means a
+changed return type, or a removed or renamed public method/argument on
+`LoopsClient`. A new optional argument, a new method, or a `DeprecationWarning`
+on an argument that still works are all non-breaking.
+
+Keep the subject under ~72 characters and put the reasoning in the body — why
+the change is needed, not a restatement of the diff.
+
+Note `check-updates.yml` hardcodes non-conventional titles for the automated
+SDK-update PRs ("Update SDK to Loops API version X"). Retitle those on review.
+
 ## SDK version bump workflow
 
 When Loops releases a new API version:
