@@ -126,8 +126,9 @@ from pyloops._generated.models import (
     CreateTransactionalRequest,
     CreateUploadRequest,
     CreateUploadResponse,
-    CreateWorkflowNodeBeforeRequest,
-    CreateWorkflowNodeBeforeRequestInsertMode,
+    CreateWorkflowNodeAfterRequest,
+    CreateWorkflowNodeAfterRequestInsertMode,
+    CreateWorkflowNodeBeforeRequestType0,
     CreateWorkflowNodeBetweenRequest,
     CreateWorkflowNodeBetweenRequestInsertMode,
     CreateWorkflowNodeTypeName,
@@ -2070,8 +2071,15 @@ class LoopsClient:
     ) -> dict[str, Any]:
         """Add a node to a workflow.
 
-        Nodes are inserted either *between* an existing edge (pass ``from_node_id``
-        and ``to_node_id``) or *before* an existing node (pass ``before_node_id``).
+        The insert mode is inferred from which node IDs you pass:
+
+        * ``from_node_id`` **and** ``to_node_id`` -> ``between``: insert into that edge.
+        * ``to_node_id`` alone -> ``before``: insert ahead of that node. The target must
+          have at least one incoming parent and cannot be a trigger node.
+        * ``from_node_id`` alone -> ``after``: insert behind that node. Valid only when
+          ``from_node_id`` has exactly one outgoing node; when it has several, use
+          ``between`` with an explicit ``to_node_id``.
+
         New nodes are created with default settings; call ``update_workflow_node``
         afterwards to configure them.
 
@@ -2082,9 +2090,11 @@ class LoopsClient:
                 ``SendEmailAction`` or ``VariantNode`` (triggers and exit nodes
                 cannot be created).
             expected_revision_id: Optimistic concurrency token (see ``update_workflow``)
-            from_node_id: Source node of the edge to insert into (``between`` mode)
-            to_node_id: Target node of the edge to insert into (``between`` mode)
-            before_node_id: Node to insert before (``before`` mode)
+            from_node_id: Source node (``between`` and ``after`` modes)
+            to_node_id: Target node (``between`` and ``before`` modes)
+            before_node_id: Deprecated alias for ``to_node_id``, matching the
+                ``beforeNodeId`` field Loops deprecated in API 1.21.7. Pass
+                ``to_node_id`` instead.
 
         Returns:
             The API response as a dictionary containing the created ``node`` and the
@@ -2095,18 +2105,19 @@ class LoopsClient:
                 found (404), or a revision conflict occurs (409)
             LoopsRateLimitError: If rate limit is exceeded
         """
-        node_type = CreateWorkflowNodeTypeName(node_type_name)
-        body: CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest
         if before_node_id is not None:
-            if from_node_id is not None or to_node_id is not None:
-                raise LoopsError("Pass before_node_id for 'before' inserts or from/to_node_id for 'between', not both")
-            body = CreateWorkflowNodeBeforeRequest(
-                expected_revision_id=expected_revision_id,
-                insert_mode=CreateWorkflowNodeBeforeRequestInsertMode.BEFORE,
-                node_type_name=node_type,
-                before_node_id=before_node_id,
+            if to_node_id is not None:
+                raise LoopsError("Pass to_node_id or before_node_id, not both - they name the same node")
+            warnings.warn(
+                "before_node_id is deprecated upstream as of Loops API 1.21.7; pass to_node_id instead.",
+                DeprecationWarning,
+                stacklevel=2,
             )
-        elif from_node_id is not None and to_node_id is not None:
+            to_node_id = before_node_id
+
+        node_type = CreateWorkflowNodeTypeName(node_type_name)
+        body: CreateWorkflowNodeAfterRequest | CreateWorkflowNodeBeforeRequestType0 | CreateWorkflowNodeBetweenRequest
+        if from_node_id is not None and to_node_id is not None:
             body = CreateWorkflowNodeBetweenRequest(
                 expected_revision_id=expected_revision_id,
                 insert_mode=CreateWorkflowNodeBetweenRequestInsertMode.BETWEEN,
@@ -2114,9 +2125,30 @@ class LoopsClient:
                 from_node_id=from_node_id,
                 to_node_id=to_node_id,
             )
+        elif to_node_id is not None:
+            # The spec models a 'before' body as a base object (expectedRevisionId,
+            # insertMode, nodeTypeName) plus a oneOf over toNodeId/beforeNodeId, and
+            # the generator flattens that into variants carrying *only* the oneOf
+            # branch - the three base fields are dropped, so the generated model
+            # cannot produce a valid body on its own. additional_properties is the
+            # documented escape hatch: to_dict() merges it back in.
+            body = CreateWorkflowNodeBeforeRequestType0(to_node_id=to_node_id)
+            body.additional_properties = {
+                "expectedRevisionId": expected_revision_id,
+                "insertMode": "before",
+                "nodeTypeName": node_type.value,
+            }
+        elif from_node_id is not None:
+            body = CreateWorkflowNodeAfterRequest(
+                expected_revision_id=expected_revision_id,
+                insert_mode=CreateWorkflowNodeAfterRequestInsertMode.AFTER,
+                node_type_name=node_type,
+                from_node_id=from_node_id,
+            )
         else:
             raise LoopsError(
-                "Provide either before_node_id ('before' insert) or both from_node_id and to_node_id ('between' insert)"
+                "Provide from_node_id and/or to_node_id: both for a 'between' insert, "
+                "to_node_id alone for 'before', from_node_id alone for 'after'"
             )
         response = await create_workflow_node.asyncio_detailed(
             workflow_id=workflow_id,
@@ -2137,7 +2169,7 @@ class LoopsClient:
         node_id: str,
         expected_revision_id: str | None,
         payload: dict[str, Any],
-    ) -> Any:
+    ) -> dict[str, Any]:
         """Update the settings of a workflow node.
 
         Args:
@@ -2150,7 +2182,8 @@ class LoopsClient:
                 a SendEmailAction). See the Loops docs for each node type's payload.
 
         Returns:
-            The updated node (one of the workflow mutation node models).
+            The API response as a dictionary: the updated node's fields plus the
+            latest simplified ``workflow``.
 
         Raises:
             LoopsError: If not found (404), a revision conflict occurs (409), or the
@@ -2165,15 +2198,12 @@ class LoopsClient:
             body=body,
         )
         result = self._handle_response(response)
-        if isinstance(result, WorkflowFailureResponse):
-            raise LoopsError(
-                f"Failed to update workflow node: {getattr(result, 'message', 'Unknown error')}",
-                status_code=response.status_code,
-                response_data=result,
-            )
-        if result is None:
-            raise LoopsError("Failed to update workflow node", status_code=response.status_code)
-        return result
+        return self._unwrap_raw(
+            result,
+            response,
+            failure=WorkflowFailureResponse,
+            action="update workflow node",
+        )
 
     async def add_workflow_branch(
         self,

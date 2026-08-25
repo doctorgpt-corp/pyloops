@@ -418,6 +418,7 @@ def loops_respx_mock(
                     "workflowRevisionId": "mock-revision-id",
                     "queuedContactCount": 0,
                     "queuedContactLimitReached": False,
+                    "workflow": _workflow_json,
                 },
             )
         )
@@ -434,7 +435,7 @@ def loops_respx_mock(
             return_value=respx.MockResponse(200, json={"node": _mutation_node, "workflow": _workflow_json})
         )
         router.post(url__regex=r"/v1/workflows/[^/]+/nodes/[^/]+$", name="update_workflow_node").mock(
-            return_value=respx.MockResponse(200, json=_mutation_node)
+            return_value=respx.MockResponse(200, json={**_mutation_node, "workflow": _workflow_json})
         )
         router.post(url__regex=r"/v1/workflows/[^/]+/nodes$", name="create_workflow_node").mock(
             return_value=respx.MockResponse(200, json={"node": _mutation_node, "workflow": _workflow_json})
@@ -450,6 +451,7 @@ def loops_respx_mock(
                     "workflowRevisionId": "mock-revision-id",
                     "queuedContactCount": 0,
                     "queuedContactLimitReached": False,
+                    "workflow": _workflow_json,
                 },
             )
         )
@@ -462,6 +464,7 @@ def loops_respx_mock(
                     "workflowRevisionId": "mock-revision-id",
                     "queuedContactCount": 0,
                     "queuedContactLimitReached": False,
+                    "workflow": _workflow_json,
                 },
             )
         )

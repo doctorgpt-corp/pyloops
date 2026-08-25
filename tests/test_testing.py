@@ -1045,10 +1045,82 @@ async def test_create_workflow_node_between():
 
 
 @pytest.mark.asyncio
+async def test_create_workflow_node_before():
+    """`to_node_id` alone inserts ahead of that node.
+
+    The generated CreateWorkflowNodeBeforeRequestType0 model carries only the
+    oneOf branch, so this also guards that the three required base fields are
+    still serialised.
+    """
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_workflow_node(
+            "mock-workflow-id",
+            "TimerAction",
+            "rev-1",
+            to_node_id="n2",
+        )
+        assert result["workflow"]["id"] == "mock-workflow-id"
+        body = json.loads(api["create_workflow_node"].calls[0].request.content)
+        assert body == {
+            "expectedRevisionId": "rev-1",
+            "insertMode": "before",
+            "nodeTypeName": "TimerAction",
+            "toNodeId": "n2",
+        }
+
+
+@pytest.mark.asyncio
+async def test_create_workflow_node_after():
+    """`from_node_id` alone inserts behind that node (new in 1.21.7)."""
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        await client.create_workflow_node(
+            "mock-workflow-id",
+            "TimerAction",
+            "rev-1",
+            from_node_id="n1",
+        )
+        body = json.loads(api["create_workflow_node"].calls[0].request.content)
+        assert body == {
+            "expectedRevisionId": "rev-1",
+            "insertMode": "after",
+            "nodeTypeName": "TimerAction",
+            "fromNodeId": "n1",
+        }
+
+
+@pytest.mark.asyncio
+async def test_create_workflow_node_before_node_id_is_deprecated():
+    """`before_node_id` still works but warns and is sent as `toNodeId`."""
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        with pytest.warns(DeprecationWarning, match="before_node_id is deprecated"):
+            await client.create_workflow_node(
+                "mock-workflow-id",
+                "TimerAction",
+                "rev-1",
+                before_node_id="n2",
+            )
+        body = json.loads(api["create_workflow_node"].calls[0].request.content)
+        assert body["insertMode"] == "before"
+        assert body["toNodeId"] == "n2"
+        assert "beforeNodeId" not in body
+
+
+@pytest.mark.asyncio
+async def test_create_workflow_node_rejects_both_before_aliases():
+    with loops_respx_mock():
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="not both"):
+            await client.create_workflow_node("wf", "TimerAction", "rev", to_node_id="n2", before_node_id="n2")
+
+
+@pytest.mark.asyncio
 async def test_create_workflow_node_requires_insert_target():
     with loops_respx_mock():
         client = pyloops.get_client()
-        with pytest.raises(LoopsError, match="before_node_id"):
+        with pytest.raises(LoopsError, match="from_node_id and/or to_node_id"):
             await client.create_workflow_node("wf", "TimerAction", "rev")
 
 
@@ -1062,7 +1134,9 @@ async def test_update_workflow_node():
             "rev-1",
             payload={"typeName": "SignupTrigger"},
         )
-        assert result.id == "mock-node-id"
+        assert result["id"] == "mock-node-id"
+        # 1.21.7 returns the updated node's fields plus the latest simplified workflow
+        assert result["workflow"]["id"] == "mock-workflow-id"
         body = json.loads(api["update_workflow_node"].calls[0].request.content)
         assert body["expectedRevisionId"] == "rev-1"
         assert body["payload"]["typeName"] == "SignupTrigger"
@@ -1193,7 +1267,7 @@ _NEW_WRAPPER_ERROR_CASES = [
     ("change_workflow_mailing_list", lambda c: c.change_workflow_mailing_list("wf", "rev", "list-id")),
     (
         "create_workflow_node",
-        lambda c: c.create_workflow_node("wf", "TimerAction", "rev", before_node_id="n1"),
+        lambda c: c.create_workflow_node("wf", "TimerAction", "rev", to_node_id="n1"),
     ),
     (
         "update_workflow_node",
