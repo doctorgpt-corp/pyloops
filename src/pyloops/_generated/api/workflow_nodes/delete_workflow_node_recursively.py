@@ -114,7 +114,8 @@ def sync_detailed(
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
     Loops returns with `\"status\": \"queuedContactsFound\"` instead of deleting. Retry with
-    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts.
+    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts. Confirmed
+    deletion responses include the simplified workflow after the nodes are removed.
 
     Args:
         workflow_id (str):
@@ -153,7 +154,8 @@ def sync(
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
     Loops returns with `\"status\": \"queuedContactsFound\"` instead of deleting. Retry with
-    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts.
+    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts. Confirmed
+    deletion responses include the simplified workflow after the nodes are removed.
 
     Args:
         workflow_id (str):
@@ -187,7 +189,8 @@ async def asyncio_detailed(
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
     Loops returns with `\"status\": \"queuedContactsFound\"` instead of deleting. Retry with
-    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts.
+    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts. Confirmed
+    deletion responses include the simplified workflow after the nodes are removed.
 
     Args:
         workflow_id (str):
@@ -224,7 +227,8 @@ async def asyncio(
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
     Loops returns with `\"status\": \"queuedContactsFound\"` instead of deleting. Retry with
-    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts.
+    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts. Confirmed
+    deletion responses include the simplified workflow after the nodes are removed.
 
     Args:
         workflow_id (str):

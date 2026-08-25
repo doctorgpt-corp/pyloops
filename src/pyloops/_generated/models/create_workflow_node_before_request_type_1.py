@@ -6,32 +6,27 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="GetV1ApiKeyResponse200")
+T = TypeVar("T", bound="CreateWorkflowNodeBeforeRequestType1")
 
 
 @_attrs_define
-class GetV1ApiKeyResponse200:
+class CreateWorkflowNodeBeforeRequestType1:
     """
     Attributes:
-        success (bool):
-        team_name (str): The name of the team the API key belongs to.
+        before_node_id (str):
     """
 
-    success: bool
-    team_name: str
+    before_node_id: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        success = self.success
-
-        team_name = self.team_name
+        before_node_id = self.before_node_id
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "success": success,
-                "teamName": team_name,
+                "beforeNodeId": before_node_id,
             }
         )
 
@@ -40,17 +35,14 @@ class GetV1ApiKeyResponse200:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        success = d.pop("success")
+        before_node_id = d.pop("beforeNodeId")
 
-        team_name = d.pop("teamName")
-
-        get_v1_api_key_response_200 = cls(
-            success=success,
-            team_name=team_name,
+        create_workflow_node_before_request_type_1 = cls(
+            before_node_id=before_node_id,
         )
 
-        get_v1_api_key_response_200.additional_properties = d
-        return get_v1_api_key_response_200
+        create_workflow_node_before_request_type_1.additional_properties = d
+        return create_workflow_node_before_request_type_1
 
     @property
     def additional_keys(self) -> list[str]:

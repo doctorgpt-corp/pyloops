@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "pyloops"
-version = "1.21.2.1"
+version = "1.21.7"
 description = "Unofficial Python SDK for Loops.so email platform"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -25,7 +25,6 @@ classifiers = [
 dependencies = [
     "httpx>=0.23.0,<0.29.0",
     "attrs>=22.2.0",
-    "python-dateutil>=2.8.0,<3",
 ]
 
 [project.optional-dependencies]
@@ -41,7 +40,7 @@ module-root = "src/"
 
 [dependency-groups]
 dev = [
-    "openapi-python-client>=0.27.1",
+    "openapi-python-client>=0.29.0",
     "pyright>=1.1.390",
     "pytest>=8.0",
     "pytest-asyncio>=0.25.0",

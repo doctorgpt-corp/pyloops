@@ -114,7 +114,8 @@ def sync_detailed(
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
     workflow due to the change of mailing list, Loops returns with `\"status\": \"queuedContactsFound\"`
     instead of applying the change. Retry with `queuedContactPolicy: \"discard\"` to apply the change
-    and discard those contacts.
+    and discard those contacts. Confirmed update responses include the simplified workflow after the
+    mailing list changes.
 
     Args:
         workflow_id (str):
@@ -151,7 +152,8 @@ def sync(
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
     workflow due to the change of mailing list, Loops returns with `\"status\": \"queuedContactsFound\"`
     instead of applying the change. Retry with `queuedContactPolicy: \"discard\"` to apply the change
-    and discard those contacts.
+    and discard those contacts. Confirmed update responses include the simplified workflow after the
+    mailing list changes.
 
     Args:
         workflow_id (str):
@@ -183,7 +185,8 @@ async def asyncio_detailed(
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
     workflow due to the change of mailing list, Loops returns with `\"status\": \"queuedContactsFound\"`
     instead of applying the change. Retry with `queuedContactPolicy: \"discard\"` to apply the change
-    and discard those contacts.
+    and discard those contacts. Confirmed update responses include the simplified workflow after the
+    mailing list changes.
 
     Args:
         workflow_id (str):
@@ -218,7 +221,8 @@ async def asyncio(
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
     workflow due to the change of mailing list, Loops returns with `\"status\": \"queuedContactsFound\"`
     instead of applying the change. Retry with `queuedContactPolicy: \"discard\"` to apply the change
-    and discard those contacts.
+    and discard those contacts. Confirmed update responses include the simplified workflow after the
+    mailing list changes.
 
     Args:
         workflow_id (str):
