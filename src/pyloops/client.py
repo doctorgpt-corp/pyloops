@@ -83,6 +83,7 @@ from pyloops._generated.api.workflow_nodes import (
     delete_workflow_node,
     delete_workflow_node_recursively,
     get_workflow_node,
+    reroute_node_connection,
     update_workflow_node,
 )
 from pyloops._generated.api.workflows import (
@@ -159,6 +160,7 @@ from pyloops._generated.models import (
     ListWorkflowsResponse,
     MailingList,
     MailingListSubscriptions,
+    RerouteNodeConnectionRequest,
     SimplifiedWorkflow,
     TestApiKeyResponse401,
     ThemeFailureResponse,
@@ -2242,6 +2244,56 @@ class LoopsClient:
             success=AddWorkflowBranchResponse,
             failure=WorkflowFailureResponse,
             action="add workflow branch",
+        )
+
+    async def reroute_workflow_node_connection(
+        self,
+        workflow_id: str,
+        node_id: str,
+        expected_revision_id: str | None,
+        new_target_node_id: str,
+    ) -> dict[str, Any]:
+        """Move a node's outgoing connection to a different target node.
+
+        ``node_id`` is the *source* node whose single outgoing connection is moved;
+        the new target goes in ``new_target_node_id``. The source must have exactly
+        one outgoing connection, so BranchNode and ExperimentBranchNode cannot be
+        rerouted this way - they have several branch-specific outputs. The current
+        target must still have another incoming connection once the reroute is done.
+
+        Added in Loops API 1.21.7.
+
+        Args:
+            workflow_id: The workflow ID
+            node_id: The source node whose outgoing connection should be moved
+            expected_revision_id: Optimistic concurrency token (see ``update_workflow``)
+            new_target_node_id: The node that should receive the connection
+
+        Returns:
+            The API response as a dictionary: the updated source node plus the latest
+            simplified ``workflow``.
+
+        Raises:
+            LoopsError: If the reroute is invalid (400), the workflow or node is not
+                found (404), or a revision conflict occurs (409)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = RerouteNodeConnectionRequest(
+            expected_revision_id=expected_revision_id,
+            new_target_node_id=new_target_node_id,
+        )
+        response = await reroute_node_connection.asyncio_detailed(
+            workflow_id=workflow_id,
+            node_id=node_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+        return self._unwrap_raw(
+            result,
+            response,
+            failure=WorkflowFailureResponse,
+            action="reroute workflow node connection",
         )
 
     async def delete_workflow_node(

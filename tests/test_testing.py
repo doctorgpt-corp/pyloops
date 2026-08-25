@@ -212,6 +212,7 @@ EXPECTED_ROUTE_NAMES = [
     "create_workflow_node",
     "update_workflow_node",
     "add_workflow_branch",
+    "reroute_node_connection",
     "delete_workflow_node",
     "delete_workflow_node_recursively",
 ]
@@ -1143,6 +1144,32 @@ async def test_update_workflow_node():
 
 
 @pytest.mark.asyncio
+async def test_reroute_workflow_node_connection():
+    """New endpoint in 1.21.7: POST /v1/workflows/{id}/nodes/{nodeId}/reroute."""
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.reroute_workflow_node_connection(
+            "mock-workflow-id",
+            "mock-node-id",
+            "rev-1",
+            new_target_node_id="n9",
+        )
+        assert result["id"] == "mock-node-id"
+        assert result["workflow"]["id"] == "mock-workflow-id"
+        body = json.loads(api["reroute_node_connection"].calls[0].request.content)
+        assert body == {"expectedRevisionId": "rev-1", "newTargetNodeId": "n9"}
+
+
+@pytest.mark.asyncio
+async def test_reroute_workflow_node_connection_not_found():
+    with loops_respx_mock() as api:
+        api["reroute_node_connection"].mock(return_value=Response(404, json={"message": "Not found"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Not found"):
+            await client.reroute_workflow_node_connection("wf", "n1", "rev", new_target_node_id="n9")
+
+
+@pytest.mark.asyncio
 async def test_add_workflow_branch():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
@@ -1274,6 +1301,10 @@ _NEW_WRAPPER_ERROR_CASES = [
         lambda c: c.update_workflow_node("wf", "n1", "rev", payload={"typeName": "SignupTrigger"}),
     ),
     ("add_workflow_branch", lambda c: c.add_workflow_branch("wf", "n1", "rev")),
+    (
+        "reroute_node_connection",
+        lambda c: c.reroute_workflow_node_connection("wf", "n1", "rev", new_target_node_id="n9"),
+    ),
     ("delete_workflow_node", lambda c: c.delete_workflow_node("wf", "n1", "rev")),
     (
         "delete_workflow_node_recursively",
