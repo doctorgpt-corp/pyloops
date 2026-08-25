@@ -52,6 +52,19 @@ await client.send_event(
 
 # List mailing lists
 mailing_lists = await client.list_mailing_lists()
+
+# Look up the data variables a transactional template expects, then send it
+variables = await client.get_transactional_variables("clfq6dinn000yl70fgwwyp82l")
+# -> ["firstName", "inviteLink"]
+
+await client.send_transactional_email(
+    transactional_id="clfq6dinn000yl70fgwwyp82l",
+    email="user@example.com",
+    data_variables={
+        "firstName": "Jane",
+        "inviteLink": "https://myapp.com/invite/abc123",
+    },
+)
 ```
 
 ### Low-Level API
@@ -113,7 +126,7 @@ The high-level `LoopsClient` wraps every Loops.so API endpoint:
 - **Mailing Lists**: View available mailing lists
 - **Events**: Trigger event-based emails
 - **Event Patterns**: List and look up triggerable event types
-- **Transactional Emails**: Send, list, and manage transactional templates (create, update, draft, publish)
+- **Transactional Emails**: Send, list, and manage transactional templates (create, update, draft, publish), and read the data variables a template expects
 - **Campaigns & Campaign Groups**: List, get, create, and update
 - **Transactional Groups**: List, get, create, and update
 - **Themes & Components**: List, get, create, and update reusable branding/building blocks

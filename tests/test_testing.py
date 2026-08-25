@@ -665,6 +665,47 @@ async def test_get_transactional_template():
 
 
 @pytest.mark.asyncio
+async def test_get_transactional_variables():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_transactional_variables("mock-transactional-id")
+        assert result == []
+        assert api["get_transactional_template"].called
+
+
+@pytest.mark.asyncio
+async def test_get_transactional_variables_returns_template_names():
+    with loops_respx_mock() as api:
+        api["get_transactional_template"].mock(
+            return_value=Response(
+                200,
+                json={
+                    "id": "mock-transactional-id",
+                    "name": "Invitation",
+                    "draftEmailMessageId": None,
+                    "publishedEmailMessageId": "mock-email-message-id",
+                    "transactionalGroupId": None,
+                    "createdAt": "2024-01-01T00:00:00.000Z",
+                    "updatedAt": "2024-01-01T00:00:00.000Z",
+                    "dataVariables": ["firstName", "inviteLink"],
+                },
+            )
+        )
+        client = pyloops.get_client()
+        result = await client.get_transactional_variables("mock-transactional-id")
+        assert result == ["firstName", "inviteLink"]
+
+
+@pytest.mark.asyncio
+async def test_get_transactional_variables_not_found():
+    with loops_respx_mock() as api:
+        api["get_transactional_template"].mock(return_value=Response(404, json={"message": "Not found"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Not found"):
+            await client.get_transactional_variables("missing-id")
+
+
+@pytest.mark.asyncio
 async def test_create_transactional_template():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
