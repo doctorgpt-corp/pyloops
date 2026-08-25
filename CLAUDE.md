@@ -19,7 +19,11 @@ Supporting modules:
 ## SDK version bump workflow
 
 When Loops releases a new API version:
-1. Regenerate `src/pyloops/_generated/` from the updated OpenAPI spec
+1. Regenerate `src/pyloops/_generated/` from the updated OpenAPI spec:
+   `uv run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv`,
+   then move `loops-open-api-spec-client/loops_open_api_spec_client` into place.
+   The generator version matters — it is pinned in the dev dependencies so a
+   local regeneration reproduces CI's tree byte-for-byte
 2. Identify new endpoints by diffing the generated `api/` and `models/` directories
 3. Add wrapper methods to `LoopsClient` in `client.py` following existing patterns
 4. Add mock routes to `loops_respx_mock()` in `testing.py`
@@ -33,7 +37,7 @@ Tests run with pytest and require no real API key — all HTTP is intercepted at
 ```
 tests/
   test_safe_mode.py   # 40 tests — safe mode email domain validation
-  test_testing.py     # 130 tests — mock utility + every client method
+  test_testing.py     # 137 tests — mock utility + every client method
   test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
 ```
 
@@ -168,6 +172,7 @@ All routes are accessible by name on the yielded router.
 | `create_workflow_node` | `POST /v1/workflows/{id}/nodes` |
 | `update_workflow_node` | `POST /v1/workflows/{id}/nodes/{node_id}` |
 | `add_workflow_branch` | `POST /v1/workflows/{id}/nodes/{node_id}/add-branch` |
+| `reroute_node_connection` | `POST /v1/workflows/{id}/nodes/{node_id}/reroute` |
 | `delete_workflow_node` | `DELETE /v1/workflows/{id}/nodes/{node_id}` |
 | `delete_workflow_node_recursively` | `DELETE /v1/workflows/{id}/nodes/{node_id}/recursive` |
 
