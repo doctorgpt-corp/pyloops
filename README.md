@@ -118,7 +118,7 @@ The high-level `LoopsClient` wraps every Loops.so API endpoint:
 - **Transactional Groups**: List, get, create, and update
 - **Themes & Components**: List, get, create, and update reusable branding/building blocks
 - **Email Messages**: Get, update, preview, and run Guardian content checks
-- **Workflows & Workflow Nodes**: Create and update workflows, change mailing lists, and build the node graph (create/update/branch/delete nodes)
+- **Workflows & Workflow Nodes**: Create and update workflows, change mailing lists, and build the node graph (create/update/branch/reroute/delete nodes)
 - **Audience Segments**: List, get, and create
 - **Uploads**: Create and complete asset uploads
 - **Sending IPs**: Retrieve dedicated sending IP addresses
@@ -276,7 +276,7 @@ For detailed API documentation, visit the [Loops.so API docs](https://loops.so/d
 
 ## Automated Updates
 
-This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.21.2.1**). A three-segment version (e.g. `1.21.2`) tracks the Loops API version directly; a fourth segment (e.g. `1.21.2.1`) denotes a client-wrapper update built on top of that API version.
+This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.21.7**). A three-segment version (e.g. `1.21.2`) tracks the Loops API version directly; a fourth segment (e.g. `1.21.2.1`) denotes a client-wrapper update built on top of that API version.
 
 A GitHub Action checks for API updates daily and creates a pull request when changes are detected. After review and merge, a new version is automatically published to PyPI.
 
