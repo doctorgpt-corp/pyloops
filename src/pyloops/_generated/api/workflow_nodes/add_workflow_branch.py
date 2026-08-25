@@ -100,7 +100,7 @@ def sync_detailed(
     - Adding a branch to an `ExperimentBranchNode` creates one `VariantNode` child node.
 
     This endpoint does not accept node configuration fields; update the child node with `POST
-    /v1/workflows/{workflowId}/nodes/{nodeId}` after creation. Public workflows are limited to 300
+    /v1/workflows/{workflowId}/nodes/{nodeId}` after creation. Public workflows are limited to 400
     nodes, and this endpoint adds 1 node.
 
     Args:
@@ -145,7 +145,7 @@ def sync(
     - Adding a branch to an `ExperimentBranchNode` creates one `VariantNode` child node.
 
     This endpoint does not accept node configuration fields; update the child node with `POST
-    /v1/workflows/{workflowId}/nodes/{nodeId}` after creation. Public workflows are limited to 300
+    /v1/workflows/{workflowId}/nodes/{nodeId}` after creation. Public workflows are limited to 400
     nodes, and this endpoint adds 1 node.
 
     Args:
@@ -185,7 +185,7 @@ async def asyncio_detailed(
     - Adding a branch to an `ExperimentBranchNode` creates one `VariantNode` child node.
 
     This endpoint does not accept node configuration fields; update the child node with `POST
-    /v1/workflows/{workflowId}/nodes/{nodeId}` after creation. Public workflows are limited to 300
+    /v1/workflows/{workflowId}/nodes/{nodeId}` after creation. Public workflows are limited to 400
     nodes, and this endpoint adds 1 node.
 
     Args:
@@ -228,7 +228,7 @@ async def asyncio(
     - Adding a branch to an `ExperimentBranchNode` creates one `VariantNode` child node.
 
     This endpoint does not accept node configuration fields; update the child node with `POST
-    /v1/workflows/{workflowId}/nodes/{nodeId}` after creation. Public workflows are limited to 300
+    /v1/workflows/{workflowId}/nodes/{nodeId}` after creation. Public workflows are limited to 400
     nodes, and this endpoint adds 1 node.
 
     Args:

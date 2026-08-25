@@ -6,7 +6,9 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.create_workflow_node_before_request import CreateWorkflowNodeBeforeRequest
+from ...models.create_workflow_node_after_request import CreateWorkflowNodeAfterRequest
+from ...models.create_workflow_node_before_request_type_0 import CreateWorkflowNodeBeforeRequestType0
+from ...models.create_workflow_node_before_request_type_1 import CreateWorkflowNodeBeforeRequestType1
 from ...models.create_workflow_node_between_request import CreateWorkflowNodeBetweenRequest
 from ...models.workflow_failure_response import WorkflowFailureResponse
 from ...types import Response
@@ -15,7 +17,10 @@ from ...types import Response
 def _get_kwargs(
     workflow_id: str,
     *,
-    body: CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -27,6 +32,10 @@ def _get_kwargs(
     }
 
     if isinstance(body, CreateWorkflowNodeBetweenRequest):
+        _kwargs["json"] = body.to_dict()
+    elif isinstance(body, CreateWorkflowNodeBeforeRequestType0):
+        _kwargs["json"] = body.to_dict()
+    elif isinstance(body, CreateWorkflowNodeBeforeRequestType1):
         _kwargs["json"] = body.to_dict()
     else:
         _kwargs["json"] = body.to_dict()
@@ -84,26 +93,38 @@ def sync_detailed(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> Response[Any | WorkflowFailureResponse]:
     """Create a workflow node
 
      Create a new default workflow node and return it with the latest workflow.
 
     Choose where the node goes with `insertMode`: `between` places it between an existing `fromNodeId`
-    -> `toNodeId` connection, and `before` places it before `beforeNodeId`.
+    -> `toNodeId` connection, `before` places it before `toNodeId`, and `after` places it after
+    `fromNodeId` when that node has exactly one outgoing connection. `after` is a convenience for simple
+    linear paths, so callers do not need to fetch and pass the current child node ID. It is invalid when
+    `fromNodeId` has no outgoing nodes, multiple outgoing nodes, or is an exit node. When the source has
+    multiple outgoing nodes, use `between` with the exact `toNodeId` instead. For `before`, deprecated
+    `beforeNodeId` requests are still accepted for compatibility, but new callers should use `toNodeId`.
 
     New nodes start with default settings; update the node after creation to configure it. Branch nodes
     create their default paths too: `BranchNode` creates two `AudienceFilter` children, and
     `ExperimentBranchNode` creates two regular `VariantNode` children plus one control `VariantNode`.
-    Public workflows can have up to 300 nodes. Generated children count toward that limit, so a normal
-    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a new branch or
-    experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-branch` endpoint
-    instead.
+    Public workflows can have up to 400 nodes. Generated children count toward that limit, so a normal
+    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a sibling child
+    path to a branch or experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-
+    branch` endpoint. Branch paths can be edited with create-node, but a workflow cannot be started
+    unless each direct `BranchNode` child is an `AudienceFilter`. For experiments, use create-node only
+    to insert a missing `VariantNode` before non-variant content; use add-branch for another variant
+    path.
 
     Args:
         workflow_id (str):
-        body (CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest): Create a new
+        body (CreateWorkflowNodeAfterRequest | CreateWorkflowNodeBeforeRequestType0 |
+            CreateWorkflowNodeBeforeRequestType1 | CreateWorkflowNodeBetweenRequest): Create a new
             workflow node with an explicit `insertMode`. To configure the node after creation, use the
             `POST /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint.
 
@@ -131,26 +152,38 @@ def sync(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> Any | WorkflowFailureResponse | None:
     """Create a workflow node
 
      Create a new default workflow node and return it with the latest workflow.
 
     Choose where the node goes with `insertMode`: `between` places it between an existing `fromNodeId`
-    -> `toNodeId` connection, and `before` places it before `beforeNodeId`.
+    -> `toNodeId` connection, `before` places it before `toNodeId`, and `after` places it after
+    `fromNodeId` when that node has exactly one outgoing connection. `after` is a convenience for simple
+    linear paths, so callers do not need to fetch and pass the current child node ID. It is invalid when
+    `fromNodeId` has no outgoing nodes, multiple outgoing nodes, or is an exit node. When the source has
+    multiple outgoing nodes, use `between` with the exact `toNodeId` instead. For `before`, deprecated
+    `beforeNodeId` requests are still accepted for compatibility, but new callers should use `toNodeId`.
 
     New nodes start with default settings; update the node after creation to configure it. Branch nodes
     create their default paths too: `BranchNode` creates two `AudienceFilter` children, and
     `ExperimentBranchNode` creates two regular `VariantNode` children plus one control `VariantNode`.
-    Public workflows can have up to 300 nodes. Generated children count toward that limit, so a normal
-    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a new branch or
-    experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-branch` endpoint
-    instead.
+    Public workflows can have up to 400 nodes. Generated children count toward that limit, so a normal
+    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a sibling child
+    path to a branch or experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-
+    branch` endpoint. Branch paths can be edited with create-node, but a workflow cannot be started
+    unless each direct `BranchNode` child is an `AudienceFilter`. For experiments, use create-node only
+    to insert a missing `VariantNode` before non-variant content; use add-branch for another variant
+    path.
 
     Args:
         workflow_id (str):
-        body (CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest): Create a new
+        body (CreateWorkflowNodeAfterRequest | CreateWorkflowNodeBeforeRequestType0 |
+            CreateWorkflowNodeBeforeRequestType1 | CreateWorkflowNodeBetweenRequest): Create a new
             workflow node with an explicit `insertMode`. To configure the node after creation, use the
             `POST /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint.
 
@@ -173,26 +206,38 @@ async def asyncio_detailed(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> Response[Any | WorkflowFailureResponse]:
     """Create a workflow node
 
      Create a new default workflow node and return it with the latest workflow.
 
     Choose where the node goes with `insertMode`: `between` places it between an existing `fromNodeId`
-    -> `toNodeId` connection, and `before` places it before `beforeNodeId`.
+    -> `toNodeId` connection, `before` places it before `toNodeId`, and `after` places it after
+    `fromNodeId` when that node has exactly one outgoing connection. `after` is a convenience for simple
+    linear paths, so callers do not need to fetch and pass the current child node ID. It is invalid when
+    `fromNodeId` has no outgoing nodes, multiple outgoing nodes, or is an exit node. When the source has
+    multiple outgoing nodes, use `between` with the exact `toNodeId` instead. For `before`, deprecated
+    `beforeNodeId` requests are still accepted for compatibility, but new callers should use `toNodeId`.
 
     New nodes start with default settings; update the node after creation to configure it. Branch nodes
     create their default paths too: `BranchNode` creates two `AudienceFilter` children, and
     `ExperimentBranchNode` creates two regular `VariantNode` children plus one control `VariantNode`.
-    Public workflows can have up to 300 nodes. Generated children count toward that limit, so a normal
-    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a new branch or
-    experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-branch` endpoint
-    instead.
+    Public workflows can have up to 400 nodes. Generated children count toward that limit, so a normal
+    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a sibling child
+    path to a branch or experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-
+    branch` endpoint. Branch paths can be edited with create-node, but a workflow cannot be started
+    unless each direct `BranchNode` child is an `AudienceFilter`. For experiments, use create-node only
+    to insert a missing `VariantNode` before non-variant content; use add-branch for another variant
+    path.
 
     Args:
         workflow_id (str):
-        body (CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest): Create a new
+        body (CreateWorkflowNodeAfterRequest | CreateWorkflowNodeBeforeRequestType0 |
+            CreateWorkflowNodeBeforeRequestType1 | CreateWorkflowNodeBetweenRequest): Create a new
             workflow node with an explicit `insertMode`. To configure the node after creation, use the
             `POST /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint.
 
@@ -218,26 +263,38 @@ async def asyncio(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> Any | WorkflowFailureResponse | None:
     """Create a workflow node
 
      Create a new default workflow node and return it with the latest workflow.
 
     Choose where the node goes with `insertMode`: `between` places it between an existing `fromNodeId`
-    -> `toNodeId` connection, and `before` places it before `beforeNodeId`.
+    -> `toNodeId` connection, `before` places it before `toNodeId`, and `after` places it after
+    `fromNodeId` when that node has exactly one outgoing connection. `after` is a convenience for simple
+    linear paths, so callers do not need to fetch and pass the current child node ID. It is invalid when
+    `fromNodeId` has no outgoing nodes, multiple outgoing nodes, or is an exit node. When the source has
+    multiple outgoing nodes, use `between` with the exact `toNodeId` instead. For `before`, deprecated
+    `beforeNodeId` requests are still accepted for compatibility, but new callers should use `toNodeId`.
 
     New nodes start with default settings; update the node after creation to configure it. Branch nodes
     create their default paths too: `BranchNode` creates two `AudienceFilter` children, and
     `ExperimentBranchNode` creates two regular `VariantNode` children plus one control `VariantNode`.
-    Public workflows can have up to 300 nodes. Generated children count toward that limit, so a normal
-    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a new branch or
-    experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-branch` endpoint
-    instead.
+    Public workflows can have up to 400 nodes. Generated children count toward that limit, so a normal
+    create adds 1 node, `BranchNode` adds 3, and `ExperimentBranchNode` adds 4. To add a sibling child
+    path to a branch or experiment branch, use the `POST /v1/workflows/{workflowId}/nodes/{nodeId}/add-
+    branch` endpoint. Branch paths can be edited with create-node, but a workflow cannot be started
+    unless each direct `BranchNode` child is an `AudienceFilter`. For experiments, use create-node only
+    to insert a missing `VariantNode` before non-variant content; use add-branch for another variant
+    path.
 
     Args:
         workflow_id (str):
-        body (CreateWorkflowNodeBeforeRequest | CreateWorkflowNodeBetweenRequest): Create a new
+        body (CreateWorkflowNodeAfterRequest | CreateWorkflowNodeBeforeRequestType0 |
+            CreateWorkflowNodeBeforeRequestType1 | CreateWorkflowNodeBetweenRequest): Create a new
             workflow node with an explicit `insertMode`. To configure the node after creation, use the
             `POST /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint.
 

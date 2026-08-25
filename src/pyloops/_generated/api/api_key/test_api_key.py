@@ -5,8 +5,8 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.get_v1_api_key_response_200 import GetV1ApiKeyResponse200
-from ...models.get_v1_api_key_response_401 import GetV1ApiKeyResponse401
+from ...models.test_api_key_response_200 import TestApiKeyResponse200
+from ...models.test_api_key_response_401 import TestApiKeyResponse401
 from ...types import Response
 
 
@@ -22,14 +22,14 @@ def _get_kwargs() -> dict[str, Any]:
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401 | None:
+) -> TestApiKeyResponse200 | TestApiKeyResponse401 | None:
     if response.status_code == 200:
-        response_200 = GetV1ApiKeyResponse200.from_dict(response.json())
+        response_200 = TestApiKeyResponse200.from_dict(response.json())
 
         return response_200
 
     if response.status_code == 401:
-        response_401 = GetV1ApiKeyResponse401.from_dict(response.json())
+        response_401 = TestApiKeyResponse401.from_dict(response.json())
 
         return response_401
 
@@ -41,7 +41,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401]:
+) -> Response[TestApiKeyResponse200 | TestApiKeyResponse401]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -53,7 +53,7 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401]:
+) -> Response[TestApiKeyResponse200 | TestApiKeyResponse401]:
     """API key
 
      Test your API key and get team context.
@@ -63,7 +63,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401]
+        Response[TestApiKeyResponse200 | TestApiKeyResponse401]
     """
 
     kwargs = _get_kwargs()
@@ -78,7 +78,7 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-) -> GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401 | None:
+) -> TestApiKeyResponse200 | TestApiKeyResponse401 | None:
     """API key
 
      Test your API key and get team context.
@@ -88,7 +88,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401
+        TestApiKeyResponse200 | TestApiKeyResponse401
     """
 
     return sync_detailed(
@@ -99,7 +99,7 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401]:
+) -> Response[TestApiKeyResponse200 | TestApiKeyResponse401]:
     """API key
 
      Test your API key and get team context.
@@ -109,7 +109,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401]
+        Response[TestApiKeyResponse200 | TestApiKeyResponse401]
     """
 
     kwargs = _get_kwargs()
@@ -122,7 +122,7 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-) -> GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401 | None:
+) -> TestApiKeyResponse200 | TestApiKeyResponse401 | None:
     """API key
 
      Test your API key and get team context.
@@ -132,7 +132,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GetV1ApiKeyResponse200 | GetV1ApiKeyResponse401
+        TestApiKeyResponse200 | TestApiKeyResponse401
     """
 
     return (
