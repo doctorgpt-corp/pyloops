@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowEventPropertyType(str, Enum):
+class WorkflowEventPropertyType(StrEnum):
     BOOLEAN = "boolean"
     DATE = "date"
     NUMBER = "number"

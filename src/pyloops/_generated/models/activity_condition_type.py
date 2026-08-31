@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ActivityConditionType(str, Enum):
+class ActivityConditionType(StrEnum):
     ACTIVITY = "activity"
 
     def __str__(self) -> str:

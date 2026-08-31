@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class SimplifiedTimerActionWorkflowNodeTypeName(str, Enum):
+class SimplifiedTimerActionWorkflowNodeTypeName(StrEnum):
     TIMERACTION = "TimerAction"
 
     def __str__(self) -> str:
