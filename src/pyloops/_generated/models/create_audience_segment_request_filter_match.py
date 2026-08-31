@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class CreateAudienceSegmentRequestFilterMatch(str, Enum):
+class CreateAudienceSegmentRequestFilterMatch(StrEnum):
     ALL = "all"
     ANY = "any"
 

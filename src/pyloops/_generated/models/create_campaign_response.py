@@ -22,6 +22,7 @@ class CreateCampaignResponse:
     """
     Attributes:
         id (str): The ID of the campaign.
+        url (str): The URL of the campaign in the Loops app.
         name (str): The name of the campaign.
         status (CreateCampaignResponseStatus): The status of the campaign (always `Draft` for new campaigns).
         created_at (datetime.datetime): ISO 8601 timestamp for when the campaign was created.
@@ -38,6 +39,7 @@ class CreateCampaignResponse:
     """
 
     id: str
+    url: str
     name: str
     status: CreateCampaignResponseStatus
     created_at: datetime.datetime
@@ -52,9 +54,11 @@ class CreateCampaignResponse:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.audience_filter_type_0 import AudienceFilterType0
+        from ..models.audience_filter_type_0 import AudienceFilterType0  # noqa: PLC0415
 
         id = self.id
+
+        url = self.url
 
         name = self.name
 
@@ -92,6 +96,7 @@ class CreateCampaignResponse:
         field_dict.update(
             {
                 "id": id,
+                "url": url,
                 "name": name,
                 "status": status,
                 "createdAt": created_at,
@@ -110,11 +115,13 @@ class CreateCampaignResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.audience_filter_type_0 import AudienceFilterType0
-        from ..models.campaign_scheduling import CampaignScheduling
+        from ..models.audience_filter_type_0 import AudienceFilterType0  # noqa: PLC0415
+        from ..models.campaign_scheduling import CampaignScheduling  # noqa: PLC0415
 
         d = dict(src_dict)
         id = d.pop("id")
+
+        url = d.pop("url")
 
         name = d.pop("name")
 
@@ -180,6 +187,7 @@ class CreateCampaignResponse:
 
         create_campaign_response = cls(
             id=id,
+            url=url,
             name=name,
             status=status,
             created_at=created_at,

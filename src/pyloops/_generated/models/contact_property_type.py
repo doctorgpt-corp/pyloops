@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ContactPropertyType(str, Enum):
+class ContactPropertyType(StrEnum):
     BOOLEAN = "boolean"
     DATE = "date"
     NUMBER = "number"

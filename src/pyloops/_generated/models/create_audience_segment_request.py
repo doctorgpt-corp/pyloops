@@ -49,7 +49,7 @@ class CreateAudienceSegmentRequest:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.create_audience_segment_request_filter import CreateAudienceSegmentRequestFilter
+        from ..models.create_audience_segment_request_filter import CreateAudienceSegmentRequestFilter  # noqa: PLC0415
 
         d = dict(src_dict)
         name = d.pop("name")

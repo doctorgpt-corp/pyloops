@@ -83,10 +83,10 @@ def sync_detailed(
     client: AuthenticatedClient,
     body: UpdateGroupRequest,
 ) -> Response[Any | GroupFailureResponse | GroupResponse]:
-    r"""Update a campaign group
+    """Update a campaign group
 
      Update a campaign group's name or description. At least one field must be provided. The reserved
-    \"Unsorted\" group cannot be edited.
+    "Unsorted" group cannot be edited.
 
     Args:
         campaign_group_id (str):
@@ -118,10 +118,10 @@ def sync(
     client: AuthenticatedClient,
     body: UpdateGroupRequest,
 ) -> Any | GroupFailureResponse | GroupResponse | None:
-    r"""Update a campaign group
+    """Update a campaign group
 
      Update a campaign group's name or description. At least one field must be provided. The reserved
-    \"Unsorted\" group cannot be edited.
+    "Unsorted" group cannot be edited.
 
     Args:
         campaign_group_id (str):
@@ -148,10 +148,10 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     body: UpdateGroupRequest,
 ) -> Response[Any | GroupFailureResponse | GroupResponse]:
-    r"""Update a campaign group
+    """Update a campaign group
 
      Update a campaign group's name or description. At least one field must be provided. The reserved
-    \"Unsorted\" group cannot be edited.
+    "Unsorted" group cannot be edited.
 
     Args:
         campaign_group_id (str):
@@ -181,10 +181,10 @@ async def asyncio(
     client: AuthenticatedClient,
     body: UpdateGroupRequest,
 ) -> Any | GroupFailureResponse | GroupResponse | None:
-    r"""Update a campaign group
+    """Update a campaign group
 
      Update a campaign group's name or description. At least one field must be provided. The reserved
-    \"Unsorted\" group cannot be edited.
+    "Unsorted" group cannot be edited.
 
     Args:
         campaign_group_id (str):
