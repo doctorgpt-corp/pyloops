@@ -110,12 +110,12 @@ def sync_detailed(
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
 ) -> Response[Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse]:
-    r"""Delete a workflow node
+    """Delete a workflow node
 
-     Delete a single workflow node. If contacts are queued at the node, Loops returns with `\"status\":
-    \"queuedContactsFound\"` instead of deleting. Retry with `queuedContactPolicy: \"discard\"` to
-    delete the node and discard those queued contacts. Confirmed deletion responses include the
-    simplified workflow after the node is removed.
+     Delete a single workflow node. If contacts are queued at the node, Loops returns with `"status":
+    "queuedContactsFound"` instead of deleting. Retry with `queuedContactPolicy: "discard"` to delete
+    the node and discard those queued contacts. Confirmed deletion responses include the simplified
+    workflow after the node is removed.
 
     Args:
         workflow_id (str):
@@ -150,12 +150,12 @@ def sync(
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
 ) -> Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse | None:
-    r"""Delete a workflow node
+    """Delete a workflow node
 
-     Delete a single workflow node. If contacts are queued at the node, Loops returns with `\"status\":
-    \"queuedContactsFound\"` instead of deleting. Retry with `queuedContactPolicy: \"discard\"` to
-    delete the node and discard those queued contacts. Confirmed deletion responses include the
-    simplified workflow after the node is removed.
+     Delete a single workflow node. If contacts are queued at the node, Loops returns with `"status":
+    "queuedContactsFound"` instead of deleting. Retry with `queuedContactPolicy: "discard"` to delete
+    the node and discard those queued contacts. Confirmed deletion responses include the simplified
+    workflow after the node is removed.
 
     Args:
         workflow_id (str):
@@ -185,12 +185,12 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
 ) -> Response[Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse]:
-    r"""Delete a workflow node
+    """Delete a workflow node
 
-     Delete a single workflow node. If contacts are queued at the node, Loops returns with `\"status\":
-    \"queuedContactsFound\"` instead of deleting. Retry with `queuedContactPolicy: \"discard\"` to
-    delete the node and discard those queued contacts. Confirmed deletion responses include the
-    simplified workflow after the node is removed.
+     Delete a single workflow node. If contacts are queued at the node, Loops returns with `"status":
+    "queuedContactsFound"` instead of deleting. Retry with `queuedContactPolicy: "discard"` to delete
+    the node and discard those queued contacts. Confirmed deletion responses include the simplified
+    workflow after the node is removed.
 
     Args:
         workflow_id (str):
@@ -223,12 +223,12 @@ async def asyncio(
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
 ) -> Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse | None:
-    r"""Delete a workflow node
+    """Delete a workflow node
 
-     Delete a single workflow node. If contacts are queued at the node, Loops returns with `\"status\":
-    \"queuedContactsFound\"` instead of deleting. Retry with `queuedContactPolicy: \"discard\"` to
-    delete the node and discard those queued contacts. Confirmed deletion responses include the
-    simplified workflow after the node is removed.
+     Delete a single workflow node. If contacts are queued at the node, Loops returns with `"status":
+    "queuedContactsFound"` instead of deleting. Retry with `queuedContactPolicy: "discard"` to delete
+    the node and discard those queued contacts. Confirmed deletion responses include the simplified
+    workflow after the node is removed.
 
     Args:
         workflow_id (str):

@@ -36,7 +36,7 @@ class PropertyCondition:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.property_condition_value_type_2 import PropertyConditionValueType2
+        from ..models.property_condition_value_type_2 import PropertyConditionValueType2  # noqa: PLC0415
 
         type_ = self.type_.value
 
@@ -68,7 +68,7 @@ class PropertyCondition:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.property_condition_value_type_2 import PropertyConditionValueType2
+        from ..models.property_condition_value_type_2 import PropertyConditionValueType2  # noqa: PLC0415
 
         d = dict(src_dict)
         type_ = PropertyConditionType(d.pop("type"))

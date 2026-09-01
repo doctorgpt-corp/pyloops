@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class SimplifiedBlankTriggerWorkflowNodeTypeName(str, Enum):
+class SimplifiedBlankTriggerWorkflowNodeTypeName(StrEnum):
     BLANKTRIGGER = "BlankTrigger"
 
     def __str__(self) -> str:

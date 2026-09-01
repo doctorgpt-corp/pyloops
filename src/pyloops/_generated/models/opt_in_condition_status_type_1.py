@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class OptInConditionStatusType1(str, Enum):
+class OptInConditionStatusType1(StrEnum):
     ACCEPTED = "accepted"
     PENDING = "pending"
     REJECTED = "rejected"

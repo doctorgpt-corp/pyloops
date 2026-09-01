@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class SimplifiedSendEmailActionWorkflowNodeTypeName(str, Enum):
+class SimplifiedSendEmailActionWorkflowNodeTypeName(StrEnum):
     SENDEMAILACTION = "SendEmailAction"
 
     def __str__(self) -> str:

@@ -41,7 +41,7 @@ class ContactPropertyTriggerWorkflowMutationNodeWithRevision:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.workflow_contact_property_query import WorkflowContactPropertyQuery
+        from ..models.workflow_contact_property_query import WorkflowContactPropertyQuery  # noqa: PLC0415
 
         id = self.id
 
@@ -77,7 +77,7 @@ class ContactPropertyTriggerWorkflowMutationNodeWithRevision:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.workflow_contact_property_query import WorkflowContactPropertyQuery
+        from ..models.workflow_contact_property_query import WorkflowContactPropertyQuery  # noqa: PLC0415
 
         d = dict(src_dict)
         id = d.pop("id")
