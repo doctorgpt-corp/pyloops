@@ -48,7 +48,7 @@ class ContactSuppressionRemoveResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.contact_suppression_removal_quota import ContactSuppressionRemovalQuota
+        from ..models.contact_suppression_removal_quota import ContactSuppressionRemovalQuota  # noqa: PLC0415
 
         d = dict(src_dict)
         success = d.pop("success")

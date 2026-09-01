@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class SimplifiedContactPropertyTriggerWorkflowNodeTypeName(str, Enum):
+class SimplifiedContactPropertyTriggerWorkflowNodeTypeName(StrEnum):
     CONTACTPROPERTYTRIGGER = "ContactPropertyTrigger"
 
     def __str__(self) -> str:

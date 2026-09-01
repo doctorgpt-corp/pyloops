@@ -88,7 +88,7 @@ class ContactFields:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.mailing_list_subscriptions import MailingListSubscriptions
+        from ..models.mailing_list_subscriptions import MailingListSubscriptions  # noqa: PLC0415
 
         d = dict(src_dict)
         email = d.pop("email", UNSET)

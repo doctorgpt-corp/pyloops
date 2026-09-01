@@ -17,6 +17,7 @@ class TransactionalDraftResponse:
     """
     Attributes:
         id (str): The ID of the transactional email.
+        url (str): The URL of the transactional email in the Loops app.
         name (str): The name of the transactional email.
         draft_email_message_id (None | str): The ID of the draft email message.
         draft_email_message_content_revision_id (None | str): The `contentRevisionId` of the draft email message. Pass
@@ -32,6 +33,7 @@ class TransactionalDraftResponse:
     """
 
     id: str
+    url: str
     name: str
     draft_email_message_id: None | str
     draft_email_message_content_revision_id: None | str
@@ -44,6 +46,8 @@ class TransactionalDraftResponse:
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
+
+        url = self.url
 
         name = self.name
 
@@ -73,6 +77,7 @@ class TransactionalDraftResponse:
         field_dict.update(
             {
                 "id": id,
+                "url": url,
                 "name": name,
                 "draftEmailMessageId": draft_email_message_id,
                 "draftEmailMessageContentRevisionId": draft_email_message_content_revision_id,
@@ -91,6 +96,8 @@ class TransactionalDraftResponse:
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
         id = d.pop("id")
+
+        url = d.pop("url")
 
         name = d.pop("name")
 
@@ -134,6 +141,7 @@ class TransactionalDraftResponse:
 
         transactional_draft_response = cls(
             id=id,
+            url=url,
             name=name,
             draft_email_message_id=draft_email_message_id,
             draft_email_message_content_revision_id=draft_email_message_content_revision_id,

@@ -83,7 +83,7 @@ class EventTriggerWorkflowMutationNodeWithRevision:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.workflow_event_property import WorkflowEventProperty
+        from ..models.workflow_event_property import WorkflowEventProperty  # noqa: PLC0415
 
         d = dict(src_dict)
         id = d.pop("id")

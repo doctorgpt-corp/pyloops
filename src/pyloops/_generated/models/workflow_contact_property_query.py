@@ -66,7 +66,7 @@ class WorkflowContactPropertyQuery:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.workflow_contact_property_comparison import WorkflowContactPropertyComparison
+        from ..models.workflow_contact_property_comparison import WorkflowContactPropertyComparison  # noqa: PLC0415
 
         d = dict(src_dict)
         key = d.pop("key")
