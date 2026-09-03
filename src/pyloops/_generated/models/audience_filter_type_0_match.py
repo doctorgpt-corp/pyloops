@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class AudienceFilterType0Match(str, Enum):
+class AudienceFilterType0Match(StrEnum):
     ALL = "all"
     ANY = "any"
 

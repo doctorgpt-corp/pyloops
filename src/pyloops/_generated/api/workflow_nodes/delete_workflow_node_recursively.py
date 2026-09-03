@@ -110,11 +110,11 @@ def sync_detailed(
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
 ) -> Response[Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse]:
-    r"""Delete workflow nodes recursively
+    """Delete workflow nodes recursively
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
-    Loops returns with `\"status\": \"queuedContactsFound\"` instead of deleting. Retry with
-    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts. Confirmed
+    Loops returns with `"status": "queuedContactsFound"` instead of deleting. Retry with
+    `queuedContactPolicy: "discard"` to delete the nodes and discard those queued contacts. Confirmed
     deletion responses include the simplified workflow after the nodes are removed.
 
     Args:
@@ -150,11 +150,11 @@ def sync(
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
 ) -> Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse | None:
-    r"""Delete workflow nodes recursively
+    """Delete workflow nodes recursively
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
-    Loops returns with `\"status\": \"queuedContactsFound\"` instead of deleting. Retry with
-    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts. Confirmed
+    Loops returns with `"status": "queuedContactsFound"` instead of deleting. Retry with
+    `queuedContactPolicy: "discard"` to delete the nodes and discard those queued contacts. Confirmed
     deletion responses include the simplified workflow after the nodes are removed.
 
     Args:
@@ -185,11 +185,11 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
 ) -> Response[Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse]:
-    r"""Delete workflow nodes recursively
+    """Delete workflow nodes recursively
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
-    Loops returns with `\"status\": \"queuedContactsFound\"` instead of deleting. Retry with
-    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts. Confirmed
+    Loops returns with `"status": "queuedContactsFound"` instead of deleting. Retry with
+    `queuedContactPolicy: "discard"` to delete the nodes and discard those queued contacts. Confirmed
     deletion responses include the simplified workflow after the nodes are removed.
 
     Args:
@@ -223,11 +223,11 @@ async def asyncio(
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
 ) -> Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse | None:
-    r"""Delete workflow nodes recursively
+    """Delete workflow nodes recursively
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
-    Loops returns with `\"status\": \"queuedContactsFound\"` instead of deleting. Retry with
-    `queuedContactPolicy: \"discard\"` to delete the nodes and discard those queued contacts. Confirmed
+    Loops returns with `"status": "queuedContactsFound"` instead of deleting. Retry with
+    `queuedContactPolicy: "discard"` to delete the nodes and discard those queued contacts. Confirmed
     deletion responses include the simplified workflow after the nodes are removed.
 
     Args:

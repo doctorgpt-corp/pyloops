@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ActivityConditionTarget(str, Enum):
+class ActivityConditionTarget(StrEnum):
     CAMPAIGN = "campaign"
     WORKFLOW = "workflow"
     WORKFLOWEMAIL = "workflowEmail"

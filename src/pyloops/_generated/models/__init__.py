@@ -100,6 +100,7 @@ from .create_workflow_node_between_request_insert_mode import CreateWorkflowNode
 from .create_workflow_node_type_name import CreateWorkflowNodeTypeName
 from .create_workflow_request import CreateWorkflowRequest
 from .delete_workflow_node_request import DeleteWorkflowNodeRequest
+from .delete_workflow_request import DeleteWorkflowRequest
 from .email_message_failure_response import EmailMessageFailureResponse
 from .email_message_guardian_response import EmailMessageGuardianResponse
 from .email_message_preview_request import EmailMessagePreviewRequest
@@ -393,6 +394,7 @@ __all__ = (
     "CreateWorkflowNodeTypeName",
     "CreateWorkflowRequest",
     "DeleteWorkflowNodeRequest",
+    "DeleteWorkflowRequest",
     "EmailMessageFailureResponse",
     "EmailMessageGuardianResponse",
     "EmailMessagePreviewRequest",

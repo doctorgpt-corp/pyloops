@@ -116,7 +116,7 @@ class WebhookContact:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.webhook_contact_mailing_lists import WebhookContactMailingLists
+        from ..models.webhook_contact_mailing_lists import WebhookContactMailingLists  # noqa: PLC0415
 
         d = dict(src_dict)
         id = d.pop("id")

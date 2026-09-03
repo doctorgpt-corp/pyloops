@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowQueuedContactPolicy(str, Enum):
+class WorkflowQueuedContactPolicy(StrEnum):
     DISCARD = "discard"
     FAIL = "fail"
 
