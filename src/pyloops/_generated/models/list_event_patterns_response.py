@@ -47,8 +47,10 @@ class ListEventPatternsResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.event_pattern_summary import EventPatternSummary
-        from ..models.list_event_patterns_response_pagination import ListEventPatternsResponsePagination
+        from ..models.event_pattern_summary import EventPatternSummary  # noqa: PLC0415
+        from ..models.list_event_patterns_response_pagination import (
+            ListEventPatternsResponsePagination,  # noqa: PLC0415
+        )
 
         d = dict(src_dict)
         pagination = ListEventPatternsResponsePagination.from_dict(d.pop("pagination"))

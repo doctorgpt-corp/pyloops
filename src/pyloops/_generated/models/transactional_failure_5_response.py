@@ -53,7 +53,7 @@ class TransactionalFailure5Response:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.transactional_failure_5_response_error import TransactionalFailure5ResponseError
+        from ..models.transactional_failure_5_response_error import TransactionalFailure5ResponseError  # noqa: PLC0415
 
         d = dict(src_dict)
         success = d.pop("success")

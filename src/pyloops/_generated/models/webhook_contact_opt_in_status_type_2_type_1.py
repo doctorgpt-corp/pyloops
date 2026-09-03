@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WebhookContactOptInStatusType2Type1(str, Enum):
+class WebhookContactOptInStatusType2Type1(StrEnum):
     ACCEPTED = "accepted"
     PENDING = "pending"
     REJECTED = "rejected"

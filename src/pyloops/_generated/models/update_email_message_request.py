@@ -139,13 +139,13 @@ class UpdateEmailMessageRequest:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.update_email_message_request_contact_properties_fallbacks import (
-            UpdateEmailMessageRequestContactPropertiesFallbacks,
+            UpdateEmailMessageRequestContactPropertiesFallbacks,  # noqa: PLC0415
         )
         from ..models.update_email_message_request_data_variables_fallbacks import (
-            UpdateEmailMessageRequestDataVariablesFallbacks,
+            UpdateEmailMessageRequestDataVariablesFallbacks,  # noqa: PLC0415
         )
         from ..models.update_email_message_request_event_properties_fallbacks import (
-            UpdateEmailMessageRequestEventPropertiesFallbacks,
+            UpdateEmailMessageRequestEventPropertiesFallbacks,  # noqa: PLC0415
         )
 
         d = dict(src_dict)

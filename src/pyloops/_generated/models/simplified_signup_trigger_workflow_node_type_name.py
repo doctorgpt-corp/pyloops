@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class SimplifiedSignupTriggerWorkflowNodeTypeName(str, Enum):
+class SimplifiedSignupTriggerWorkflowNodeTypeName(StrEnum):
     SIGNUPTRIGGER = "SignupTrigger"
 
     def __str__(self) -> str:
