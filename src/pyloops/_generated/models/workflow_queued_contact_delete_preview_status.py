@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowQueuedContactDeletePreviewStatus(str, Enum):
+class WorkflowQueuedContactDeletePreviewStatus(StrEnum):
     DRYRUN = "dryRun"
     QUEUEDCONTACTSFOUND = "queuedContactsFound"
 

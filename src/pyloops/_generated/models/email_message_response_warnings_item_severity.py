@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class EmailMessageResponseWarningsItemSeverity(str, Enum):
+class EmailMessageResponseWarningsItemSeverity(StrEnum):
     WARNING = "warning"
 
     def __str__(self) -> str:
