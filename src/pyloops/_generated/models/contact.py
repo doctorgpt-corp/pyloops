@@ -124,7 +124,7 @@ class Contact:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.contact_mailing_lists import ContactMailingLists
+        from ..models.contact_mailing_lists import ContactMailingLists  # noqa: PLC0415
 
         d = dict(src_dict)
         id = d.pop("id", UNSET)

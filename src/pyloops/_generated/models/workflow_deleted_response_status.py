@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowDeletedResponseStatus(str, Enum):
+class WorkflowDeletedResponseStatus(StrEnum):
     DELETED = "deleted"
 
     def __str__(self) -> str:

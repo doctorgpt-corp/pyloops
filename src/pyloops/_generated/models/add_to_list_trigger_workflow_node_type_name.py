@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class AddToListTriggerWorkflowNodeTypeName(str, Enum):
+class AddToListTriggerWorkflowNodeTypeName(StrEnum):
     ADDTOLISTTRIGGER = "AddToListTrigger"
 
     def __str__(self) -> str:

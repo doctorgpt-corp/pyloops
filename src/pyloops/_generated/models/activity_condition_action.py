@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ActivityConditionAction(str, Enum):
+class ActivityConditionAction(StrEnum):
     CLICKED = "clicked"
     OPENED = "opened"
     SENT = "sent"

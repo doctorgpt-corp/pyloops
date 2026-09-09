@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class CampaignSchedulingRequestMethod(str, Enum):
+class CampaignSchedulingRequestMethod(StrEnum):
     NOW = "now"
     SCHEDULE = "schedule"
 

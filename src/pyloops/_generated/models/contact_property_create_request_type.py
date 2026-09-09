@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ContactPropertyCreateRequestType(str, Enum):
+class ContactPropertyCreateRequestType(StrEnum):
     BOOLEAN = "boolean"
     DATE = "date"
     NUMBER = "number"
