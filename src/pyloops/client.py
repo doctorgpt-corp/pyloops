@@ -107,7 +107,7 @@ from pyloops._generated.models import (
     ComponentResponse,
     ComponentValidationFailureResponse,
     Contact,
-    ContactDeleteRequest,
+    ContactDeleteResponse,
     ContactFailureResponse,
     ContactProperty,
     ContactPropertyCreateRequest,
@@ -575,18 +575,18 @@ class LoopsClient:
             True if deleted successfully, False if not found
 
         Raises:
-            LoopsError: If the request fails
+            LoopsError: If neither or both identifiers are given, or the request fails
         """
         if not email and not user_id:
             raise LoopsError("Either email or user_id must be provided")
+        if email and user_id:
+            raise LoopsError("Provide either email or user_id, not both")
 
         self._validate_email(email)
 
-        # ContactDeleteRequest requires both fields, use empty string for the unused one
-        body = ContactDeleteRequest(
-            email=email if email else "",
-            user_id=user_id if user_id else "",
-        )
+        # The spec models this body as oneOf email|userId, so the generated endpoint
+        # takes raw JSON: send exactly the one key the caller identified the contact by.
+        body = {"email": email} if email else {"userId": user_id}
 
         response = await delete_contact.asyncio_detailed(client=self._client, body=body)
         result = self._handle_response(response)
@@ -601,7 +601,7 @@ class LoopsClient:
                 response_data=result,
             )
 
-        if isinstance(result, ContactSuccessResponse):
+        if isinstance(result, ContactDeleteResponse):
             return True
 
         return False

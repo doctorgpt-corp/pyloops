@@ -76,9 +76,33 @@ async def test_find_contact():
 async def test_delete_contact():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
-        # delete_contact returns bool — the call should not raise
-        _result = await client.delete_contact(email="user@test.com")
-        assert api["delete_contact"].called
+        result = await client.delete_contact(email="user@test.com")
+        assert result is True
+
+        body = json.loads(api["delete_contact"].calls[0].request.content)
+        assert body == {"email": "user@test.com"}
+
+
+@pytest.mark.asyncio
+async def test_delete_contact_by_user_id():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.delete_contact(user_id="user-123")
+        assert result is True
+
+        body = json.loads(api["delete_contact"].calls[0].request.content)
+        assert body == {"userId": "user-123"}
+
+
+@pytest.mark.asyncio
+async def test_delete_contact_requires_exactly_one_identifier():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Either email or user_id must be provided"):
+            await client.delete_contact()
+        with pytest.raises(LoopsError, match="not both"):
+            await client.delete_contact(email="user@test.com", user_id="user-123")
+        assert not api["delete_contact"].called
 
 
 @pytest.mark.asyncio
