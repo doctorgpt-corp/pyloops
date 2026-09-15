@@ -45,17 +45,22 @@ SDK-update PRs ("Update SDK to Loops API version X"). Retitle those on review.
 
 ## SDK version bump workflow
 
-When Loops releases a new API version:
-1. Regenerate `src/pyloops/_generated/` from the updated OpenAPI spec:
-   `uv run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv`,
-   then move `loops-open-api-spec-client/loops_open_api_spec_client` into place.
-   The generator version matters — it is pinned in the dev dependencies so a
-   local regeneration reproduces CI's tree byte-for-byte
-2. Identify new endpoints by diffing the generated `api/` and `models/` directories
-3. Add wrapper methods to `LoopsClient` in `client.py` following existing patterns
-4. Add mock routes to `loops_respx_mock()` in `testing.py`
-5. Add tests to `tests/test_testing.py`
-6. Bump the version in `pyproject.toml`
+The procedure lives in the `sdk-update` skill
+(`.claude/skills/sdk-update/SKILL.md`): triaging the bot PRs, telling generator
+churn from a real spec change, and the repair recipe for each pattern. Run it
+whenever a new Loops API version lands. These rules bind whatever route the
+change takes:
+
+- `src/pyloops/_generated/` is never hand-edited. `just generate` replaces it
+  wholesale, and the next regeneration would drop the edit anyway.
+- A new wrapper method is a four-part unit landing in one commit: the method in
+  `client.py`, a named respx route plus fixture in `testing.py`, the
+  `EXPECTED_ROUTE_NAMES` entry with happy-path and error tests, and a row in
+  the named-route table below.
+- The three-segment version tracks the Loops API version and is what ships when
+  a regeneration and its wrapper repair go out together. A fourth segment
+  (`just bump-client`) is a wrapper-only release on top of an API version that
+  already shipped.
 
 ## Testing strategy
 
