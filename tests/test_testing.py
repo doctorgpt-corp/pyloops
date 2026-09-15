@@ -389,6 +389,7 @@ async def test_get_campaign():
         client = pyloops.get_client()
         result = await client.get_campaign("mock-campaign-id")
         assert result.id == "mock-campaign-id"
+        assert result.url == "https://app.loops.so/campaigns/mock-campaign-id"
         assert api["get_campaign"].called
 
 
@@ -685,6 +686,7 @@ async def test_get_transactional_template():
         client = pyloops.get_client()
         result = await client.get_transactional_template("mock-transactional-id")
         assert result.id == "mock-transactional-id"
+        assert result.url == "https://app.loops.so/transactional/mock-transactional-id"
         assert api["get_transactional_template"].called
 
 
@@ -705,6 +707,7 @@ async def test_get_transactional_variables_returns_template_names():
                 200,
                 json={
                     "id": "mock-transactional-id",
+                    "url": "https://app.loops.so/transactional/mock-transactional-id",
                     "name": "Invitation",
                     "draftEmailMessageId": None,
                     "publishedEmailMessageId": "mock-email-message-id",
@@ -832,6 +835,7 @@ async def test_get_workflow():
         client = pyloops.get_client()
         result = await client.get_workflow("mock-workflow-id")
         assert result.id == "mock-workflow-id"
+        assert result.url == "https://app.loops.so/workflows/mock-workflow-id"
         assert api["get_workflow"].called
 
 
