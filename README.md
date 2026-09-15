@@ -131,7 +131,7 @@ The high-level `LoopsClient` wraps every Loops.so API endpoint:
 - **Transactional Groups**: List, get, create, and update
 - **Themes & Components**: List, get, create, and update reusable branding/building blocks
 - **Email Messages**: Get, update, preview, and run Guardian content checks
-- **Workflows & Workflow Nodes**: Create and update workflows, change mailing lists, and build the node graph (create/update/branch/reroute/delete nodes)
+- **Workflows & Workflow Nodes**: Create, update, and delete workflows, change mailing lists, and build the node graph (create/update/branch/reroute/delete nodes)
 - **Audience Segments**: List, get, and create
 - **Uploads**: Create and complete asset uploads
 - **Sending IPs**: Retrieve dedicated sending IP addresses

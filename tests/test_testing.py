@@ -233,6 +233,7 @@ EXPECTED_ROUTE_NAMES = [
     "create_workflow",
     "update_workflow",
     "change_workflow_mailing_list",
+    "delete_workflow",
     "create_workflow_node",
     "update_workflow_node",
     "add_workflow_branch",
@@ -1096,6 +1097,46 @@ async def test_change_workflow_mailing_list():
 
 
 @pytest.mark.asyncio
+async def test_delete_workflow():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.delete_workflow("mock-workflow-id", "rev-1")
+        assert result is True
+        body = json.loads(api["delete_workflow"].calls[0].request.content)
+        assert body == {"expectedRevisionId": "rev-1"}
+
+
+@pytest.mark.asyncio
+async def test_delete_workflow_confirmation_required():
+    with loops_respx_mock() as api:
+        api["delete_workflow"].mock(
+            return_value=Response(409, json={"message": "Workflow is sending. Retry with confirmDelete."})
+        )
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Retry with confirmDelete"):
+            await client.delete_workflow("mock-workflow-id", "rev-1")
+
+
+@pytest.mark.asyncio
+async def test_delete_workflow_confirmed():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.delete_workflow("mock-workflow-id", "rev-1", confirm_delete=True)
+        assert result is True
+        body = json.loads(api["delete_workflow"].calls[0].request.content)
+        assert body == {"expectedRevisionId": "rev-1", "confirmDelete": True}
+
+
+@pytest.mark.asyncio
+async def test_delete_workflow_not_found():
+    with loops_respx_mock() as api:
+        api["delete_workflow"].mock(return_value=Response(404, json={"message": "Workflow not found"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Workflow not found"):
+            await client.delete_workflow("missing", None)
+
+
+@pytest.mark.asyncio
 async def test_create_workflow_node_between():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
@@ -1374,6 +1415,7 @@ _NEW_WRAPPER_ERROR_CASES = [
         "reroute_node_connection",
         lambda c: c.reroute_workflow_node_connection("wf", "n1", "rev", new_target_node_id="n9"),
     ),
+    ("delete_workflow", lambda c: c.delete_workflow("wf", "rev")),
     ("delete_workflow_node", lambda c: c.delete_workflow_node("wf", "n1", "rev")),
     (
         "delete_workflow_node_recursively",

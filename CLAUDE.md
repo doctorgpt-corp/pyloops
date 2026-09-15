@@ -64,7 +64,7 @@ Tests run with pytest and require no real API key — all HTTP is intercepted at
 ```
 tests/
   test_safe_mode.py   # 40 tests — safe mode email domain validation
-  test_testing.py     # 137 tests — mock utility + every client method
+  test_testing.py     # 147 tests — mock utility + every client method
   test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
 ```
 
@@ -196,6 +196,7 @@ All routes are accessible by name on the yielded router.
 | `create_workflow` | `POST /v1/workflows` |
 | `update_workflow` | `POST /v1/workflows/{id}` |
 | `change_workflow_mailing_list` | `POST /v1/workflows/{id}/mailing-list` |
+| `delete_workflow` | `DELETE /v1/workflows/{id}` |
 | `create_workflow_node` | `POST /v1/workflows/{id}/nodes` |
 | `update_workflow_node` | `POST /v1/workflows/{id}/nodes/{node_id}` |
 | `add_workflow_branch` | `POST /v1/workflows/{id}/nodes/{node_id}/add-branch` |

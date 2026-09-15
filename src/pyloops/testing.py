@@ -477,6 +477,9 @@ def loops_respx_mock(
                 },
             )
         )
+        router.delete(url__regex=r"/v1/workflows/[^/]+$", name="delete_workflow").mock(
+            return_value=respx.MockResponse(204)
+        )
         router.get(url__regex=r"/v1/workflows/[^/]+$", name="get_workflow").mock(
             return_value=respx.MockResponse(200, json=_workflow_json)
         )
