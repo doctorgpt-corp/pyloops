@@ -90,9 +90,12 @@ Conventional Commits, one concern per commit, `!` only when a public return
 type changes or a method or argument is removed or renamed (see `CLAUDE.md`).
 Retitle the bot PR's non-conventional title on the human PR.
 
-The version stays the bot's three-segment value when regen and repair ship
-together. `just bump-client` (the fourth segment) is only for a wrapper-only
-release on top of an API version that already shipped.
+Leave the version in `pyproject.toml` alone - it is the bot's three-segment API
+version and there is nothing to bump by hand. On merge to main, `publish.yml`
+derives the release version from the tags: the bare API version the first time,
+a fourth segment for each wrapper-only release after it. That release is gated
+on `src/`, `pyproject.toml` or `uv.lock` changing since the last tag, so a merge
+carrying only docs, tests or skill edits ships nothing.
 
 Open the human PR, then close the bot PR as superseded by it.
 
@@ -110,5 +113,4 @@ Mention these where they bite; do not fix them as a side effect of an update.
   `uv tool run openapi-python-client`, which resolves the newest release. The
   dev-dependency entry is a floor, not a pin, so a local regeneration is not
   guaranteed to reproduce the bot's tree.
-- `just bump-client` uses `sed -i ''`, which only works on macOS.
 - Bot PRs get no CI run at all.

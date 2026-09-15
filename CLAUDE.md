@@ -57,10 +57,12 @@ change takes:
   `client.py`, a named respx route plus fixture in `testing.py`, the
   `EXPECTED_ROUTE_NAMES` entry with happy-path and error tests, and a row in
   the named-route table below.
-- The three-segment version tracks the Loops API version and is what ships when
-  a regeneration and its wrapper repair go out together. A fourth segment
-  (`just bump-client`) is a wrapper-only release on top of an API version that
-  already shipped.
+- The version in `pyproject.toml` is the three-segment Loops API version and is
+  maintained by the update bot. Nothing is bumped by hand. On merge to main,
+  `publish.yml` derives the released version from the git tags: the bare API
+  version first, then a fourth segment for each wrapper-only release on top of
+  it. It releases only when `src/`, `pyproject.toml` or `uv.lock` changed since
+  the last tag, so a docs- or test-only merge ships nothing.
 
 ## Testing strategy
 
