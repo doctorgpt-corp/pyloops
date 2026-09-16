@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class EventPatternIncomingWebhookPlatform(str, Enum):
+class EventPatternIncomingWebhookPlatform(StrEnum):
     CLERK = "clerk"
     NULL = "null"
     POLAR = "polar"

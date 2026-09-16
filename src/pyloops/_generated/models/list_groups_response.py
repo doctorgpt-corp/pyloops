@@ -47,8 +47,8 @@ class ListGroupsResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.group_response import GroupResponse
-        from ..models.pagination import Pagination
+        from ..models.group_response import GroupResponse  # noqa: PLC0415
+        from ..models.pagination import Pagination  # noqa: PLC0415
 
         d = dict(src_dict)
         pagination = Pagination.from_dict(d.pop("pagination"))

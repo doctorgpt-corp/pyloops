@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowAddToListTriggerPayloadTypeName(str, Enum):
+class WorkflowAddToListTriggerPayloadTypeName(StrEnum):
     ADDTOLISTTRIGGER = "AddToListTrigger"
 
     def __str__(self) -> str:

@@ -45,17 +45,24 @@ SDK-update PRs ("Update SDK to Loops API version X"). Retitle those on review.
 
 ## SDK version bump workflow
 
-When Loops releases a new API version:
-1. Regenerate `src/pyloops/_generated/` from the updated OpenAPI spec:
-   `uv run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv`,
-   then move `loops-open-api-spec-client/loops_open_api_spec_client` into place.
-   The generator version matters — it is pinned in the dev dependencies so a
-   local regeneration reproduces CI's tree byte-for-byte
-2. Identify new endpoints by diffing the generated `api/` and `models/` directories
-3. Add wrapper methods to `LoopsClient` in `client.py` following existing patterns
-4. Add mock routes to `loops_respx_mock()` in `testing.py`
-5. Add tests to `tests/test_testing.py`
-6. Bump the version in `pyproject.toml`
+The procedure lives in the `sdk-update` skill
+(`.claude/skills/sdk-update/SKILL.md`): triaging the bot PRs, telling generator
+churn from a real spec change, and the repair recipe for each pattern. Run it
+whenever a new Loops API version lands. These rules bind whatever route the
+change takes:
+
+- `src/pyloops/_generated/` is never hand-edited. `just generate` replaces it
+  wholesale, and the next regeneration would drop the edit anyway.
+- A new wrapper method is a four-part unit landing in one commit: the method in
+  `client.py`, a named respx route plus fixture in `testing.py`, the
+  `EXPECTED_ROUTE_NAMES` entry with happy-path and error tests, and a row in
+  the named-route table below.
+- The version in `pyproject.toml` is the three-segment Loops API version and is
+  maintained by the update bot. Nothing is bumped by hand. On merge to main,
+  `publish.yml` derives the released version from the git tags: the bare API
+  version first, then a fourth segment for each wrapper-only release on top of
+  it. It releases only when `src/`, `pyproject.toml` or `uv.lock` changed since
+  the last tag, so a docs- or test-only merge ships nothing.
 
 ## Testing strategy
 
@@ -64,7 +71,7 @@ Tests run with pytest and require no real API key — all HTTP is intercepted at
 ```
 tests/
   test_safe_mode.py   # 40 tests — safe mode email domain validation
-  test_testing.py     # 137 tests — mock utility + every client method
+  test_testing.py     # 147 tests — mock utility + every client method
   test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
 ```
 
@@ -196,6 +203,7 @@ All routes are accessible by name on the yielded router.
 | `create_workflow` | `POST /v1/workflows` |
 | `update_workflow` | `POST /v1/workflows/{id}` |
 | `change_workflow_mailing_list` | `POST /v1/workflows/{id}/mailing-list` |
+| `delete_workflow` | `DELETE /v1/workflows/{id}` |
 | `create_workflow_node` | `POST /v1/workflows/{id}/nodes` |
 | `update_workflow_node` | `POST /v1/workflows/{id}/nodes/{node_id}` |
 | `add_workflow_branch` | `POST /v1/workflows/{id}/nodes/{node_id}/add-branch` |

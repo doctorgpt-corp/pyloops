@@ -89,6 +89,7 @@ from pyloops._generated.api.workflow_nodes import (
 from pyloops._generated.api.workflows import (
     change_workflow_mailing_list,
     create_workflow,
+    delete_workflow,
     get_workflow,
     list_workflows,
     update_workflow_properties,
@@ -107,7 +108,7 @@ from pyloops._generated.models import (
     ComponentResponse,
     ComponentValidationFailureResponse,
     Contact,
-    ContactDeleteRequest,
+    ContactDeleteResponse,
     ContactFailureResponse,
     ContactProperty,
     ContactPropertyCreateRequest,
@@ -135,6 +136,7 @@ from pyloops._generated.models import (
     CreateWorkflowNodeTypeName,
     CreateWorkflowRequest,
     DeleteWorkflowNodeRequest,
+    DeleteWorkflowRequest,
     EmailMessageFailureResponse,
     EmailMessageGuardianResponse,
     EmailMessagePreviewRequest,
@@ -575,18 +577,18 @@ class LoopsClient:
             True if deleted successfully, False if not found
 
         Raises:
-            LoopsError: If the request fails
+            LoopsError: If neither or both identifiers are given, or the request fails
         """
         if not email and not user_id:
             raise LoopsError("Either email or user_id must be provided")
+        if email and user_id:
+            raise LoopsError("Provide either email or user_id, not both")
 
         self._validate_email(email)
 
-        # ContactDeleteRequest requires both fields, use empty string for the unused one
-        body = ContactDeleteRequest(
-            email=email if email else "",
-            user_id=user_id if user_id else "",
-        )
+        # The spec models this body as oneOf email|userId, so the generated endpoint
+        # takes raw JSON: send exactly the one key the caller identified the contact by.
+        body = {"email": email} if email else {"userId": user_id}
 
         response = await delete_contact.asyncio_detailed(client=self._client, body=body)
         result = self._handle_response(response)
@@ -601,7 +603,7 @@ class LoopsClient:
                 response_data=result,
             )
 
-        if isinstance(result, ContactSuccessResponse):
+        if isinstance(result, ContactDeleteResponse):
             return True
 
         return False
@@ -2076,6 +2078,59 @@ class LoopsClient:
             success=(WorkflowMailingListUpdatedResponse, WorkflowMailingListPreview),
             failure=WorkflowFailureResponse,
             action="change workflow mailing list",
+        )
+
+    async def delete_workflow(
+        self,
+        workflow_id: str,
+        expected_revision_id: str | None,
+        confirm_delete: bool | None = None,
+    ) -> bool:
+        """Delete a workflow.
+
+        A workflow that is sending, or that still has queued contacts, is not
+        deleted on the first attempt: Loops answers 409 with a message saying
+        what stands in the way. Retry with ``confirm_delete=True`` to delete it,
+        stop the sending and cancel the queued contacts.
+
+        Args:
+            workflow_id: The workflow ID
+            expected_revision_id: Optimistic concurrency token (see ``update_workflow``)
+            confirm_delete: Pass True to go through with a delete that Loops asked
+                you to confirm.
+
+        Returns:
+            True once the workflow is deleted.
+
+        Raises:
+            LoopsError: If not found (404), a revision conflict occurs (409), or
+                Loops wants the delete confirmed (409)
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = DeleteWorkflowRequest(
+            expected_revision_id=expected_revision_id,
+            confirm_delete=confirm_delete if confirm_delete is not None else UNSET,
+        )
+        response = await delete_workflow.asyncio_detailed(
+            workflow_id=workflow_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+
+        if isinstance(result, WorkflowFailureResponse):
+            raise LoopsError(
+                f"Failed to delete workflow: {result.message}",
+                status_code=response.status_code,
+                response_data=result,
+            )
+        # A successful delete is 204 with an empty body, so there is nothing to parse.
+        if response.status_code == HTTPStatus.NO_CONTENT:
+            return True
+        raise LoopsError(
+            "Failed to delete workflow",
+            status_code=response.status_code,
+            response_data=result,
         )
 
     # ------------------------------------------------------------------

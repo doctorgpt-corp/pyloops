@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowContactPropertyComparisonOperator(str, Enum):
+class WorkflowContactPropertyComparisonOperator(StrEnum):
     AFTER = "after"
     ANY = "any"
     BEFORE = "before"

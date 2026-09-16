@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class PropertyConditionType(str, Enum):
+class PropertyConditionType(StrEnum):
     PROPERTY = "property"
 
     def __str__(self) -> str:

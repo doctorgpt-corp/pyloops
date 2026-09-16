@@ -208,6 +208,7 @@ def loops_respx_mock(
                 200,
                 json={
                     "id": "mock-campaign-id",
+                    "url": "https://app.loops.so/campaigns/mock-campaign-id",
                     "name": "Mock Campaign",
                     "status": "Draft",
                     "createdAt": "2024-01-01T00:00:00.000Z",
@@ -222,6 +223,7 @@ def loops_respx_mock(
                 201,
                 json={
                     "id": "mock-campaign-id",
+                    "url": "https://app.loops.so/campaigns/mock-campaign-id",
                     "name": "Mock Campaign",
                     "status": "Draft",
                     "createdAt": "2024-01-01T00:00:00.000Z",
@@ -237,6 +239,7 @@ def loops_respx_mock(
                 200,
                 json={
                     "id": "mock-campaign-id",
+                    "url": "https://app.loops.so/campaigns/mock-campaign-id",
                     "name": "Updated Campaign",
                     "status": "Draft",
                     "createdAt": "2024-01-01T00:00:00.000Z",
@@ -330,6 +333,7 @@ def loops_respx_mock(
         # Transactional email templates
         _transactional_resource = {
             "id": "mock-transactional-id",
+            "url": "https://app.loops.so/transactional/mock-transactional-id",
             "name": "Mock Transactional",
             "draftEmailMessageId": None,
             "publishedEmailMessageId": None,
@@ -340,6 +344,7 @@ def loops_respx_mock(
         }
         _transactional_draft = {
             "id": "mock-transactional-id",
+            "url": "https://app.loops.so/transactional/mock-transactional-id",
             "name": "Mock Transactional",
             "draftEmailMessageId": None,
             "draftEmailMessageContentRevisionId": None,
@@ -398,6 +403,7 @@ def loops_respx_mock(
         )
         _workflow_json = {
             "id": "mock-workflow-id",
+            "url": "https://app.loops.so/workflows/mock-workflow-id",
             "workflowRevisionId": "mock-revision-id",
             "status": "Draft",
             "name": "Mock Workflow",
@@ -470,6 +476,9 @@ def loops_respx_mock(
                     "workflow": _workflow_json,
                 },
             )
+        )
+        router.delete(url__regex=r"/v1/workflows/[^/]+$", name="delete_workflow").mock(
+            return_value=respx.MockResponse(204)
         )
         router.get(url__regex=r"/v1/workflows/[^/]+$", name="get_workflow").mock(
             return_value=respx.MockResponse(200, json=_workflow_json)

@@ -86,8 +86,8 @@ class WebhookEmailMetricPayload:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.webhook_contact_identity import WebhookContactIdentity
-        from ..models.webhook_email import WebhookEmail
+        from ..models.webhook_contact_identity import WebhookContactIdentity  # noqa: PLC0415
+        from ..models.webhook_email import WebhookEmail  # noqa: PLC0415
 
         d = dict(src_dict)
         event_name = d.pop("eventName")

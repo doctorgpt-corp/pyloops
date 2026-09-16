@@ -80,8 +80,8 @@ class TransactionalRequest:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.transactional_request_attachments_item import TransactionalRequestAttachmentsItem
-        from ..models.transactional_request_data_variables import TransactionalRequestDataVariables
+        from ..models.transactional_request_attachments_item import TransactionalRequestAttachmentsItem  # noqa: PLC0415
+        from ..models.transactional_request_data_variables import TransactionalRequestDataVariables  # noqa: PLC0415
 
         d = dict(src_dict)
         email = d.pop("email")

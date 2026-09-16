@@ -46,13 +46,15 @@ class UpdateWorkflowNodeRequest:
     )
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.workflow_add_to_list_trigger_payload import WorkflowAddToListTriggerPayload
-        from ..models.workflow_audience_filter_payload import WorkflowAudienceFilterPayload
-        from ..models.workflow_contact_property_trigger_payload import WorkflowContactPropertyTriggerPayload
-        from ..models.workflow_event_trigger_payload import WorkflowEventTriggerPayload
-        from ..models.workflow_experiment_branch_payload import WorkflowExperimentBranchPayload
-        from ..models.workflow_signup_trigger_payload import WorkflowSignupTriggerPayload
-        from ..models.workflow_timer_action_payload import WorkflowTimerActionPayload
+        from ..models.workflow_add_to_list_trigger_payload import WorkflowAddToListTriggerPayload  # noqa: PLC0415
+        from ..models.workflow_audience_filter_payload import WorkflowAudienceFilterPayload  # noqa: PLC0415
+        from ..models.workflow_contact_property_trigger_payload import (
+            WorkflowContactPropertyTriggerPayload,  # noqa: PLC0415
+        )
+        from ..models.workflow_event_trigger_payload import WorkflowEventTriggerPayload  # noqa: PLC0415
+        from ..models.workflow_experiment_branch_payload import WorkflowExperimentBranchPayload  # noqa: PLC0415
+        from ..models.workflow_signup_trigger_payload import WorkflowSignupTriggerPayload  # noqa: PLC0415
+        from ..models.workflow_timer_action_payload import WorkflowTimerActionPayload  # noqa: PLC0415
 
         expected_revision_id: None | str
         expected_revision_id = self.expected_revision_id
@@ -88,14 +90,16 @@ class UpdateWorkflowNodeRequest:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.workflow_add_to_list_trigger_payload import WorkflowAddToListTriggerPayload
-        from ..models.workflow_audience_filter_payload import WorkflowAudienceFilterPayload
-        from ..models.workflow_contact_property_trigger_payload import WorkflowContactPropertyTriggerPayload
-        from ..models.workflow_event_trigger_payload import WorkflowEventTriggerPayload
-        from ..models.workflow_experiment_branch_payload import WorkflowExperimentBranchPayload
-        from ..models.workflow_signup_trigger_payload import WorkflowSignupTriggerPayload
-        from ..models.workflow_timer_action_payload import WorkflowTimerActionPayload
-        from ..models.workflow_variant_payload import WorkflowVariantPayload
+        from ..models.workflow_add_to_list_trigger_payload import WorkflowAddToListTriggerPayload  # noqa: PLC0415
+        from ..models.workflow_audience_filter_payload import WorkflowAudienceFilterPayload  # noqa: PLC0415
+        from ..models.workflow_contact_property_trigger_payload import (
+            WorkflowContactPropertyTriggerPayload,  # noqa: PLC0415
+        )
+        from ..models.workflow_event_trigger_payload import WorkflowEventTriggerPayload  # noqa: PLC0415
+        from ..models.workflow_experiment_branch_payload import WorkflowExperimentBranchPayload  # noqa: PLC0415
+        from ..models.workflow_signup_trigger_payload import WorkflowSignupTriggerPayload  # noqa: PLC0415
+        from ..models.workflow_timer_action_payload import WorkflowTimerActionPayload  # noqa: PLC0415
+        from ..models.workflow_variant_payload import WorkflowVariantPayload  # noqa: PLC0415
 
         d = dict(src_dict)
 

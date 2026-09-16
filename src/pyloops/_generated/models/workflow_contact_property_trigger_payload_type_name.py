@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowContactPropertyTriggerPayloadTypeName(str, Enum):
+class WorkflowContactPropertyTriggerPayloadTypeName(StrEnum):
     CONTACTPROPERTYTRIGGER = "ContactPropertyTrigger"
 
     def __str__(self) -> str:

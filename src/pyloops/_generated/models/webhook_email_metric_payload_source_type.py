@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WebhookEmailMetricPayloadSourceType(str, Enum):
+class WebhookEmailMetricPayloadSourceType(StrEnum):
     CAMPAIGN = "campaign"
     LOOP = "loop"
     TRANSACTIONAL = "transactional"

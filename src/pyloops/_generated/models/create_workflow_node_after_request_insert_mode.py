@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class CreateWorkflowNodeAfterRequestInsertMode(str, Enum):
+class CreateWorkflowNodeAfterRequestInsertMode(StrEnum):
     AFTER = "after"
 
     def __str__(self) -> str:

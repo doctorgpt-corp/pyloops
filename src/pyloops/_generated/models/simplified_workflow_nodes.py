@@ -52,19 +52,29 @@ class SimplifiedWorkflowNodes:
     ] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.simplified_add_to_list_trigger_workflow_node import SimplifiedAddToListTriggerWorkflowNode
-        from ..models.simplified_audience_filter_workflow_node import SimplifiedAudienceFilterWorkflowNode
-        from ..models.simplified_blank_trigger_workflow_node import SimplifiedBlankTriggerWorkflowNode
-        from ..models.simplified_branch_workflow_node import SimplifiedBranchWorkflowNode
-        from ..models.simplified_contact_property_trigger_workflow_node import (
-            SimplifiedContactPropertyTriggerWorkflowNode,
+        from ..models.simplified_add_to_list_trigger_workflow_node import (
+            SimplifiedAddToListTriggerWorkflowNode,  # noqa: PLC0415
         )
-        from ..models.simplified_event_trigger_workflow_node import SimplifiedEventTriggerWorkflowNode
-        from ..models.simplified_exit_action_workflow_node import SimplifiedExitActionWorkflowNode
-        from ..models.simplified_experiment_branch_workflow_node import SimplifiedExperimentBranchWorkflowNode
-        from ..models.simplified_send_email_action_workflow_node import SimplifiedSendEmailActionWorkflowNode
-        from ..models.simplified_signup_trigger_workflow_node import SimplifiedSignupTriggerWorkflowNode
-        from ..models.simplified_timer_action_workflow_node import SimplifiedTimerActionWorkflowNode
+        from ..models.simplified_audience_filter_workflow_node import (
+            SimplifiedAudienceFilterWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_blank_trigger_workflow_node import SimplifiedBlankTriggerWorkflowNode  # noqa: PLC0415
+        from ..models.simplified_branch_workflow_node import SimplifiedBranchWorkflowNode  # noqa: PLC0415
+        from ..models.simplified_contact_property_trigger_workflow_node import (
+            SimplifiedContactPropertyTriggerWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_event_trigger_workflow_node import SimplifiedEventTriggerWorkflowNode  # noqa: PLC0415
+        from ..models.simplified_exit_action_workflow_node import SimplifiedExitActionWorkflowNode  # noqa: PLC0415
+        from ..models.simplified_experiment_branch_workflow_node import (
+            SimplifiedExperimentBranchWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_send_email_action_workflow_node import (
+            SimplifiedSendEmailActionWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_signup_trigger_workflow_node import (
+            SimplifiedSignupTriggerWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_timer_action_workflow_node import SimplifiedTimerActionWorkflowNode  # noqa: PLC0415
 
         field_dict: dict[str, Any] = {}
         for prop_name, prop in self.additional_properties.items():
@@ -97,20 +107,30 @@ class SimplifiedWorkflowNodes:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.simplified_add_to_list_trigger_workflow_node import SimplifiedAddToListTriggerWorkflowNode
-        from ..models.simplified_audience_filter_workflow_node import SimplifiedAudienceFilterWorkflowNode
-        from ..models.simplified_blank_trigger_workflow_node import SimplifiedBlankTriggerWorkflowNode
-        from ..models.simplified_branch_workflow_node import SimplifiedBranchWorkflowNode
-        from ..models.simplified_contact_property_trigger_workflow_node import (
-            SimplifiedContactPropertyTriggerWorkflowNode,
+        from ..models.simplified_add_to_list_trigger_workflow_node import (
+            SimplifiedAddToListTriggerWorkflowNode,  # noqa: PLC0415
         )
-        from ..models.simplified_event_trigger_workflow_node import SimplifiedEventTriggerWorkflowNode
-        from ..models.simplified_exit_action_workflow_node import SimplifiedExitActionWorkflowNode
-        from ..models.simplified_experiment_branch_workflow_node import SimplifiedExperimentBranchWorkflowNode
-        from ..models.simplified_send_email_action_workflow_node import SimplifiedSendEmailActionWorkflowNode
-        from ..models.simplified_signup_trigger_workflow_node import SimplifiedSignupTriggerWorkflowNode
-        from ..models.simplified_timer_action_workflow_node import SimplifiedTimerActionWorkflowNode
-        from ..models.simplified_variant_workflow_node import SimplifiedVariantWorkflowNode
+        from ..models.simplified_audience_filter_workflow_node import (
+            SimplifiedAudienceFilterWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_blank_trigger_workflow_node import SimplifiedBlankTriggerWorkflowNode  # noqa: PLC0415
+        from ..models.simplified_branch_workflow_node import SimplifiedBranchWorkflowNode  # noqa: PLC0415
+        from ..models.simplified_contact_property_trigger_workflow_node import (
+            SimplifiedContactPropertyTriggerWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_event_trigger_workflow_node import SimplifiedEventTriggerWorkflowNode  # noqa: PLC0415
+        from ..models.simplified_exit_action_workflow_node import SimplifiedExitActionWorkflowNode  # noqa: PLC0415
+        from ..models.simplified_experiment_branch_workflow_node import (
+            SimplifiedExperimentBranchWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_send_email_action_workflow_node import (
+            SimplifiedSendEmailActionWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_signup_trigger_workflow_node import (
+            SimplifiedSignupTriggerWorkflowNode,  # noqa: PLC0415
+        )
+        from ..models.simplified_timer_action_workflow_node import SimplifiedTimerActionWorkflowNode  # noqa: PLC0415
+        from ..models.simplified_variant_workflow_node import SimplifiedVariantWorkflowNode  # noqa: PLC0415
 
         d = dict(src_dict)
         simplified_workflow_nodes = cls()

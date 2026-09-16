@@ -47,8 +47,8 @@ class ListComponentsResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.component import Component
-        from ..models.pagination import Pagination
+        from ..models.component import Component  # noqa: PLC0415
+        from ..models.pagination import Pagination  # noqa: PLC0415
 
         d = dict(src_dict)
         pagination = Pagination.from_dict(d.pop("pagination"))

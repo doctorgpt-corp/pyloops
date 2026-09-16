@@ -21,6 +21,7 @@ class SimplifiedWorkflow:
     """
     Attributes:
         id (str): The ID of the workflow.
+        url (str): The URL of the workflow in the Loops app.
         workflow_revision_id (None | str): The current workflow revision token. Pass the latest value as
             `expectedRevisionId` on the next workflow mutation. Will be `null` for workflows without a revision token yet.
         status (SimplifiedWorkflowStatus):
@@ -35,6 +36,7 @@ class SimplifiedWorkflow:
     """
 
     id: str
+    url: str
     workflow_revision_id: None | str
     status: SimplifiedWorkflowStatus
     mailing_list_id: None | str
@@ -46,6 +48,8 @@ class SimplifiedWorkflow:
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
+
+        url = self.url
 
         workflow_revision_id: None | str
         workflow_revision_id = self.workflow_revision_id
@@ -68,6 +72,7 @@ class SimplifiedWorkflow:
         field_dict.update(
             {
                 "id": id,
+                "url": url,
                 "workflowRevisionId": workflow_revision_id,
                 "status": status,
                 "mailingListId": mailing_list_id,
@@ -84,10 +89,12 @@ class SimplifiedWorkflow:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.simplified_workflow_nodes import SimplifiedWorkflowNodes
+        from ..models.simplified_workflow_nodes import SimplifiedWorkflowNodes  # noqa: PLC0415
 
         d = dict(src_dict)
         id = d.pop("id")
+
+        url = d.pop("url")
 
         def _parse_workflow_revision_id(data: object) -> None | str:
             if data is None:
@@ -115,6 +122,7 @@ class SimplifiedWorkflow:
 
         simplified_workflow = cls(
             id=id,
+            url=url,
             workflow_revision_id=workflow_revision_id,
             status=status,
             mailing_list_id=mailing_list_id,

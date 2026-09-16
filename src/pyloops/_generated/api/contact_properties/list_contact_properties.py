@@ -68,10 +68,10 @@ def sync_detailed(
     client: AuthenticatedClient,
     list_: str | Unset = UNSET,
 ) -> Response[Any | list[ContactProperty]]:
-    r"""List contact properties
+    """List contact properties
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query "all" or
+    "custom" properties.
 
     Args:
         list_ (str | Unset):
@@ -100,10 +100,10 @@ def sync(
     client: AuthenticatedClient,
     list_: str | Unset = UNSET,
 ) -> Any | list[ContactProperty] | None:
-    r"""List contact properties
+    """List contact properties
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query "all" or
+    "custom" properties.
 
     Args:
         list_ (str | Unset):
@@ -127,10 +127,10 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     list_: str | Unset = UNSET,
 ) -> Response[Any | list[ContactProperty]]:
-    r"""List contact properties
+    """List contact properties
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query "all" or
+    "custom" properties.
 
     Args:
         list_ (str | Unset):
@@ -157,10 +157,10 @@ async def asyncio(
     client: AuthenticatedClient,
     list_: str | Unset = UNSET,
 ) -> Any | list[ContactProperty] | None:
-    r"""List contact properties
+    """List contact properties
 
-     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query \"all\"
-    or \"custom\" properties.
+     Retrieve a list of your account's contact properties.<br>Use the `list` parameter to query "all" or
+    "custom" properties.
 
     Args:
         list_ (str | Unset):

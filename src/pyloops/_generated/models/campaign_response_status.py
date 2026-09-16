@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class CampaignResponseStatus(str, Enum):
+class CampaignResponseStatus(StrEnum):
     DRAFT = "Draft"
     SCHEDULED = "Scheduled"
     SENDING = "Sending"

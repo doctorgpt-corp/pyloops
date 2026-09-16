@@ -47,8 +47,8 @@ class ListThemesResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.pagination import Pagination
-        from ..models.theme import Theme
+        from ..models.pagination import Pagination  # noqa: PLC0415
+        from ..models.theme import Theme  # noqa: PLC0415
 
         d = dict(src_dict)
         pagination = Pagination.from_dict(d.pop("pagination"))

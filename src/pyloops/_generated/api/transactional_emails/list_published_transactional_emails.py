@@ -56,7 +56,7 @@ def sync_detailed(
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
 ) -> Response[Any]:
-    """List transactional emails
+    """List transactional emails (legacy)
 
      Get a list of published transactional emails.
 
@@ -90,7 +90,7 @@ async def asyncio_detailed(
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
 ) -> Response[Any]:
-    """List transactional emails
+    """List transactional emails (legacy)
 
      Get a list of published transactional emails.
 

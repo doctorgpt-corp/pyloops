@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class GuardianRuleRule(str, Enum):
+class GuardianRuleRule(StrEnum):
     BAREARRAYNODES = "bareArrayNodes"
     EMAILWITHOUTMAILTOBUTTONHREFS = "emailWithoutMailtoButtonHrefs"
     EMAILWITHOUTMAILTOIMAGEHREFS = "emailWithoutMailtoImageHrefs"

@@ -63,7 +63,7 @@ class WorkflowDeletedResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.simplified_workflow import SimplifiedWorkflow
+        from ..models.simplified_workflow import SimplifiedWorkflow  # noqa: PLC0415
 
         d = dict(src_dict)
         status = WorkflowDeletedResponseStatus(d.pop("status"))

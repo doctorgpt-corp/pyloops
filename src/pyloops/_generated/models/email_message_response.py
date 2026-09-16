@@ -166,13 +166,15 @@ class EmailMessageResponse:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.email_message_response_contact_properties_fallbacks import (
-            EmailMessageResponseContactPropertiesFallbacks,
+            EmailMessageResponseContactPropertiesFallbacks,  # noqa: PLC0415
         )
-        from ..models.email_message_response_data_variables_fallbacks import EmailMessageResponseDataVariablesFallbacks
+        from ..models.email_message_response_data_variables_fallbacks import (
+            EmailMessageResponseDataVariablesFallbacks,  # noqa: PLC0415
+        )
         from ..models.email_message_response_event_properties_fallbacks import (
-            EmailMessageResponseEventPropertiesFallbacks,
+            EmailMessageResponseEventPropertiesFallbacks,  # noqa: PLC0415
         )
-        from ..models.email_message_response_warnings_item import EmailMessageResponseWarningsItem
+        from ..models.email_message_response_warnings_item import EmailMessageResponseWarningsItem  # noqa: PLC0415
 
         d = dict(src_dict)
         id = d.pop("id")

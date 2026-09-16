@@ -15,12 +15,14 @@ class WorkflowSummary:
     """
     Attributes:
         id (str): The ID of the workflow.
+        url (str): The URL of the workflow in the Loops app.
         name (str): The name of the workflow.
         created_at (datetime.datetime): ISO 8601 timestamp for when the workflow was created.
         updated_at (datetime.datetime): ISO 8601 timestamp for when the workflow was last updated.
     """
 
     id: str
+    url: str
     name: str
     created_at: datetime.datetime
     updated_at: datetime.datetime
@@ -28,6 +30,8 @@ class WorkflowSummary:
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
+
+        url = self.url
 
         name = self.name
 
@@ -40,6 +44,7 @@ class WorkflowSummary:
         field_dict.update(
             {
                 "id": id,
+                "url": url,
                 "name": name,
                 "createdAt": created_at,
                 "updatedAt": updated_at,
@@ -53,6 +58,8 @@ class WorkflowSummary:
         d = dict(src_dict)
         id = d.pop("id")
 
+        url = d.pop("url")
+
         name = d.pop("name")
 
         created_at = datetime.datetime.fromisoformat(d.pop("createdAt"))
@@ -61,6 +68,7 @@ class WorkflowSummary:
 
         workflow_summary = cls(
             id=id,
+            url=url,
             name=name,
             created_at=created_at,
             updated_at=updated_at,

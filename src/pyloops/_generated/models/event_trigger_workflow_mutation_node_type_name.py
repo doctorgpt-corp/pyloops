@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class EventTriggerWorkflowMutationNodeTypeName(str, Enum):
+class EventTriggerWorkflowMutationNodeTypeName(StrEnum):
     EVENTTRIGGER = "EventTrigger"
 
     def __str__(self) -> str:

@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowTimerUnit(str, Enum):
+class WorkflowTimerUnit(StrEnum):
     D = "d"
     H = "h"
     M = "m"

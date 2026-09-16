@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class SimplifiedWorkflowStatus(str, Enum):
+class SimplifiedWorkflowStatus(StrEnum):
     DRAFT = "Draft"
     PAUSED = "Paused"
     PAUSEDANDQUEUEING = "PausedAndQueueing"

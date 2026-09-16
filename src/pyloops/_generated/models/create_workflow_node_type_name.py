@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class CreateWorkflowNodeTypeName(str, Enum):
+class CreateWorkflowNodeTypeName(StrEnum):
     AUDIENCEFILTER = "AudienceFilter"
     BRANCHNODE = "BranchNode"
     EXPERIMENTBRANCHNODE = "ExperimentBranchNode"

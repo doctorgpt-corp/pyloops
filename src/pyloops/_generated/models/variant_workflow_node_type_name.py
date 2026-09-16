@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class VariantWorkflowNodeTypeName(str, Enum):
+class VariantWorkflowNodeTypeName(StrEnum):
     VARIANTNODE = "VariantNode"
 
     def __str__(self) -> str:

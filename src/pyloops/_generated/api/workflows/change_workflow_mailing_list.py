@@ -109,13 +109,13 @@ def sync_detailed(
     client: AuthenticatedClient,
     body: ChangeWorkflowMailingListRequest,
 ) -> Response[Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse]:
-    r"""Change workflow mailing list
+    """Change workflow mailing list
 
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
-    workflow due to the change of mailing list, Loops returns with `\"status\": \"queuedContactsFound\"`
-    instead of applying the change. Retry with `queuedContactPolicy: \"discard\"` to apply the change
-    and discard those contacts. Confirmed update responses include the simplified workflow after the
-    mailing list changes.
+    workflow due to the change of mailing list, Loops returns with `"status": "queuedContactsFound"`
+    instead of applying the change. Retry with `queuedContactPolicy: "discard"` to apply the change and
+    discard those contacts. Confirmed update responses include the simplified workflow after the mailing
+    list changes.
 
     Args:
         workflow_id (str):
@@ -147,13 +147,13 @@ def sync(
     client: AuthenticatedClient,
     body: ChangeWorkflowMailingListRequest,
 ) -> Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse | None:
-    r"""Change workflow mailing list
+    """Change workflow mailing list
 
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
-    workflow due to the change of mailing list, Loops returns with `\"status\": \"queuedContactsFound\"`
-    instead of applying the change. Retry with `queuedContactPolicy: \"discard\"` to apply the change
-    and discard those contacts. Confirmed update responses include the simplified workflow after the
-    mailing list changes.
+    workflow due to the change of mailing list, Loops returns with `"status": "queuedContactsFound"`
+    instead of applying the change. Retry with `queuedContactPolicy: "discard"` to apply the change and
+    discard those contacts. Confirmed update responses include the simplified workflow after the mailing
+    list changes.
 
     Args:
         workflow_id (str):
@@ -180,13 +180,13 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     body: ChangeWorkflowMailingListRequest,
 ) -> Response[Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse]:
-    r"""Change workflow mailing list
+    """Change workflow mailing list
 
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
-    workflow due to the change of mailing list, Loops returns with `\"status\": \"queuedContactsFound\"`
-    instead of applying the change. Retry with `queuedContactPolicy: \"discard\"` to apply the change
-    and discard those contacts. Confirmed update responses include the simplified workflow after the
-    mailing list changes.
+    workflow due to the change of mailing list, Loops returns with `"status": "queuedContactsFound"`
+    instead of applying the change. Retry with `queuedContactPolicy: "discard"` to apply the change and
+    discard those contacts. Confirmed update responses include the simplified workflow after the mailing
+    list changes.
 
     Args:
         workflow_id (str):
@@ -216,13 +216,13 @@ async def asyncio(
     client: AuthenticatedClient,
     body: ChangeWorkflowMailingListRequest,
 ) -> Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse | None:
-    r"""Change workflow mailing list
+    """Change workflow mailing list
 
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
-    workflow due to the change of mailing list, Loops returns with `\"status\": \"queuedContactsFound\"`
-    instead of applying the change. Retry with `queuedContactPolicy: \"discard\"` to apply the change
-    and discard those contacts. Confirmed update responses include the simplified workflow after the
-    mailing list changes.
+    workflow due to the change of mailing list, Loops returns with `"status": "queuedContactsFound"`
+    instead of applying the change. Retry with `queuedContactPolicy: "discard"` to apply the change and
+    discard those contacts. Confirmed update responses include the simplified workflow after the mailing
+    list changes.
 
     Args:
         workflow_id (str):
