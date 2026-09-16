@@ -49,8 +49,10 @@ class ContactSuppressionStatusResponse:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.contact_suppression_removal_quota import ContactSuppressionRemovalQuota
-        from ..models.contact_suppression_status_response_contact import ContactSuppressionStatusResponseContact
+        from ..models.contact_suppression_removal_quota import ContactSuppressionRemovalQuota  # noqa: PLC0415
+        from ..models.contact_suppression_status_response_contact import (
+            ContactSuppressionStatusResponseContact,  # noqa: PLC0415
+        )
 
         d = dict(src_dict)
         contact = ContactSuppressionStatusResponseContact.from_dict(d.pop("contact"))

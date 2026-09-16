@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ExitActionWorkflowMutationNodeTypeName(str, Enum):
+class ExitActionWorkflowMutationNodeTypeName(StrEnum):
     EXITACTION = "ExitAction"
 
     def __str__(self) -> str:

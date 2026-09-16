@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowMailingListUpdatedResponseStatus(str, Enum):
+class WorkflowMailingListUpdatedResponseStatus(StrEnum):
     UPDATED = "updated"
 
     def __str__(self) -> str:

@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class SimplifiedAudienceFilterWorkflowNodeTypeName(str, Enum):
+class SimplifiedAudienceFilterWorkflowNodeTypeName(StrEnum):
     AUDIENCEFILTER = "AudienceFilter"
 
     def __str__(self) -> str:

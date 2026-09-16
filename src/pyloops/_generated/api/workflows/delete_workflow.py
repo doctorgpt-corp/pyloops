@@ -6,23 +6,22 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.group_failure_response import GroupFailureResponse
-from ...models.group_response import GroupResponse
-from ...models.update_group_request import UpdateGroupRequest
+from ...models.delete_workflow_request import DeleteWorkflowRequest
+from ...models.workflow_failure_response import WorkflowFailureResponse
 from ...types import Response
 
 
 def _get_kwargs(
-    transactional_group_id: str,
+    workflow_id: str,
     *,
-    body: UpdateGroupRequest,
+    body: DeleteWorkflowRequest,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
     _kwargs: dict[str, Any] = {
-        "method": "post",
-        "url": "/v1/transactional-groups/{transactional_group_id}".format(
-            transactional_group_id=quote(str(transactional_group_id), safe=""),
+        "method": "delete",
+        "url": "/v1/workflows/{workflow_id}".format(
+            workflow_id=quote(str(workflow_id), safe=""),
         ),
     }
 
@@ -36,14 +35,13 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | GroupFailureResponse | GroupResponse | None:
-    if response.status_code == 200:
-        response_200 = GroupResponse.from_dict(response.json())
-
-        return response_200
+) -> Any | WorkflowFailureResponse | None:
+    if response.status_code == 204:
+        response_204 = cast(Any, None)
+        return response_204
 
     if response.status_code == 400:
-        response_400 = GroupFailureResponse.from_dict(response.json())
+        response_400 = WorkflowFailureResponse.from_dict(response.json())
 
         return response_400
 
@@ -52,13 +50,18 @@ def _parse_response(
         return response_401
 
     if response.status_code == 404:
-        response_404 = GroupFailureResponse.from_dict(response.json())
+        response_404 = WorkflowFailureResponse.from_dict(response.json())
 
         return response_404
 
     if response.status_code == 405:
         response_405 = cast(Any, None)
         return response_405
+
+    if response.status_code == 409:
+        response_409 = WorkflowFailureResponse.from_dict(response.json())
+
+        return response_409
 
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
@@ -68,7 +71,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | GroupFailureResponse | GroupResponse]:
+) -> Response[Any | WorkflowFailureResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -78,30 +81,31 @@ def _build_response(
 
 
 def sync_detailed(
-    transactional_group_id: str,
+    workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateGroupRequest,
-) -> Response[Any | GroupFailureResponse | GroupResponse]:
-    """Update a transactional group
+    body: DeleteWorkflowRequest,
+) -> Response[Any | WorkflowFailureResponse]:
+    """Delete a workflow
 
-     Update a transactional group's name or description. At least one field must be provided. The
-    reserved "Unsorted" group cannot be edited.
+     Delete a workflow. Successful deletion returns `204 No Content`. If the workflow is currently
+    sending or has queued contacts, Loops returns `409 Conflict` with a message instead of deleting.
+    Retry with `confirmDelete: true` to delete the workflow, stop sending, and cancel queued contacts.
 
     Args:
-        transactional_group_id (str):
-        body (UpdateGroupRequest): At least one field must be provided.
+        workflow_id (str):
+        body (DeleteWorkflowRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | GroupFailureResponse | GroupResponse]
+        Response[Any | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
-        transactional_group_id=transactional_group_id,
+        workflow_id=workflow_id,
         body=body,
     )
 
@@ -113,60 +117,62 @@ def sync_detailed(
 
 
 def sync(
-    transactional_group_id: str,
+    workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateGroupRequest,
-) -> Any | GroupFailureResponse | GroupResponse | None:
-    """Update a transactional group
+    body: DeleteWorkflowRequest,
+) -> Any | WorkflowFailureResponse | None:
+    """Delete a workflow
 
-     Update a transactional group's name or description. At least one field must be provided. The
-    reserved "Unsorted" group cannot be edited.
+     Delete a workflow. Successful deletion returns `204 No Content`. If the workflow is currently
+    sending or has queued contacts, Loops returns `409 Conflict` with a message instead of deleting.
+    Retry with `confirmDelete: true` to delete the workflow, stop sending, and cancel queued contacts.
 
     Args:
-        transactional_group_id (str):
-        body (UpdateGroupRequest): At least one field must be provided.
+        workflow_id (str):
+        body (DeleteWorkflowRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | GroupFailureResponse | GroupResponse
+        Any | WorkflowFailureResponse
     """
 
     return sync_detailed(
-        transactional_group_id=transactional_group_id,
+        workflow_id=workflow_id,
         client=client,
         body=body,
     ).parsed
 
 
 async def asyncio_detailed(
-    transactional_group_id: str,
+    workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateGroupRequest,
-) -> Response[Any | GroupFailureResponse | GroupResponse]:
-    """Update a transactional group
+    body: DeleteWorkflowRequest,
+) -> Response[Any | WorkflowFailureResponse]:
+    """Delete a workflow
 
-     Update a transactional group's name or description. At least one field must be provided. The
-    reserved "Unsorted" group cannot be edited.
+     Delete a workflow. Successful deletion returns `204 No Content`. If the workflow is currently
+    sending or has queued contacts, Loops returns `409 Conflict` with a message instead of deleting.
+    Retry with `confirmDelete: true` to delete the workflow, stop sending, and cancel queued contacts.
 
     Args:
-        transactional_group_id (str):
-        body (UpdateGroupRequest): At least one field must be provided.
+        workflow_id (str):
+        body (DeleteWorkflowRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | GroupFailureResponse | GroupResponse]
+        Response[Any | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
-        transactional_group_id=transactional_group_id,
+        workflow_id=workflow_id,
         body=body,
     )
 
@@ -176,31 +182,32 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    transactional_group_id: str,
+    workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: UpdateGroupRequest,
-) -> Any | GroupFailureResponse | GroupResponse | None:
-    """Update a transactional group
+    body: DeleteWorkflowRequest,
+) -> Any | WorkflowFailureResponse | None:
+    """Delete a workflow
 
-     Update a transactional group's name or description. At least one field must be provided. The
-    reserved "Unsorted" group cannot be edited.
+     Delete a workflow. Successful deletion returns `204 No Content`. If the workflow is currently
+    sending or has queued contacts, Loops returns `409 Conflict` with a message instead of deleting.
+    Retry with `confirmDelete: true` to delete the workflow, stop sending, and cancel queued contacts.
 
     Args:
-        transactional_group_id (str):
-        body (UpdateGroupRequest): At least one field must be provided.
+        workflow_id (str):
+        body (DeleteWorkflowRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | GroupFailureResponse | GroupResponse
+        Any | WorkflowFailureResponse
     """
 
     return (
         await asyncio_detailed(
-            transactional_group_id=transactional_group_id,
+            workflow_id=workflow_id,
             client=client,
             body=body,
         )

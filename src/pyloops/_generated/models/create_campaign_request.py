@@ -41,7 +41,7 @@ class CreateCampaignRequest:
     scheduling: CampaignSchedulingRequest | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.audience_filter_in_request_type_0 import AudienceFilterInRequestType0
+        from ..models.audience_filter_in_request_type_0 import AudienceFilterInRequestType0  # noqa: PLC0415
 
         name = self.name
 
@@ -93,8 +93,8 @@ class CreateCampaignRequest:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.audience_filter_in_request_type_0 import AudienceFilterInRequestType0
-        from ..models.campaign_scheduling_request import CampaignSchedulingRequest
+        from ..models.audience_filter_in_request_type_0 import AudienceFilterInRequestType0  # noqa: PLC0415
+        from ..models.campaign_scheduling_request import CampaignSchedulingRequest  # noqa: PLC0415
 
         d = dict(src_dict)
         name = d.pop("name")

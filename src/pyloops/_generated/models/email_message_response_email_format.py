@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class EmailMessageResponseEmailFormat(str, Enum):
+class EmailMessageResponseEmailFormat(StrEnum):
     PLAIN = "plain"
     STYLED = "styled"
 

@@ -68,33 +68,37 @@ class AddWorkflowBranchResponse:
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.add_to_list_trigger_workflow_mutation_node_with_revision import (
-            AddToListTriggerWorkflowMutationNodeWithRevision,
+            AddToListTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.audience_filter_workflow_mutation_node_with_revision import (
-            AudienceFilterWorkflowMutationNodeWithRevision,
+            AudienceFilterWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.blank_trigger_workflow_mutation_node_with_revision import (
-            BlankTriggerWorkflowMutationNodeWithRevision,
+            BlankTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
-        from ..models.branch_workflow_mutation_node_with_revision import BranchWorkflowMutationNodeWithRevision
+        from ..models.branch_workflow_mutation_node_with_revision import (
+            BranchWorkflowMutationNodeWithRevision,  # noqa: PLC0415
+        )
         from ..models.contact_property_trigger_workflow_mutation_node_with_revision import (
-            ContactPropertyTriggerWorkflowMutationNodeWithRevision,
+            ContactPropertyTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.event_trigger_workflow_mutation_node_with_revision import (
-            EventTriggerWorkflowMutationNodeWithRevision,
+            EventTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
-        from ..models.exit_action_workflow_mutation_node_with_revision import ExitActionWorkflowMutationNodeWithRevision
+        from ..models.exit_action_workflow_mutation_node_with_revision import (
+            ExitActionWorkflowMutationNodeWithRevision,  # noqa: PLC0415
+        )
         from ..models.experiment_branch_workflow_mutation_node_with_revision import (
-            ExperimentBranchWorkflowMutationNodeWithRevision,
+            ExperimentBranchWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.send_email_action_workflow_mutation_node_with_revision import (
-            SendEmailActionWorkflowMutationNodeWithRevision,
+            SendEmailActionWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.signup_trigger_workflow_mutation_node_with_revision import (
-            SignupTriggerWorkflowMutationNodeWithRevision,
+            SignupTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.timer_action_workflow_mutation_node_with_revision import (
-            TimerActionWorkflowMutationNodeWithRevision,
+            TimerActionWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
 
         node: dict[str, Any]
@@ -139,36 +143,42 @@ class AddWorkflowBranchResponse:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.add_to_list_trigger_workflow_mutation_node_with_revision import (
-            AddToListTriggerWorkflowMutationNodeWithRevision,
+            AddToListTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.audience_filter_workflow_mutation_node_with_revision import (
-            AudienceFilterWorkflowMutationNodeWithRevision,
+            AudienceFilterWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.blank_trigger_workflow_mutation_node_with_revision import (
-            BlankTriggerWorkflowMutationNodeWithRevision,
+            BlankTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
-        from ..models.branch_workflow_mutation_node_with_revision import BranchWorkflowMutationNodeWithRevision
+        from ..models.branch_workflow_mutation_node_with_revision import (
+            BranchWorkflowMutationNodeWithRevision,  # noqa: PLC0415
+        )
         from ..models.contact_property_trigger_workflow_mutation_node_with_revision import (
-            ContactPropertyTriggerWorkflowMutationNodeWithRevision,
+            ContactPropertyTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.event_trigger_workflow_mutation_node_with_revision import (
-            EventTriggerWorkflowMutationNodeWithRevision,
+            EventTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
-        from ..models.exit_action_workflow_mutation_node_with_revision import ExitActionWorkflowMutationNodeWithRevision
+        from ..models.exit_action_workflow_mutation_node_with_revision import (
+            ExitActionWorkflowMutationNodeWithRevision,  # noqa: PLC0415
+        )
         from ..models.experiment_branch_workflow_mutation_node_with_revision import (
-            ExperimentBranchWorkflowMutationNodeWithRevision,
+            ExperimentBranchWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.send_email_action_workflow_mutation_node_with_revision import (
-            SendEmailActionWorkflowMutationNodeWithRevision,
+            SendEmailActionWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
         from ..models.signup_trigger_workflow_mutation_node_with_revision import (
-            SignupTriggerWorkflowMutationNodeWithRevision,
+            SignupTriggerWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
-        from ..models.simplified_workflow import SimplifiedWorkflow
+        from ..models.simplified_workflow import SimplifiedWorkflow  # noqa: PLC0415
         from ..models.timer_action_workflow_mutation_node_with_revision import (
-            TimerActionWorkflowMutationNodeWithRevision,
+            TimerActionWorkflowMutationNodeWithRevision,  # noqa: PLC0415
         )
-        from ..models.variant_workflow_mutation_node_with_revision import VariantWorkflowMutationNodeWithRevision
+        from ..models.variant_workflow_mutation_node_with_revision import (
+            VariantWorkflowMutationNodeWithRevision,  # noqa: PLC0415
+        )
 
         d = dict(src_dict)
 

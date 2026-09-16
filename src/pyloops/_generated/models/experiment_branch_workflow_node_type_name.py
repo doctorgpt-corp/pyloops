@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ExperimentBranchWorkflowNodeTypeName(str, Enum):
+class ExperimentBranchWorkflowNodeTypeName(StrEnum):
     EXPERIMENTBRANCHNODE = "ExperimentBranchNode"
 
     def __str__(self) -> str:

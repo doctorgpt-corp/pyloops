@@ -58,7 +58,7 @@ class GuardianRule:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.guardian_rule_items_item import GuardianRuleItemsItem
+        from ..models.guardian_rule_items_item import GuardianRuleItemsItem  # noqa: PLC0415
 
         d = dict(src_dict)
         rule = GuardianRuleRule(d.pop("rule"))

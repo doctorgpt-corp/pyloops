@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class PropertyConditionOperator(str, Enum):
+class PropertyConditionOperator(StrEnum):
     AFTER = "after"
     ANY = "any"
     BEFORE = "before"

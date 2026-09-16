@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class CreateCampaignResponseStatus(str, Enum):
+class CreateCampaignResponseStatus(StrEnum):
     DRAFT = "Draft"
 
     def __str__(self) -> str:

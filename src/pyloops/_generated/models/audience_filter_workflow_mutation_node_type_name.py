@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class AudienceFilterWorkflowMutationNodeTypeName(str, Enum):
+class AudienceFilterWorkflowMutationNodeTypeName(StrEnum):
     AUDIENCEFILTER = "AudienceFilter"
 
     def __str__(self) -> str:

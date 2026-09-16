@@ -30,8 +30,8 @@ class AudienceFilterInRequestType0:
     conditions: list[ActivityCondition | OptInCondition | PropertyCondition]
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.opt_in_condition import OptInCondition
-        from ..models.property_condition import PropertyCondition
+        from ..models.opt_in_condition import OptInCondition  # noqa: PLC0415
+        from ..models.property_condition import PropertyCondition  # noqa: PLC0415
 
         match = self.match.value
 
@@ -60,9 +60,9 @@ class AudienceFilterInRequestType0:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.activity_condition import ActivityCondition
-        from ..models.opt_in_condition import OptInCondition
-        from ..models.property_condition import PropertyCondition
+        from ..models.activity_condition import ActivityCondition  # noqa: PLC0415
+        from ..models.opt_in_condition import OptInCondition  # noqa: PLC0415
+        from ..models.property_condition import PropertyCondition  # noqa: PLC0415
 
         d = dict(src_dict)
         match = AudienceFilterInRequestType0Match(d.pop("match"))

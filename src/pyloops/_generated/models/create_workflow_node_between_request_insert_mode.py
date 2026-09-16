@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class CreateWorkflowNodeBetweenRequestInsertMode(str, Enum):
+class CreateWorkflowNodeBetweenRequestInsertMode(StrEnum):
     BETWEEN = "between"
 
     def __str__(self) -> str:
