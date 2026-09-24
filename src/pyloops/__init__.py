@@ -13,6 +13,7 @@ from pyloops.responses import (
     TransactionalEmailPagination,
     TransactionalEmailsResponse,
 )
+from pyloops.spec import openapi_spec_path
 
 __all__ = (
     # High-level API
@@ -33,4 +34,6 @@ __all__ = (
     # Low-level API
     "AuthenticatedClient",
     "Client",
+    # The OpenAPI spec the low-level API was generated from
+    "openapi_spec_path",
 )

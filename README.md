@@ -332,6 +332,8 @@ src/pyloops/
 ├── client.py            # High-level LoopsClient wrapper
 ├── config.py            # Configuration
 ├── exceptions.py        # Exceptions
+├── spec.py              # openapi_spec_path()
+├── openapi.yaml         # The Loops OpenAPI spec _generated/ was built from
 ├── api/                 # Re-exports from _generated.api
 ├── models/              # Re-exports from _generated.models
 └── _generated/          # ALL auto-generated code
@@ -353,12 +355,26 @@ Or manually:
 
 ```bash
 rm -rf src/pyloops/_generated
-uv tool run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv
+curl -fsSL https://app.loops.so/openapi.yaml -o src/pyloops/openapi.yaml
+uv tool run openapi-python-client generate --path src/pyloops/openapi.yaml --meta uv
 mv loops-open-api-spec-client/loops_open_api_spec_client src/pyloops/_generated
-rm -rf loops-open-api-spec-client openapi.yaml
+rm -rf loops-open-api-spec-client
 ```
 
 Custom code is never touched during regeneration.
+
+### The spec ships with the package
+
+The Loops OpenAPI spec the client was generated from is committed as
+`src/pyloops/openapi.yaml` and included in the wheel and sdist, so a consumer
+can check its own fakes or contract tests against exactly the API the installed
+client speaks:
+
+```python
+import pyloops
+
+spec_path = pyloops.openapi_spec_path()  # pathlib.Path to openapi.yaml
+```
 
 ## License
 

@@ -28,8 +28,8 @@ jobs:
       - name: Fetch OpenAPI spec and extract version
         id: fetch-spec
         run: |
-          curl -s https://app.loops.so/openapi.yaml -o openapi.yaml
-          API_VERSION=$(grep '  version:' openapi.yaml | head -1 | awk '{print $2}')
+          curl -fsSL https://app.loops.so/openapi.yaml -o src/pyloops/openapi.yaml
+          API_VERSION=$(grep '  version:' src/pyloops/openapi.yaml | head -1 | awk '{print $2}')
           echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
           echo "Found API version: $API_VERSION"
 
@@ -59,14 +59,14 @@ jobs:
           # Remove old generated code
           rm -rf src/pyloops/_generated
 
-          # Generate new SDK
-          uv tool run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv
+          # Generate new SDK from the spec fetched above, which ships with the package
+          uv tool run openapi-python-client generate --path src/pyloops/openapi.yaml --meta uv
 
           # Move generated code to _generated
           mv loops-open-api-spec-client/loops_open_api_spec_client src/pyloops/_generated
 
           # Clean up
-          rm -rf loops-open-api-spec-client openapi.yaml
+          rm -rf loops-open-api-spec-client
 
       - name: Update version in pyproject.toml
         if: steps.compare.outputs.needs_update == 'true'
@@ -98,7 +98,7 @@ jobs:
             This PR updates the PyLoops SDK to match Loops API version **${{ steps.fetch-spec.outputs.api_version }}**.
 
             ### Changes
-            - Regenerated SDK code from latest OpenAPI specification
+            - Regenerated SDK code and the shipped `src/pyloops/openapi.yaml` from the latest OpenAPI specification
             - Updated package version from ${{ steps.current-version.outputs.current_version }} to ${{ steps.fetch-spec.outputs.api_version }}
             - Updated version in README.md
 
