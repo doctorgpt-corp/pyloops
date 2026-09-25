@@ -15,6 +15,8 @@ Supporting modules:
 - `src/pyloops/exceptions.py` — exception hierarchy (`LoopsError`, `LoopsRateLimitError`, `LoopsContactExistsError`, `LoopsUnsafeEmailError`, `LoopsConfigurationError`)
 - `src/pyloops/responses.py` — hand-written response models for endpoints where the generated model is insufficient (e.g. `TransactionalEmailsResponse`)
 - `src/pyloops/testing.py` — testing utilities (see below)
+- `src/pyloops/openapi.yaml` - the Loops OpenAPI spec `_generated/` was generated from, shipped in the package; `just generate` and `check-updates.yml` rewrite it together with `_generated/`, never by hand
+- `src/pyloops/spec.py` - `openapi_spec_path()`, the filesystem path of that spec for consumers
 
 ## Git conventions
 
@@ -73,6 +75,7 @@ tests/
   test_safe_mode.py   # 40 tests — safe mode email domain validation
   test_testing.py     # 147 tests — mock utility + every client method
   test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
+  test_spec.py        # 3 tests  - shipped OpenAPI spec exists and covers every generated operation
 ```
 
 Run tests:

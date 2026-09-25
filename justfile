@@ -30,12 +30,14 @@ build:
 generate:
     @echo "🗑️  Removing old generated code..."
     rm -rf src/pyloops/_generated
-    @echo "📥 Fetching OpenAPI spec and generating SDK..."
-    uv tool run openapi-python-client generate --url https://app.loops.so/openapi.yaml --meta uv
+    @echo "📥 Fetching OpenAPI spec..."
+    curl -fsSL https://app.loops.so/openapi.yaml -o src/pyloops/openapi.yaml
+    @echo "⚙️  Generating SDK..."
+    uv tool run openapi-python-client generate --path src/pyloops/openapi.yaml --meta uv
     @echo "📦 Moving generated code..."
     mv loops-open-api-spec-client/loops_open_api_spec_client src/pyloops/_generated
     @echo "🧹 Cleaning up..."
-    rm -rf loops-open-api-spec-client openapi.yaml
+    rm -rf loops-open-api-spec-client
     @echo "✨ Done! Running checks..."
     just check
 
