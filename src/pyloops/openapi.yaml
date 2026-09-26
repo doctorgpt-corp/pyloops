@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Loops OpenAPI Spec
   description: This is the OpenAPI Spec for the [Loops API](https://loops.so/docs/api).
-  version: 1.21.12
+  version: 1.21.14
 servers:
   - url: https://app.loops.so/api
 tags:
@@ -1518,12 +1518,18 @@ paths:
       description: Send events to trigger workflows.
       x-mint:
         href: /api-reference/send-event
-        content: <Note>Provide either an `email` or `userId` value or both to identify
+        content: >-
+          <Note>Provide either an `email` or `userId` value or both to identify
           the contact. If both are provided, the system will look for a contact
           with either a matching `email` or `userId` value. If a contact is
           found for one of the values (e.g. `email`), the other value (e.g.
           `userId`) will be updated. If a contact is not found, a new contact
           will be created using both `email` and `userId` values.</Note>
+
+
+          You can update the contact in this request by adding contact
+          properties in the root of the request body. See `favoriteColor` and
+          `planName` in the example.
       requestBody:
         description: Provide either `email` or `userId` to identify the contact ([read
           more](https://loops.so/docs/api-reference/send-event#body)).<br>Event
@@ -1532,8 +1538,9 @@ paths:
           ([see allowed date
           formats](https://loops.so/docs/events/properties#important-information-about-event-properties)).<br>Make
           sure to create the properties in Loops before using them in API
-          calls.<br>You can add contact properties as keys in this request (of
-          type `string`, `number`, `boolean` or `date` ([see available date
+          calls.<br>You can add update the contact by adding contact properties
+          as keys in this request (of type `string`, `number`, `boolean` or
+          `date` ([see available date
           formats](https://loops.so/docs/contacts/properties#dates))).
         content:
           application/json:
@@ -4674,6 +4681,8 @@ components:
             plan: pro
           mailingLists:
             clm2k8j4h6g0f8d6s4a2b0z8: true
+          favoriteColor: blue
+          planName: Pro
     EventSuccessResponse:
       type: object
       properties:
@@ -8551,10 +8560,12 @@ components:
           description: Reply-to email. Must be empty or a valid email address.
         ccEmail:
           type: string
-          description: CC email address. Requires the team to have CC/BCC enabled.
+          description: CC email address. Requires the team to have CC/BCC enabled. Not
+            supported for campaign emails.
         bccEmail:
           type: string
-          description: BCC email address. Requires the team to have CC/BCC enabled.
+          description: BCC email address. Requires the team to have CC/BCC enabled. Not
+            supported for campaign emails.
         languageCode:
           type: string
           description: ISO 639-1 language code for the email, e.g. `en` or `fr`.

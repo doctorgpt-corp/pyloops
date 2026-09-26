@@ -289,7 +289,7 @@ For detailed API documentation, visit the [Loops.so API docs](https://loops.so/d
 
 ## Automated Updates
 
-This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.21.12**). A three-segment version (e.g. `1.21.2`) tracks the Loops API version directly; a fourth segment (e.g. `1.21.2.1`) denotes a client-wrapper release built on top of that API version and is assigned automatically at publish time.
+This SDK is automatically updated to match the latest Loops.so API specification. The package version corresponds to the Loops API version (current: **1.21.14**). A three-segment version (e.g. `1.21.2`) tracks the Loops API version directly; a fourth segment (e.g. `1.21.2.1`) denotes a client-wrapper release built on top of that API version and is assigned automatically at publish time.
 
 A GitHub Action checks for API updates daily and creates a pull request when changes are detected. After review and merge, a new version is automatically published to PyPI. A merge that leaves the shipped code untouched - docs or tests only - publishes nothing.
 
