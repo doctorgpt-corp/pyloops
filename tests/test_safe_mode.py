@@ -69,6 +69,14 @@ async def test_send_event_blocked(safe_client, email):
         await safe_client.send_event(event_name="signup", email=email)
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("field", ["cc_email", "bcc_email"])
+@pytest.mark.parametrize("email", UNSAFE_EMAILS)
+async def test_update_email_message_cc_bcc_blocked(safe_client, field, email):
+    with pytest.raises(LoopsUnsafeEmailError):
+        await safe_client.update_email_message("mock-email-message-id", **{field: email})
+
+
 # ---------------------------------------------------------------------------
 # Allowed emails
 # ---------------------------------------------------------------------------
@@ -100,6 +108,13 @@ async def test_create_contact_allowed(safe_client, email):
 async def test_send_event_allowed(safe_client, email):
     result = await safe_client.send_event(event_name="signup", email=email)
     assert result.success is True
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("email", ALLOWED_EMAILS)
+async def test_update_email_message_cc_bcc_allowed(safe_client, email):
+    result = await safe_client.update_email_message("mock-email-message-id", cc_email=email, bcc_email=email)
+    assert result.id == "mock-email-message-id"
 
 
 # ---------------------------------------------------------------------------
