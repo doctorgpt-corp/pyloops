@@ -114,6 +114,7 @@ from .email_message_response_email_format import EmailMessageResponseEmailFormat
 from .email_message_response_event_properties_fallbacks import EmailMessageResponseEventPropertiesFallbacks
 from .email_message_response_warnings_item import EmailMessageResponseWarningsItem
 from .email_message_response_warnings_item_severity import EmailMessageResponseWarningsItemSeverity
+from .email_metrics_response import EmailMetricsResponse
 from .event_failure_response import EventFailureResponse
 from .event_pattern import EventPattern
 from .event_pattern_failure_response import EventPatternFailureResponse
@@ -223,6 +224,7 @@ from .transactional_failure_4_response_error import TransactionalFailure4Respons
 from .transactional_failure_5_response import TransactionalFailure5Response
 from .transactional_failure_5_response_error import TransactionalFailure5ResponseError
 from .transactional_failure_response import TransactionalFailureResponse
+from .transactional_metrics_response import TransactionalMetricsResponse
 from .transactional_request import TransactionalRequest
 from .transactional_request_attachments_item import TransactionalRequestAttachmentsItem
 from .transactional_request_data_variables import TransactionalRequestDataVariables
@@ -407,6 +409,7 @@ __all__ = (
     "EmailMessageResponseEventPropertiesFallbacks",
     "EmailMessageResponseWarningsItem",
     "EmailMessageResponseWarningsItemSeverity",
+    "EmailMetricsResponse",
     "EventFailureResponse",
     "EventPattern",
     "EventPatternFailureResponse",
@@ -514,6 +517,7 @@ __all__ = (
     "TransactionalFailure5Response",
     "TransactionalFailure5ResponseError",
     "TransactionalFailureResponse",
+    "TransactionalMetricsResponse",
     "TransactionalRequest",
     "TransactionalRequestAttachmentsItem",
     "TransactionalRequestDataVariables",
