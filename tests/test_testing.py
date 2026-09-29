@@ -504,6 +504,43 @@ async def test_update_email_message():
         assert "email" not in body  # unset fields should be omitted
 
 
+@pytest.mark.asyncio
+async def test_update_email_message_sender_format_and_fallbacks():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        await client.update_email_message(
+            "mock-email-message-id",
+            cc_email="cc@test.com",
+            bcc_email="",
+            language_code="fr",
+            email_format="plain",
+            contact_properties_fallbacks={"firstName": "there", "company": None},
+            event_properties_fallbacks={"plan": "free"},
+            data_variables_fallbacks={"code": None},
+        )
+
+        body = json.loads(api["update_email_message"].calls[0].request.content)
+        assert body == {
+            "ccEmail": "cc@test.com",
+            "bccEmail": "",
+            "languageCode": "fr",
+            "emailFormat": "plain",
+            # None is sent as null: it deletes that key's fallback server-side.
+            "contactPropertiesFallbacks": {"firstName": "there", "company": None},
+            "eventPropertiesFallbacks": {"plan": "free"},
+            "dataVariablesFallbacks": {"code": None},
+        }
+
+
+@pytest.mark.asyncio
+async def test_update_email_message_rejects_unknown_email_format():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="email_format"):
+            await client.update_email_message("mock-email-message-id", email_format="html")  # type: ignore[arg-type]
+        assert not api["update_email_message"].called
+
+
 # ---------------------------------------------------------------------------
 # Contact Suppression (1.8.0)
 # ---------------------------------------------------------------------------

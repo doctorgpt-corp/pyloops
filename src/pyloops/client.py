@@ -2,7 +2,7 @@ import json
 import uuid
 import warnings
 from http import HTTPStatus
-from typing import Any
+from typing import Any, Literal
 
 from pyloops._generated.api.api_key import test_api_key
 from pyloops._generated.api.audience_segments import (
@@ -189,6 +189,10 @@ from pyloops._generated.models import (
     UpdateComponentBody,
     UpdateComponentResponse,
     UpdateEmailMessageRequest,
+    UpdateEmailMessageRequestContactPropertiesFallbacks,
+    UpdateEmailMessageRequestDataVariablesFallbacks,
+    UpdateEmailMessageRequestEmailFormat,
+    UpdateEmailMessageRequestEventPropertiesFallbacks,
     UpdateGroupRequest,
     UpdateThemeBody,
     UpdateThemeResponse,
@@ -202,7 +206,7 @@ from pyloops._generated.models import (
     WorkflowQueuedContactDeletePreview,
     WorkflowQueuedContactPolicy,
 )
-from pyloops._generated.types import UNSET, Response
+from pyloops._generated.types import UNSET, Response, Unset
 from pyloops.config import get_config
 from pyloops.exceptions import (
     LoopsConfigurationError,
@@ -1412,6 +1416,13 @@ class LoopsClient:
         reply_to_email: str | None = None,
         lmx: str | None = None,
         expected_revision_id: str | None = None,
+        cc_email: str | None = None,
+        bcc_email: str | None = None,
+        language_code: str | None = None,
+        email_format: Literal["plain", "styled"] | None = None,
+        contact_properties_fallbacks: dict[str, str | None] | None = None,
+        event_properties_fallbacks: dict[str, str | None] | None = None,
+        data_variables_fallbacks: dict[str, str | None] | None = None,
     ) -> EmailMessageResponse:
         """
         Update an email message.
@@ -1425,21 +1436,66 @@ class LoopsClient:
             reply_to_email: Reply-to email address (must be empty or a valid email)
             lmx: Email body as LMX with styles embedded in a <Style /> tag
             expected_revision_id: Optimistic concurrency token (raises 409 if out of sync)
+            cc_email: CC address. Requires CC/BCC to be enabled for the team; not
+                supported for campaign emails. Checked against safe mode.
+            bcc_email: BCC address. Same requirements as ``cc_email``.
+            language_code: ISO 639-1 language code, e.g. ``"en"`` or ``"fr"``
+            email_format: Rendering format, ``"plain"`` or ``"styled"``
+            contact_properties_fallbacks: Fallback values keyed by contact property name
+            event_properties_fallbacks: Fallback values keyed by event property name
+            data_variables_fallbacks: Fallback values keyed by data variable name
+
+        The three ``*_fallbacks`` maps are merged per key on the server: a string
+        sets the fallback, ``None`` deletes it, and keys left out are unchanged.
 
         Returns:
             EmailMessageResponse
 
         Raises:
-            LoopsError: If the request fails or revision conflict (409)
+            LoopsError: If the request fails, revision conflict (409), or
+                ``email_format`` is not ``"plain"`` or ``"styled"``
+            LoopsUnsafeEmailError: If safe mode is on and ``cc_email`` or
+                ``bcc_email`` is outside the allowed domains
             LoopsRateLimitError: If rate limit is exceeded
         """
+        # CC/BCC addresses receive every email sent from this message, so they
+        # go through the same safe-mode check as a direct recipient.
+        self._validate_email(cc_email)
+        self._validate_email(bcc_email)
+
+        format_value: UpdateEmailMessageRequestEmailFormat | Unset = UNSET
+        if email_format is not None:
+            try:
+                format_value = UpdateEmailMessageRequestEmailFormat(email_format)
+            except ValueError:
+                raise LoopsError(f"email_format must be 'plain' or 'styled', got {email_format!r}") from None
+
         body = UpdateEmailMessageRequest(
             subject=subject if subject is not None else UNSET,
             preview_text=preview_text if preview_text is not None else UNSET,
             from_name=from_name if from_name is not None else UNSET,
             from_email=from_email if from_email is not None else UNSET,
             reply_to_email=reply_to_email if reply_to_email is not None else UNSET,
+            cc_email=cc_email if cc_email is not None else UNSET,
+            bcc_email=bcc_email if bcc_email is not None else UNSET,
+            language_code=language_code if language_code is not None else UNSET,
+            email_format=format_value,
             lmx=lmx if lmx is not None else UNSET,
+            contact_properties_fallbacks=(
+                UpdateEmailMessageRequestContactPropertiesFallbacks.from_dict(contact_properties_fallbacks)
+                if contact_properties_fallbacks is not None
+                else UNSET
+            ),
+            event_properties_fallbacks=(
+                UpdateEmailMessageRequestEventPropertiesFallbacks.from_dict(event_properties_fallbacks)
+                if event_properties_fallbacks is not None
+                else UNSET
+            ),
+            data_variables_fallbacks=(
+                UpdateEmailMessageRequestDataVariablesFallbacks.from_dict(data_variables_fallbacks)
+                if data_variables_fallbacks is not None
+                else UNSET
+            ),
             expected_revision_id=expected_revision_id if expected_revision_id is not None else UNSET,
         )
         response = await update_email_message.asyncio_detailed(
