@@ -19,6 +19,7 @@ from pyloops._generated.api.campaign_groups import (
 from pyloops._generated.api.campaigns import (
     create_campaign,
     get_campaign,
+    get_campaign_metrics,
     list_campaigns,
     update_campaign,
 )
@@ -64,6 +65,7 @@ from pyloops._generated.api.transactional_emails import (
     create_transactional_email,
     ensure_transactional_draft,
     get_transactional_email,
+    get_transactional_email_metrics,
     list_published_transactional_emails,
     list_transactional_emails,
     publish_transactional_email,
@@ -83,6 +85,7 @@ from pyloops._generated.api.workflow_nodes import (
     delete_workflow_node,
     delete_workflow_node_recursively,
     get_workflow_node,
+    get_workflow_node_metrics,
     reroute_node_connection,
     update_workflow_node,
 )
@@ -145,6 +148,7 @@ from pyloops._generated.models import (
     EmailMessagePreviewRequestEventProperties,
     EmailMessagePreviewResponse,
     EmailMessageResponse,
+    EmailMetricsResponse,
     EventFailureResponse,
     EventPattern,
     EventPatternFailureResponse,
@@ -174,6 +178,7 @@ from pyloops._generated.models import (
     TransactionalFailure4Response,
     TransactionalFailure5Response,
     TransactionalFailureResponse,
+    TransactionalMetricsResponse,
     TransactionalRequest,
     TransactionalRequestAttachmentsItem,
     TransactionalRequestDataVariables,
@@ -1046,6 +1051,37 @@ class LoopsClient:
 
         raise LoopsError("Failed to update campaign", status_code=None, response_data=result)
 
+    async def get_campaign_metrics(self, campaign_id: str) -> EmailMetricsResponse:
+        """Retrieve all-time email engagement metrics for a campaign.
+
+        Opens and clicks count sends, not events: a send opened five times
+        counts once.
+
+        Args:
+            campaign_id: The campaign ID
+
+        Returns:
+            EmailMetricsResponse with sends, opens, clicks, unsubscribes,
+            spam reports and hard/soft bounces
+
+        Raises:
+            LoopsError: If not found (404), the campaign has not been sent yet or
+                has no email message (400), or the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_campaign_metrics.asyncio_detailed(
+            campaign_id=campaign_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=EmailMetricsResponse,
+            failure=CampaignFailureResponse,
+            action="get campaign metrics",
+        )
+
     # ------------------------------------------------------------------
     # Components
     # ------------------------------------------------------------------
@@ -1683,6 +1719,35 @@ class LoopsClient:
         template = await self.get_transactional_template(transactional_id)
         return list(template.data_variables)
 
+    async def get_transactional_template_metrics(self, transactional_id: str) -> TransactionalMetricsResponse:
+        """Retrieve all-time delivery metrics for a transactional email template.
+
+        Metrics are totalled across every published version of the template.
+
+        Args:
+            transactional_id: The transactional email template ID
+
+        Returns:
+            TransactionalMetricsResponse with sends, deliveries, spam reports
+            and hard/soft bounces
+
+        Raises:
+            LoopsError: If not found (404) or the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_transactional_email_metrics.asyncio_detailed(
+            transactional_id=transactional_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=TransactionalMetricsResponse,
+            failure=TransactionalFailureResponse,
+            action="get transactional template metrics",
+        )
+
     async def create_transactional_template(
         self,
         name: str,
@@ -1946,6 +2011,40 @@ class LoopsClient:
             response,
             failure=WorkflowFailureResponse,
             action="get workflow node",
+        )
+
+    async def get_workflow_node_metrics(self, workflow_id: str, node_id: str) -> EmailMetricsResponse:
+        """Retrieve all-time email engagement metrics for a workflow email node.
+
+        Only ``SendEmailAction`` nodes have metrics; any other node type is
+        answered with a 400. A ``SendEmailAction`` node whose email has not
+        sent anything yet reports every counter as ``0``.
+
+        Args:
+            workflow_id: The workflow ID
+            node_id: The ``SendEmailAction`` node ID
+
+        Returns:
+            EmailMetricsResponse with sends, opens, clicks, unsubscribes,
+            spam reports and hard/soft bounces
+
+        Raises:
+            LoopsError: If not found (404), the node is not a
+                ``SendEmailAction`` node (400), or the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_workflow_node_metrics.asyncio_detailed(
+            workflow_id=workflow_id,
+            node_id=node_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=EmailMetricsResponse,
+            failure=WorkflowFailureResponse,
+            action="get workflow node metrics",
         )
 
     async def create_workflow(

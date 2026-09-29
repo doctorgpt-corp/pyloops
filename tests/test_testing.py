@@ -240,6 +240,10 @@ EXPECTED_ROUTE_NAMES = [
     "reroute_node_connection",
     "delete_workflow_node",
     "delete_workflow_node_recursively",
+    # 1.22.x
+    "get_campaign_metrics",
+    "get_transactional_template_metrics",
+    "get_workflow_node_metrics",
 ]
 
 
@@ -1360,6 +1364,96 @@ async def test_list_workflows_rate_limit():
 
 
 # ---------------------------------------------------------------------------
+# Metrics (1.22.x)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_get_campaign_metrics():
+    with loops_respx_mock() as api:
+        api["get_campaign_metrics"].mock(
+            return_value=Response(
+                200,
+                json={
+                    "sends": 4210,
+                    "opens": 1922,
+                    "clicks": 301,
+                    "unsubscribes": 12,
+                    "spamReports": 1,
+                    "hardBounces": 9,
+                    "softBounces": 13,
+                },
+            )
+        )
+        client = pyloops.get_client()
+        result = await client.get_campaign_metrics("mock-campaign-id")
+        assert result.sends == 4210
+        assert result.opens == 1922
+        assert result.clicks == 301
+        assert result.unsubscribes == 12
+        assert result.spam_reports == 1
+        assert result.hard_bounces == 9
+        assert result.soft_bounces == 13
+        request = api["get_campaign_metrics"].calls[0].request
+        assert request.url.path.endswith("/v1/campaigns/mock-campaign-id/metrics")
+        # The metrics route must not be swallowed by the plain get_campaign route.
+        assert not api["get_campaign"].called
+
+
+@pytest.mark.asyncio
+async def test_get_transactional_template_metrics():
+    with loops_respx_mock() as api:
+        api["get_transactional_template_metrics"].mock(
+            return_value=Response(
+                200,
+                json={"sends": 4210, "deliveries": 4175, "spamReports": 1, "hardBounces": 9, "softBounces": 13},
+            )
+        )
+        client = pyloops.get_client()
+        result = await client.get_transactional_template_metrics("mock-transactional-id")
+        assert result.sends == 4210
+        assert result.deliveries == 4175
+        assert result.spam_reports == 1
+        assert result.hard_bounces == 9
+        assert result.soft_bounces == 13
+        assert not api["get_transactional_template"].called
+
+
+@pytest.mark.asyncio
+async def test_get_workflow_node_metrics():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_workflow_node_metrics("mock-workflow-id", "mock-node-id")
+        assert result.sends == 0
+        assert result.opens == 0
+        request = api["get_workflow_node_metrics"].calls[0].request
+        assert request.url.path.endswith("/v1/workflows/mock-workflow-id/nodes/mock-node-id/metrics")
+        assert not api["get_workflow_node"].called
+
+
+@pytest.mark.asyncio
+async def test_get_campaign_metrics_404():
+    with loops_respx_mock() as api:
+        api["get_campaign_metrics"].mock(return_value=Response(404, json=_FAILURE_JSON))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Something went wrong") as exc_info:
+            await client.get_campaign_metrics("missing-id")
+        assert exc_info.value.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_workflow_node_metrics_not_an_email_node():
+    with loops_respx_mock() as api:
+        api["get_workflow_node_metrics"].mock(
+            return_value=Response(400, json={"message": "Node is not a SendEmailAction node"})
+        )
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="SendEmailAction") as exc_info:
+            await client.get_workflow_node_metrics("wf", "timer-node")
+        assert exc_info.value.status_code == 400
+
+
+# ---------------------------------------------------------------------------
 # Error-path coverage for the new 1.14.x wrappers
 # ---------------------------------------------------------------------------
 
@@ -1421,6 +1515,10 @@ _NEW_WRAPPER_ERROR_CASES = [
         "delete_workflow_node_recursively",
         lambda c: c.delete_workflow_node("wf", "n1", "rev", recursive=True),
     ),
+    # 1.22.x
+    ("get_campaign_metrics", lambda c: c.get_campaign_metrics("x")),
+    ("get_transactional_template_metrics", lambda c: c.get_transactional_template_metrics("x")),
+    ("get_workflow_node_metrics", lambda c: c.get_workflow_node_metrics("wf", "n1")),
 ]
 
 

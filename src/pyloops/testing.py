@@ -633,6 +633,31 @@ def loops_respx_mock(
             return_value=respx.MockResponse(200, json=_event_pattern)
         )
 
+        # Metrics (Loops API v1.22.x)
+        _email_metrics = {
+            "sends": 0,
+            "opens": 0,
+            "clicks": 0,
+            "unsubscribes": 0,
+            "spamReports": 0,
+            "hardBounces": 0,
+            "softBounces": 0,
+        }
+        router.get(url__regex=r"/v1/campaigns/[^/]+/metrics$", name="get_campaign_metrics").mock(
+            return_value=respx.MockResponse(200, json=_email_metrics)
+        )
+        router.get(
+            url__regex=r"/v1/transactional-emails/[^/]+/metrics$", name="get_transactional_template_metrics"
+        ).mock(
+            return_value=respx.MockResponse(
+                200,
+                json={"sends": 0, "deliveries": 0, "spamReports": 0, "hardBounces": 0, "softBounces": 0},
+            )
+        )
+        router.get(url__regex=r"/v1/workflows/[^/]+/nodes/[^/]+/metrics$", name="get_workflow_node_metrics").mock(
+            return_value=respx.MockResponse(200, json=_email_metrics)
+        )
+
         try:
             yield router
         finally:

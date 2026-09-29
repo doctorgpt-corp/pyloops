@@ -73,7 +73,7 @@ Tests run with pytest and require no real API key — all HTTP is intercepted at
 ```
 tests/
   test_safe_mode.py   # 40 tests — safe mode email domain validation
-  test_testing.py     # 147 tests — mock utility + every client method
+  test_testing.py     # 155 tests — mock utility + every client method
   test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
   test_spec.py        # 3 tests  - shipped OpenAPI spec exists and covers every generated operation
 ```
@@ -213,6 +213,9 @@ All routes are accessible by name on the yielded router.
 | `reroute_node_connection` | `POST /v1/workflows/{id}/nodes/{node_id}/reroute` |
 | `delete_workflow_node` | `DELETE /v1/workflows/{id}/nodes/{node_id}` |
 | `delete_workflow_node_recursively` | `DELETE /v1/workflows/{id}/nodes/{node_id}/recursive` |
+| `get_campaign_metrics` | `GET /v1/campaigns/{id}/metrics` |
+| `get_transactional_template_metrics` | `GET /v1/transactional-emails/{id}/metrics` |
+| `get_workflow_node_metrics` | `GET /v1/workflows/{id}/nodes/{node_id}/metrics` |
 
 ### Simulating errors
 
