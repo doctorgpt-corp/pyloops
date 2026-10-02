@@ -16,7 +16,7 @@ class CreateTransactionalRequest:
     Attributes:
         name (str): The name of the transactional email.
         transactional_group_id (str | Unset): The ID of the group to add this transactional email to. Defaults to the
-            team's default group when omitted.
+            team's Unsorted group when omitted.
     """
 
     name: str
