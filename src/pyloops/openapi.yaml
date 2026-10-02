@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Loops OpenAPI Spec
   description: This is the OpenAPI Spec for the [Loops API](https://loops.so/docs/api).
-  version: 1.22.1
+  version: 1.22.2
 servers:
   - url: https://app.loops.so/api
 tags:
@@ -5421,7 +5421,7 @@ components:
         transactionalGroupId:
           type: string
           description: The ID of the group to add this transactional email to. Defaults to
-            the team's default group when omitted.
+            the team's Unsorted group when omitted.
           examples:
             - clg7n5p3q1r9s7t5u3v1w9y7
       required:
@@ -6461,7 +6461,7 @@ components:
         campaignGroupId:
           type: string
           description: The ID of the group to add this campaign to. Defaults to the team's
-            default group when omitted.
+            Unsorted group when omitted.
           examples:
             - clg7n5p3q1r9s7t5u3v1w9y7
         mailingListId:
