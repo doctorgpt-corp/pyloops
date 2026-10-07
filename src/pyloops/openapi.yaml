@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Loops OpenAPI Spec
   description: This is the OpenAPI Spec for the [Loops API](https://loops.so/docs/api).
-  version: 1.22.1
+  version: 1.22.3
 servers:
   - url: https://app.loops.so/api
 tags:
@@ -39,6 +39,8 @@ tags:
     description: Upload image assets
   - name: Workflows
     description: View and mutate workflow graphs
+  - name: Workflow groups
+    description: Organize workflows into groups
   - name: Workflow nodes
     description: View and mutate workflow nodes
   - name: Webhooks
@@ -2748,6 +2750,178 @@ paths:
                 $ref: "#/components/schemas/UploadLimitExceededFailureResponse"
       security:
         - apiKey: []
+  /v1/workflow-groups:
+    get:
+      operationId: listWorkflowGroups
+      tags:
+        - Workflow groups
+      summary: List workflow groups
+      description: Retrieve a paginated list of workflow groups, most recently created
+        first.
+      x-mint:
+        href: /api-reference/list-workflow-groups
+        metadata:
+          sidebarTitle: List groups
+      parameters:
+        - name: perPage
+          in: query
+          required: false
+          description: How many results to return in each request. Must be between 10 and
+            50. Default is 20.
+          schema:
+            type: string
+        - name: cursor
+          in: query
+          required: false
+          description: A cursor to return a specific page of results. Cursors can be found
+            from the `pagination.nextCursor` value in each response.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListGroupsResponse"
+        "400":
+          description: Invalid `perPage` value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "401":
+          description: Invalid API key.
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+    post:
+      operationId: createWorkflowGroup
+      tags:
+        - Workflow groups
+      summary: Create a workflow group
+      description: Create a new workflow group.
+      x-mint:
+        href: /api-reference/create-workflow-group
+        metadata:
+          sidebarTitle: Create a group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGroupRequest"
+      responses:
+        "200":
+          description: Workflow group created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupResponse"
+        "400":
+          description: Invalid request body or reserved group name.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "401":
+          description: Invalid API key.
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+  /v1/workflow-groups/{workflowGroupId}:
+    parameters:
+      - name: workflowGroupId
+        in: path
+        required: true
+        description: The ID of the workflow group.
+        schema:
+          type: string
+          examples:
+            - clg7n5p3q1r9s7t5u3v1w9y7
+    get:
+      operationId: getWorkflowGroup
+      tags:
+        - Workflow groups
+      summary: Get a workflow group
+      description: Retrieve a single workflow group by ID.
+      x-mint:
+        href: /api-reference/get-workflow-group
+        metadata:
+          sidebarTitle: Get a group
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupResponse"
+        "400":
+          description: Invalid `workflowGroupId`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "401":
+          description: Invalid API key.
+        "404":
+          description: Workflow group not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+    post:
+      operationId: updateWorkflowGroup
+      tags:
+        - Workflow groups
+      summary: Update a workflow group
+      description: Update a workflow group's name or description. At least one field
+        must be provided. The reserved "Unsorted" group cannot be edited.
+      x-mint:
+        href: /api-reference/update-workflow-group
+        content: <Info>At least one field must be provided. The reserved "Unsorted"
+          group cannot be edited.</Info>
+        metadata:
+          description: Update a workflow group's name or description.
+          sidebarTitle: Update a group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateGroupRequest"
+      responses:
+        "200":
+          description: Workflow group updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupResponse"
+        "400":
+          description: Invalid request body, reserved group name, or the Unsorted group
+            cannot be edited.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "401":
+          description: Invalid API key.
+        "404":
+          description: Workflow group not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
   /v1/workflows:
     get:
       tags:
@@ -5421,7 +5595,7 @@ components:
         transactionalGroupId:
           type: string
           description: The ID of the group to add this transactional email to. Defaults to
-            the team's default group when omitted.
+            the team's Unsorted group when omitted.
           examples:
             - clg7n5p3q1r9s7t5u3v1w9y7
       required:
@@ -6461,7 +6635,7 @@ components:
         campaignGroupId:
           type: string
           description: The ID of the group to add this campaign to. Defaults to the team's
-            default group when omitted.
+            Unsorted group when omitted.
           examples:
             - clg7n5p3q1r9s7t5u3v1w9y7
         mailingListId:

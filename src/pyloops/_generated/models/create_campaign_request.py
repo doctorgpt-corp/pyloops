@@ -20,7 +20,7 @@ class CreateCampaignRequest:
     """
     Attributes:
         name (str): The campaign name.
-        campaign_group_id (str | Unset): The ID of the group to add this campaign to. Defaults to the team's default
+        campaign_group_id (str | Unset): The ID of the group to add this campaign to. Defaults to the team's Unsorted
             group when omitted.
         mailing_list_id (None | str | Unset): The ID of the mailing list to send to.
         audience_segment_id (None | str | Unset): The ID of an audience segment. Setting this without also providing
