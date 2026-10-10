@@ -168,9 +168,7 @@ class EmailMessageResponse:
         from ..models.email_message_response_contact_properties_fallbacks import (
             EmailMessageResponseContactPropertiesFallbacks,  # noqa: PLC0415
         )
-        from ..models.email_message_response_data_variables_fallbacks import (
-            EmailMessageResponseDataVariablesFallbacks,  # noqa: PLC0415
-        )
+        from ..models.email_message_response_data_variables_fallbacks import EmailMessageResponseDataVariablesFallbacks  # noqa: PLC0415
         from ..models.email_message_response_event_properties_fallbacks import (
             EmailMessageResponseEventPropertiesFallbacks,  # noqa: PLC0415
         )

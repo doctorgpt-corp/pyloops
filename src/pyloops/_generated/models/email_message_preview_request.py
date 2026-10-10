@@ -70,12 +70,8 @@ class EmailMessagePreviewRequest:
         from ..models.email_message_preview_request_contact_properties import (
             EmailMessagePreviewRequestContactProperties,  # noqa: PLC0415
         )
-        from ..models.email_message_preview_request_data_variables import (
-            EmailMessagePreviewRequestDataVariables,  # noqa: PLC0415
-        )
-        from ..models.email_message_preview_request_event_properties import (
-            EmailMessagePreviewRequestEventProperties,  # noqa: PLC0415
-        )
+        from ..models.email_message_preview_request_data_variables import EmailMessagePreviewRequestDataVariables  # noqa: PLC0415
+        from ..models.email_message_preview_request_event_properties import EmailMessagePreviewRequestEventProperties  # noqa: PLC0415
 
         d = dict(src_dict)
         emails = cast(list[str], d.pop("emails"))

@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Loops OpenAPI Spec
   description: This is the OpenAPI Spec for the [Loops API](https://loops.so/docs/api).
-  version: 1.22.1
+  version: 1.22.4
 servers:
   - url: https://app.loops.so/api
 tags:
@@ -39,6 +39,8 @@ tags:
     description: Upload image assets
   - name: Workflows
     description: View and mutate workflow graphs
+  - name: Workflow groups
+    description: Organize workflows into groups
   - name: Workflow nodes
     description: View and mutate workflow nodes
   - name: Webhooks
@@ -2748,6 +2750,178 @@ paths:
                 $ref: "#/components/schemas/UploadLimitExceededFailureResponse"
       security:
         - apiKey: []
+  /v1/workflow-groups:
+    get:
+      operationId: listWorkflowGroups
+      tags:
+        - Workflow groups
+      summary: List workflow groups
+      description: Retrieve a paginated list of workflow groups, most recently created
+        first.
+      x-mint:
+        href: /api-reference/list-workflow-groups
+        metadata:
+          sidebarTitle: List groups
+      parameters:
+        - name: perPage
+          in: query
+          required: false
+          description: How many results to return in each request. Must be between 10 and
+            50. Default is 20.
+          schema:
+            type: string
+        - name: cursor
+          in: query
+          required: false
+          description: A cursor to return a specific page of results. Cursors can be found
+            from the `pagination.nextCursor` value in each response.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListGroupsResponse"
+        "400":
+          description: Invalid `perPage` value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "401":
+          description: Invalid API key.
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+    post:
+      operationId: createWorkflowGroup
+      tags:
+        - Workflow groups
+      summary: Create a workflow group
+      description: Create a new workflow group.
+      x-mint:
+        href: /api-reference/create-workflow-group
+        metadata:
+          sidebarTitle: Create a group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGroupRequest"
+      responses:
+        "200":
+          description: Workflow group created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupResponse"
+        "400":
+          description: Invalid request body or reserved group name.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "401":
+          description: Invalid API key.
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+  /v1/workflow-groups/{workflowGroupId}:
+    parameters:
+      - name: workflowGroupId
+        in: path
+        required: true
+        description: The ID of the workflow group.
+        schema:
+          type: string
+          examples:
+            - clg7n5p3q1r9s7t5u3v1w9y7
+    get:
+      operationId: getWorkflowGroup
+      tags:
+        - Workflow groups
+      summary: Get a workflow group
+      description: Retrieve a single workflow group by ID.
+      x-mint:
+        href: /api-reference/get-workflow-group
+        metadata:
+          sidebarTitle: Get a group
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupResponse"
+        "400":
+          description: Invalid `workflowGroupId`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "401":
+          description: Invalid API key.
+        "404":
+          description: Workflow group not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+    post:
+      operationId: updateWorkflowGroup
+      tags:
+        - Workflow groups
+      summary: Update a workflow group
+      description: Update a workflow group's name or description. At least one field
+        must be provided. The reserved "Unsorted" group cannot be edited.
+      x-mint:
+        href: /api-reference/update-workflow-group
+        content: <Info>At least one field must be provided. The reserved "Unsorted"
+          group cannot be edited.</Info>
+        metadata:
+          description: Update a workflow group's name or description.
+          sidebarTitle: Update a group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateGroupRequest"
+      responses:
+        "200":
+          description: Workflow group updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupResponse"
+        "400":
+          description: Invalid request body, reserved group name, or the Unsorted group
+            cannot be edited.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "401":
+          description: Invalid API key.
+        "404":
+          description: Workflow group not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
   /v1/workflows:
     get:
       tags:
@@ -4630,9 +4804,12 @@ components:
           $ref: "#/components/schemas/MailingListSubscriptions"
       additionalProperties:
         oneOf:
-          - type: string
-          - type: number
-          - type: boolean
+          - title: String
+            type: string
+          - title: Number
+            type: number
+          - title: Boolean
+            type: boolean
       examples:
         - email: alex@company.com
           firstName: Alex
@@ -4669,15 +4846,20 @@ components:
               description: The contact's unique user ID. **Required if `email` is not
                 provided.**
           anyOf:
-            - required:
+            - title: Identify by email
+              required:
                 - email
-            - required:
+            - title: Identify by user ID
+              required:
                 - userId
       additionalProperties:
         oneOf:
-          - type: string
-          - type: number
-          - type: boolean
+          - title: String
+            type: string
+          - title: Number
+            type: number
+          - title: Boolean
+            type: boolean
       examples:
         - email: alex@company.com
           firstName: Alex
@@ -4736,9 +4918,11 @@ components:
           examples:
             - usr_7f8e9d0c1b2a
       oneOf:
-        - required:
+        - title: Identify by email
+          required:
             - email
-        - required:
+        - title: Identify by user ID
+          required:
             - userId
       examples:
         - email: alex@company.com
@@ -4892,9 +5076,11 @@ components:
       required:
         - eventName
       anyOf:
-        - required:
+        - title: Identify by email
+          required:
             - email
-        - required:
+        - title: Identify by user ID
+          required:
             - userId
       properties:
         email:
@@ -4925,9 +5111,12 @@ components:
           $ref: "#/components/schemas/MailingListSubscriptions"
       additionalProperties:
         oneOf:
-          - type: string
-          - type: number
-          - type: boolean
+          - title: String
+            type: string
+          - title: Number
+            type: number
+          - title: Boolean
+            type: boolean
       examples:
         - email: alex@company.com
           userId: usr_7f8e9d0c1b2a
@@ -5053,6 +5242,7 @@ components:
       examples:
         - message: Transactional email not found.
     TransactionalSendFailureResponse:
+      title: General error
       type: object
       properties:
         success:
@@ -5070,6 +5260,7 @@ components:
         - success: false
           message: "Missing required data variable(s): confirmationUrl"
     TransactionalFailure2Response:
+      title: Attachments not enabled
       type: object
       properties:
         success:
@@ -5085,6 +5276,7 @@ components:
         - message
         - path
     TransactionalFailure3Response:
+      title: Invalid request or email
       type: object
       properties:
         success:
@@ -5105,6 +5297,7 @@ components:
         - message
         - error
     TransactionalFailure4Response:
+      title: Email not sendable
       type: object
       properties:
         success:
@@ -5125,6 +5318,7 @@ components:
         - message
         - error
     TransactionalFailure5Response:
+      title: Invalid data variables
       type: object
       properties:
         success:
@@ -5421,7 +5615,7 @@ components:
         transactionalGroupId:
           type: string
           description: The ID of the group to add this transactional email to. Defaults to
-            the team's default group when omitted.
+            the team's Unsorted group when omitted.
           examples:
             - clg7n5p3q1r9s7t5u3v1w9y7
       required:
@@ -6298,6 +6492,7 @@ components:
       discriminator:
         propertyName: type
     PropertyCondition:
+      title: Contact property
       type: object
       description: Matches contacts by a property value.
       properties:
@@ -6331,9 +6526,12 @@ components:
           description: The comparison value. Omitted for value-less operators (e.g.
             `isTrue`, `empty`). A `{ from, to }` object for `between`.
           oneOf:
-            - type: string
-            - type: number
-            - type: object
+            - title: String
+              type: string
+            - title: Number
+              type: number
+            - title: Date range
+              type: object
               properties:
                 from:
                   type: string
@@ -6354,8 +6552,9 @@ components:
           operator: equals
           value: pro
     OptInCondition:
+      title: Mailing list opt-in
       type: object
-      description: Matches contacts by mailing-list opt-in status.
+      description: Matches contacts by mailing list opt-in status.
       properties:
         type:
           type: string
@@ -6377,6 +6576,7 @@ components:
         - type: optIn
           status: accepted
     ActivityCondition:
+      title: Activity
       type: object
       description: Matches contacts by their activity on a campaign or workflow.
       properties:
@@ -6461,7 +6661,7 @@ components:
         campaignGroupId:
           type: string
           description: The ID of the group to add this campaign to. Defaults to the team's
-            default group when omitted.
+            Unsorted group when omitted.
           examples:
             - clg7n5p3q1r9s7t5u3v1w9y7
         mailingListId:
@@ -6963,9 +7163,11 @@ components:
       required:
         - expectedRevisionId
       anyOf:
-        - required:
+        - title: Name
+          required:
             - name
-        - required:
+        - title: Description
+          required:
             - description
       additionalProperties: false
     DeleteWorkflowRequest:
@@ -7020,6 +7222,7 @@ components:
       required:
         - workflowRevisionId
     SignupTriggerWorkflowMutationNode:
+      title: Signup trigger
       type: object
       properties:
         id:
@@ -7035,6 +7238,7 @@ components:
         - typeName
         - nextNodeIds
     EventTriggerWorkflowMutationNode:
+      title: Event trigger
       type: object
       properties:
         id:
@@ -7061,6 +7265,7 @@ components:
         - nextNodeIds
         - reEligible
     ContactPropertyTriggerWorkflowMutationNode:
+      title: Contact property trigger
       type: object
       properties:
         id:
@@ -7074,7 +7279,8 @@ components:
         contactPropertyQuery:
           oneOf:
             - $ref: "#/components/schemas/WorkflowContactPropertyQuery"
-            - type: "null"
+            - title: "Null"
+              type: "null"
         reEligible:
           $ref: "#/components/schemas/WorkflowReEligible"
       required:
@@ -7084,6 +7290,7 @@ components:
         - contactPropertyQuery
         - reEligible
     AddToListTriggerWorkflowMutationNode:
+      title: Add-to-list trigger
       type: object
       properties:
         id:
@@ -7108,6 +7315,7 @@ components:
         - mailingListId
         - reEligible
     BlankTriggerWorkflowMutationNode:
+      title: Blank trigger
       type: object
       properties:
         id:
@@ -7123,6 +7331,7 @@ components:
         - typeName
         - nextNodeIds
     AudienceFilterWorkflowMutationNode:
+      title: Audience filter node
       type: object
       properties:
         id:
@@ -7149,6 +7358,7 @@ components:
         - nextNodeIds
         - appliesDownstream
     TimerActionWorkflowMutationNode:
+      title: Timer node
       type: object
       properties:
         id:
@@ -7170,6 +7380,7 @@ components:
         - amount
         - unit
     SendEmailActionWorkflowMutationNode:
+      title: Send email node
       type: object
       properties:
         id:
@@ -7193,6 +7404,7 @@ components:
         - emailMessageId
         - subject
     ExitActionWorkflowMutationNode:
+      title: Exit node
       type: object
       properties:
         id:
@@ -7208,6 +7420,7 @@ components:
         - typeName
         - nextNodeIds
     BranchWorkflowMutationNode:
+      title: Branch node
       type: object
       properties:
         id:
@@ -7223,6 +7436,7 @@ components:
         - typeName
         - nextNodeIds
     ExperimentBranchWorkflowMutationNode:
+      title: Experiment node
       type: object
       properties:
         id:
@@ -7244,6 +7458,7 @@ components:
         - nextNodeIds
         - samplingRate
     VariantWorkflowMutationNode:
+      title: Variant node
       type: object
       properties:
         id:
@@ -7275,6 +7490,7 @@ components:
         the existing node type. Trigger node updates may include `typeName` when
         changing one trigger node type to another trigger node type.
     WorkflowSignupTriggerPayload:
+      title: Signup trigger
       type: object
       description: Changes an existing trigger node to a signup trigger.
       properties:
@@ -7286,6 +7502,7 @@ components:
         - typeName
       additionalProperties: false
     WorkflowEventTriggerPayload:
+      title: Event trigger
       type: object
       description: Updates an event trigger, or changes an existing trigger node to an
         event trigger. Assign the event pattern with either `eventPatternId` or
@@ -7316,6 +7533,7 @@ components:
           $ref: "#/components/schemas/WorkflowReEligible"
       additionalProperties: false
     WorkflowContactPropertyTriggerPayload:
+      title: Contact property trigger
       type: object
       description: Updates a contact-property trigger, or changes an existing trigger
         node to a contact-property trigger.
@@ -7331,6 +7549,7 @@ components:
           $ref: "#/components/schemas/WorkflowReEligible"
       additionalProperties: false
     WorkflowAddToListTriggerPayload:
+      title: Add-to-list trigger
       type: object
       description: Updates an add-to-list trigger, or changes an existing trigger node
         to an add-to-list trigger.
@@ -7344,6 +7563,7 @@ components:
           $ref: "#/components/schemas/WorkflowReEligible"
       additionalProperties: false
     WorkflowAudienceFilterPayload:
+      title: Audience filter node
       type: object
       minProperties: 1
       description: Configuration for the audience filter node.
@@ -7364,6 +7584,7 @@ components:
             Matches the "Filter scope" option in the UI.
       additionalProperties: false
     WorkflowTimerActionPayload:
+      title: Timer node
       type: object
       minProperties: 1
       description: Configuration for the timer action node.
@@ -7374,6 +7595,7 @@ components:
           $ref: "#/components/schemas/WorkflowTimerUnit"
       additionalProperties: false
     WorkflowExperimentBranchPayload:
+      title: Experiment node
       type: object
       minProperties: 1
       description: Configuration for the experiment branch node.
@@ -7385,6 +7607,7 @@ components:
             control branch. `100` sends all contacts to variant branches.
       additionalProperties: false
     WorkflowVariantPayload:
+      title: Variant node
       type: object
       minProperties: 1
       description: Configuration for the variant node.
@@ -7407,6 +7630,7 @@ components:
       description: Node types that can be created with the API. `*Trigger` nodes and
         `ExitAction` nodes cannot be created.
     CreateWorkflowNodeBetweenRequest:
+      title: Between nodes
       type: object
       description: Insert a new node between two existing nodes, `fromNodeId` and
         `toNodeId`. When `fromNodeId` is an `ExperimentBranchNode`,
@@ -7440,6 +7664,7 @@ components:
         - toNodeId
       additionalProperties: false
     CreateWorkflowNodeBeforeRequest:
+      title: Before a node
       type: object
       description: 'Insert a new node before `toNodeId`. `VariantNode` cannot use
         `insertMode: "before"`; to restore a missing variant path, use
@@ -7466,12 +7691,14 @@ components:
         - insertMode
         - nodeTypeName
       oneOf:
-        - properties:
+        - title: Target node
+          properties:
             toNodeId:
               type: string
           required:
             - toNodeId
-        - properties:
+        - title: Target node (deprecated)
+          properties:
             beforeNodeId:
               type: string
               deprecated: true
@@ -7479,6 +7706,7 @@ components:
             - beforeNodeId
       additionalProperties: false
     CreateWorkflowNodeAfterRequest:
+      title: After a node
       type: object
       description: Insert a new node after `fromNodeId`. This is valid only when
         `fromNodeId` has exactly one outgoing node. It is invalid when
@@ -7555,50 +7783,62 @@ components:
             eWithRevision"
           VariantNode: "#/components/schemas/VariantWorkflowMutationNodeWithRevision"
     SignupTriggerWorkflowMutationNodeWithRevision:
+      title: Signup trigger
       allOf:
         - $ref: "#/components/schemas/SignupTriggerWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     EventTriggerWorkflowMutationNodeWithRevision:
+      title: Event trigger
       allOf:
         - $ref: "#/components/schemas/EventTriggerWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     ContactPropertyTriggerWorkflowMutationNodeWithRevision:
+      title: Contact property trigger
       allOf:
         - $ref: "#/components/schemas/ContactPropertyTriggerWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     AddToListTriggerWorkflowMutationNodeWithRevision:
+      title: Add-to-list trigger
       allOf:
         - $ref: "#/components/schemas/AddToListTriggerWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     BlankTriggerWorkflowMutationNodeWithRevision:
+      title: Blank trigger
       allOf:
         - $ref: "#/components/schemas/BlankTriggerWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     AudienceFilterWorkflowMutationNodeWithRevision:
+      title: Audience filter node
       allOf:
         - $ref: "#/components/schemas/AudienceFilterWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     TimerActionWorkflowMutationNodeWithRevision:
+      title: Timer node
       allOf:
         - $ref: "#/components/schemas/TimerActionWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     SendEmailActionWorkflowMutationNodeWithRevision:
+      title: Send email node
       allOf:
         - $ref: "#/components/schemas/SendEmailActionWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     ExitActionWorkflowMutationNodeWithRevision:
+      title: Exit node
       allOf:
         - $ref: "#/components/schemas/ExitActionWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     BranchWorkflowMutationNodeWithRevision:
+      title: Branch node
       allOf:
         - $ref: "#/components/schemas/BranchWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     ExperimentBranchWorkflowMutationNodeWithRevision:
+      title: Experiment node
       allOf:
         - $ref: "#/components/schemas/ExperimentBranchWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
     VariantWorkflowMutationNodeWithRevision:
+      title: Variant node
       allOf:
         - $ref: "#/components/schemas/VariantWorkflowMutationNode"
         - $ref: "#/components/schemas/WorkflowMutationNodeRevision"
@@ -7738,6 +7978,7 @@ components:
         - expectedRevisionId
       additionalProperties: false
     WorkflowQueuedContactDeletePreview:
+      title: Deletion preview
       type: object
       properties:
         status:
@@ -7759,6 +8000,7 @@ components:
         - nodeIds
         - queuedContactCount
     WorkflowDeletedResponse:
+      title: Nodes deleted
       type: object
       properties:
         status:
@@ -7813,6 +8055,7 @@ components:
         - mailingListId
       additionalProperties: false
     WorkflowMailingListPreview:
+      title: Mailing list change preview
       type: object
       properties:
         status:
@@ -7833,6 +8076,7 @@ components:
         - mailingListId
         - queuedContactCount
     WorkflowMailingListUpdatedResponse:
+      title: Mailing list updated
       type: object
       properties:
         status:
@@ -7971,6 +8215,7 @@ components:
       discriminator:
         propertyName: typeName
     SimplifiedSignupTriggerWorkflowNode:
+      title: Signup trigger
       type: object
       properties:
         typeName:
@@ -7984,6 +8229,7 @@ components:
         - nextNodeIds
       additionalProperties: false
     SimplifiedEventTriggerWorkflowNode:
+      title: Event trigger
       type: object
       properties:
         typeName:
@@ -8012,6 +8258,7 @@ components:
           eventName: signup
           reEligible: false
     SimplifiedContactPropertyTriggerWorkflowNode:
+      title: Contact property trigger
       type: object
       properties:
         typeName:
@@ -8023,7 +8270,8 @@ components:
         contactPropertyQuery:
           oneOf:
             - $ref: "#/components/schemas/WorkflowContactPropertyQuery"
-            - type: "null"
+            - title: "Null"
+              type: "null"
         reEligible:
           $ref: "#/components/schemas/WorkflowReEligible"
       required:
@@ -8033,6 +8281,7 @@ components:
         - reEligible
       additionalProperties: false
     SimplifiedAddToListTriggerWorkflowNode:
+      title: Add-to-list trigger
       type: object
       properties:
         typeName:
@@ -8055,6 +8304,7 @@ components:
         - reEligible
       additionalProperties: false
     SimplifiedBlankTriggerWorkflowNode:
+      title: Blank trigger
       type: object
       properties:
         typeName:
@@ -8068,6 +8318,7 @@ components:
         - nextNodeIds
       additionalProperties: false
     SimplifiedAudienceFilterWorkflowNode:
+      title: Audience filter node
       type: object
       properties:
         typeName:
@@ -8081,6 +8332,7 @@ components:
         - nextNodeIds
       additionalProperties: false
     SimplifiedTimerActionWorkflowNode:
+      title: Timer node
       type: object
       properties:
         typeName:
@@ -8106,6 +8358,7 @@ components:
           amount: 2
           unit: d
     SimplifiedSendEmailActionWorkflowNode:
+      title: Send email node
       type: object
       properties:
         typeName:
@@ -8135,6 +8388,7 @@ components:
           emailMessageId: cle5f7g9h1i3j5k7l9m1n3p5
           subject: Welcome to Acme!
     SimplifiedExitActionWorkflowNode:
+      title: Exit node
       type: object
       properties:
         typeName:
@@ -8148,6 +8402,7 @@ components:
         - nextNodeIds
       additionalProperties: false
     SimplifiedBranchWorkflowNode:
+      title: Branch node
       type: object
       properties:
         typeName:
@@ -8161,6 +8416,7 @@ components:
         - nextNodeIds
       additionalProperties: false
     SimplifiedExperimentBranchWorkflowNode:
+      title: Experiment node
       type: object
       properties:
         typeName:
@@ -8180,6 +8436,7 @@ components:
         - samplingRate
       additionalProperties: false
     SimplifiedVariantWorkflowNode:
+      title: Variant node
       type: object
       properties:
         typeName:
@@ -8224,6 +8481,7 @@ components:
           required:
             - workflowRevisionId
     SignupTriggerWorkflowNode:
+      title: Signup trigger
       type: object
       properties:
         id:
@@ -8247,6 +8505,7 @@ components:
         - nextNodeIds
       additionalProperties: false
     EventTriggerWorkflowNode:
+      title: Event trigger
       type: object
       properties:
         id:
@@ -8283,6 +8542,7 @@ components:
         - reEligible
       additionalProperties: false
     ContactPropertyTriggerWorkflowNode:
+      title: Contact property trigger
       type: object
       properties:
         id:
@@ -8302,7 +8562,8 @@ components:
         contactPropertyQuery:
           oneOf:
             - $ref: "#/components/schemas/WorkflowContactPropertyQuery"
-            - type: "null"
+            - title: "Null"
+              type: "null"
         reEligible:
           $ref: "#/components/schemas/WorkflowReEligible"
       required:
@@ -8314,6 +8575,7 @@ components:
         - reEligible
       additionalProperties: false
     AddToListTriggerWorkflowNode:
+      title: Add-to-list trigger
       type: object
       properties:
         id:
@@ -8349,6 +8611,7 @@ components:
         - reEligible
       additionalProperties: false
     BlankTriggerWorkflowNode:
+      title: Blank trigger
       type: object
       properties:
         id:
@@ -8372,6 +8635,7 @@ components:
         - nextNodeIds
       additionalProperties: false
     AudienceFilterWorkflowNode:
+      title: Audience filter node
       type: object
       properties:
         id:
@@ -8405,6 +8669,7 @@ components:
         - appliesDownstream
       additionalProperties: false
     TimerActionWorkflowNode:
+      title: Timer node
       type: object
       properties:
         id:
@@ -8434,6 +8699,7 @@ components:
         - unit
       additionalProperties: false
     SendEmailActionWorkflowNode:
+      title: Send email node
       type: object
       properties:
         id:
@@ -8469,6 +8735,7 @@ components:
         - subject
       additionalProperties: false
     ExitActionWorkflowNode:
+      title: Exit node
       type: object
       properties:
         id:
@@ -8492,6 +8759,7 @@ components:
         - nextNodeIds
       additionalProperties: false
     BranchWorkflowNode:
+      title: Branch node
       type: object
       properties:
         id:
@@ -8515,6 +8783,7 @@ components:
         - nextNodeIds
       additionalProperties: false
     ExperimentBranchWorkflowNode:
+      title: Experiment node
       type: object
       properties:
         id:
@@ -8544,6 +8813,7 @@ components:
         - samplingRate
       additionalProperties: false
     VariantWorkflowNode:
+      title: Variant node
       type: object
       properties:
         id:
@@ -8585,6 +8855,7 @@ components:
         - name
         - type
     WorkflowContactPropertyQuery:
+      title: Contact property query
       type: object
       description: Define the contact property change that triggers the workflow. In
         update requests, `key` must resolve to an existing contact property that
@@ -8627,9 +8898,12 @@ components:
       properties:
         value:
           oneOf:
-            - type: string
-            - type: number
-            - type: boolean
+            - title: String
+              type: string
+            - title: Number
+              type: number
+            - title: Boolean
+              type: boolean
         operator:
           type: string
           description: The comparison operator. It must be valid for the selected contact
