@@ -7,7 +7,6 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.audience_segment_failure_response import AudienceSegmentFailureResponse
-from ...models.audience_segment_response import AudienceSegmentResponse
 from ...types import Response
 
 
@@ -27,12 +26,7 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | AudienceSegmentFailureResponse | AudienceSegmentResponse | None:
-    if response.status_code == 200:
-        response_200 = AudienceSegmentResponse.from_dict(response.json())
-
-        return response_200
-
+) -> Any | AudienceSegmentFailureResponse | None:
     if response.status_code == 400:
         response_400 = AudienceSegmentFailureResponse.from_dict(response.json())
 
@@ -59,7 +53,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | AudienceSegmentFailureResponse | AudienceSegmentResponse]:
+) -> Response[Any | AudienceSegmentFailureResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -72,7 +66,7 @@ def sync_detailed(
     audience_segment_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | AudienceSegmentFailureResponse | AudienceSegmentResponse]:
+) -> Response[Any | AudienceSegmentFailureResponse]:
     """Get an audience segment
 
      Retrieve a single audience segment by ID.
@@ -85,7 +79,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | AudienceSegmentFailureResponse | AudienceSegmentResponse]
+        Response[Any | AudienceSegmentFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -103,7 +97,7 @@ def sync(
     audience_segment_id: str,
     *,
     client: AuthenticatedClient,
-) -> Any | AudienceSegmentFailureResponse | AudienceSegmentResponse | None:
+) -> Any | AudienceSegmentFailureResponse | None:
     """Get an audience segment
 
      Retrieve a single audience segment by ID.
@@ -116,7 +110,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | AudienceSegmentFailureResponse | AudienceSegmentResponse
+        Any | AudienceSegmentFailureResponse
     """
 
     return sync_detailed(
@@ -129,7 +123,7 @@ async def asyncio_detailed(
     audience_segment_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | AudienceSegmentFailureResponse | AudienceSegmentResponse]:
+) -> Response[Any | AudienceSegmentFailureResponse]:
     """Get an audience segment
 
      Retrieve a single audience segment by ID.
@@ -142,7 +136,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | AudienceSegmentFailureResponse | AudienceSegmentResponse]
+        Response[Any | AudienceSegmentFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -158,7 +152,7 @@ async def asyncio(
     audience_segment_id: str,
     *,
     client: AuthenticatedClient,
-) -> Any | AudienceSegmentFailureResponse | AudienceSegmentResponse | None:
+) -> Any | AudienceSegmentFailureResponse | None:
     """Get an audience segment
 
      Retrieve a single audience segment by ID.
@@ -171,7 +165,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | AudienceSegmentFailureResponse | AudienceSegmentResponse
+        Any | AudienceSegmentFailureResponse
     """
 
     return (

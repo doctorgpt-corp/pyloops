@@ -6,7 +6,6 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.simplified_workflow import SimplifiedWorkflow
 from ...models.workflow_failure_response import WorkflowFailureResponse
 from ...types import Response
 
@@ -27,12 +26,7 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | SimplifiedWorkflow | WorkflowFailureResponse | None:
-    if response.status_code == 200:
-        response_200 = SimplifiedWorkflow.from_dict(response.json())
-
-        return response_200
-
+) -> Any | WorkflowFailureResponse | None:
     if response.status_code == 400:
         response_400 = WorkflowFailureResponse.from_dict(response.json())
 
@@ -59,7 +53,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]:
+) -> Response[Any | WorkflowFailureResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -72,7 +66,7 @@ def sync_detailed(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]:
+) -> Response[Any | WorkflowFailureResponse]:
     """Get a workflow
 
      Retrieve a workflow graph with node type names, connections, and selected display fields.
@@ -85,7 +79,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]
+        Response[Any | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -103,7 +97,7 @@ def sync(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-) -> Any | SimplifiedWorkflow | WorkflowFailureResponse | None:
+) -> Any | WorkflowFailureResponse | None:
     """Get a workflow
 
      Retrieve a workflow graph with node type names, connections, and selected display fields.
@@ -116,7 +110,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | SimplifiedWorkflow | WorkflowFailureResponse
+        Any | WorkflowFailureResponse
     """
 
     return sync_detailed(
@@ -129,7 +123,7 @@ async def asyncio_detailed(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]:
+) -> Response[Any | WorkflowFailureResponse]:
     """Get a workflow
 
      Retrieve a workflow graph with node type names, connections, and selected display fields.
@@ -142,7 +136,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]
+        Response[Any | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -158,7 +152,7 @@ async def asyncio(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-) -> Any | SimplifiedWorkflow | WorkflowFailureResponse | None:
+) -> Any | WorkflowFailureResponse | None:
     """Get a workflow
 
      Retrieve a workflow graph with node type names, connections, and selected display fields.
@@ -171,7 +165,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | SimplifiedWorkflow | WorkflowFailureResponse
+        Any | WorkflowFailureResponse
     """
 
     return (

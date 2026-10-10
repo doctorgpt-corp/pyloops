@@ -7,9 +7,9 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.change_workflow_mailing_list_request import ChangeWorkflowMailingListRequest
+from ...models.mailing_list_change_preview import MailingListChangePreview
+from ...models.mailing_list_updated import MailingListUpdated
 from ...models.workflow_failure_response import WorkflowFailureResponse
-from ...models.workflow_mailing_list_preview import WorkflowMailingListPreview
-from ...models.workflow_mailing_list_updated_response import WorkflowMailingListUpdatedResponse
 from ...types import Response
 
 
@@ -37,14 +37,14 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse | None:
+) -> Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse | None:
     if response.status_code == 200:
 
-        def _parse_response_200(data: object) -> WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse:
+        def _parse_response_200(data: object) -> MailingListChangePreview | MailingListUpdated:
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                componentsschemas_change_workflow_mailing_list_response_type_0 = WorkflowMailingListPreview.from_dict(
+                componentsschemas_change_workflow_mailing_list_response_type_0 = MailingListChangePreview.from_dict(
                     data
                 )
 
@@ -53,9 +53,7 @@ def _parse_response(
                 pass
             if not isinstance(data, dict):
                 raise TypeError()
-            componentsschemas_change_workflow_mailing_list_response_type_1 = (
-                WorkflowMailingListUpdatedResponse.from_dict(data)
-            )
+            componentsschemas_change_workflow_mailing_list_response_type_1 = MailingListUpdated.from_dict(data)
 
             return componentsschemas_change_workflow_mailing_list_response_type_1
 
@@ -94,7 +92,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse]:
+) -> Response[Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -108,7 +106,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: ChangeWorkflowMailingListRequest,
-) -> Response[Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse]:
+) -> Response[Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse]:
     """Change workflow mailing list
 
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
@@ -126,7 +124,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse]
+        Response[Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -146,7 +144,7 @@ def sync(
     *,
     client: AuthenticatedClient,
     body: ChangeWorkflowMailingListRequest,
-) -> Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse | None:
+) -> Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse | None:
     """Change workflow mailing list
 
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
@@ -164,7 +162,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse
+        Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse
     """
 
     return sync_detailed(
@@ -179,7 +177,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: ChangeWorkflowMailingListRequest,
-) -> Response[Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse]:
+) -> Response[Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse]:
     """Change workflow mailing list
 
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
@@ -197,7 +195,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse]
+        Response[Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -215,7 +213,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     body: ChangeWorkflowMailingListRequest,
-) -> Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse | None:
+) -> Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse | None:
     """Change workflow mailing list
 
      Dry run or apply a workflow mailing list change. If queued contacts would be removed from the
@@ -233,7 +231,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | WorkflowFailureResponse | WorkflowMailingListPreview | WorkflowMailingListUpdatedResponse
+        Any | MailingListChangePreview | MailingListUpdated | WorkflowFailureResponse
     """
 
     return (

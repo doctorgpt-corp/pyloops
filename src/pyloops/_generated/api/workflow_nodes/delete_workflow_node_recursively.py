@@ -7,9 +7,9 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.delete_workflow_node_request import DeleteWorkflowNodeRequest
-from ...models.workflow_deleted_response import WorkflowDeletedResponse
+from ...models.deletion_preview import DeletionPreview
+from ...models.nodes_deleted import NodesDeleted
 from ...models.workflow_failure_response import WorkflowFailureResponse
-from ...models.workflow_queued_contact_delete_preview import WorkflowQueuedContactDeletePreview
 from ...types import Response
 
 
@@ -39,23 +39,21 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse | None:
+) -> Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse | None:
     if response.status_code == 200:
 
-        def _parse_response_200(data: object) -> WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview:
+        def _parse_response_200(data: object) -> DeletionPreview | NodesDeleted:
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                componentsschemas_delete_workflow_node_response_type_0 = WorkflowQueuedContactDeletePreview.from_dict(
-                    data
-                )
+                componentsschemas_delete_workflow_node_response_type_0 = DeletionPreview.from_dict(data)
 
                 return componentsschemas_delete_workflow_node_response_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
                 pass
             if not isinstance(data, dict):
                 raise TypeError()
-            componentsschemas_delete_workflow_node_response_type_1 = WorkflowDeletedResponse.from_dict(data)
+            componentsschemas_delete_workflow_node_response_type_1 = NodesDeleted.from_dict(data)
 
             return componentsschemas_delete_workflow_node_response_type_1
 
@@ -94,7 +92,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse]:
+) -> Response[Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -109,7 +107,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
-) -> Response[Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse]:
+) -> Response[Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse]:
     """Delete workflow nodes recursively
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
@@ -127,7 +125,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse]
+        Response[Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -149,7 +147,7 @@ def sync(
     *,
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
-) -> Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse | None:
+) -> Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse | None:
     """Delete workflow nodes recursively
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
@@ -167,7 +165,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse
+        Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse
     """
 
     return sync_detailed(
@@ -184,7 +182,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
-) -> Response[Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse]:
+) -> Response[Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse]:
     """Delete workflow nodes recursively
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
@@ -202,7 +200,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse]
+        Response[Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -222,7 +220,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     body: DeleteWorkflowNodeRequest,
-) -> Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse | None:
+) -> Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse | None:
     """Delete workflow nodes recursively
 
      Delete a node and its downstream subtree. If contacts are queued at any node that would be deleted,
@@ -240,7 +238,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | WorkflowDeletedResponse | WorkflowQueuedContactDeletePreview | WorkflowFailureResponse
+        Any | DeletionPreview | NodesDeleted | WorkflowFailureResponse
     """
 
     return (
