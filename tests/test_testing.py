@@ -244,6 +244,10 @@ EXPECTED_ROUTE_NAMES = [
     "get_campaign_metrics",
     "get_transactional_template_metrics",
     "get_workflow_node_metrics",
+    "list_workflow_groups",
+    "get_workflow_group",
+    "create_workflow_group",
+    "update_workflow_group",
 ]
 
 
@@ -985,6 +989,46 @@ async def test_update_transactional_group():
 
 
 @pytest.mark.asyncio
+async def test_list_workflow_groups():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.list_workflow_groups(per_page=10, cursor="next")
+        assert result.data == []
+        params = api["list_workflow_groups"].calls[0].request.url.params
+        assert params["perPage"] == "10"
+        assert params["cursor"] == "next"
+
+
+@pytest.mark.asyncio
+async def test_get_workflow_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.get_workflow_group("mock-group-id")
+        assert result.id == "mock-group-id"
+        assert api["get_workflow_group"].calls[0].request.url.path.endswith("/v1/workflow-groups/mock-group-id")
+
+
+@pytest.mark.asyncio
+async def test_create_workflow_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.create_workflow_group(name="Onboarding", description="desc")
+        assert result.id == "mock-group-id"
+        body = json.loads(api["create_workflow_group"].calls[0].request.content)
+        assert body == {"name": "Onboarding", "description": "desc"}
+
+
+@pytest.mark.asyncio
+async def test_update_workflow_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        result = await client.update_workflow_group("mock-group-id", description="new desc")
+        assert result.id == "mock-group-id"
+        body = json.loads(api["update_workflow_group"].calls[0].request.content)
+        assert body == {"description": "new desc"}
+
+
+@pytest.mark.asyncio
 async def test_preview_email_message():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
@@ -1384,6 +1428,15 @@ async def test_create_campaign_group_error():
 
 
 @pytest.mark.asyncio
+async def test_get_workflow_group_not_found():
+    with loops_respx_mock() as api:
+        api["get_workflow_group"].mock(return_value=Response(404, json={"message": "Workflow group not found"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Workflow group not found"):
+            await client.get_workflow_group("missing")
+
+
+@pytest.mark.asyncio
 async def test_list_workflows_rate_limit():
     with loops_respx_mock() as api:
         api["list_workflows"].mock(
@@ -1556,6 +1609,10 @@ _NEW_WRAPPER_ERROR_CASES = [
     ("get_campaign_metrics", lambda c: c.get_campaign_metrics("x")),
     ("get_transactional_template_metrics", lambda c: c.get_transactional_template_metrics("x")),
     ("get_workflow_node_metrics", lambda c: c.get_workflow_node_metrics("wf", "n1")),
+    ("list_workflow_groups", lambda c: c.list_workflow_groups()),
+    ("get_workflow_group", lambda c: c.get_workflow_group("x")),
+    ("create_workflow_group", lambda c: c.create_workflow_group(name="x")),
+    ("update_workflow_group", lambda c: c.update_workflow_group("x", name="y")),
 ]
 
 

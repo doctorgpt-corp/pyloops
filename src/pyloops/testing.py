@@ -505,7 +505,7 @@ def loops_respx_mock(
             )
         )
 
-        # Campaign + transactional groups (shared GroupResponse shape)
+        # Campaign, transactional and workflow groups (shared GroupResponse shape)
         _group_json = {
             "id": "mock-group-id",
             "name": "Mock Group",
@@ -535,6 +535,18 @@ def loops_respx_mock(
             return_value=respx.MockResponse(200, json=_group_json)
         )
         router.post(url__regex=r"/v1/transactional-groups/[^/]+$", name="update_transactional_group").mock(
+            return_value=respx.MockResponse(200, json=_group_json)
+        )
+        router.get("/v1/workflow-groups", name="list_workflow_groups").mock(
+            return_value=respx.MockResponse(200, json={"pagination": _pagination, "data": []})
+        )
+        router.get(url__regex=r"/v1/workflow-groups/[^/]+$", name="get_workflow_group").mock(
+            return_value=respx.MockResponse(200, json=_group_json)
+        )
+        router.post("/v1/workflow-groups", name="create_workflow_group").mock(
+            return_value=respx.MockResponse(200, json=_group_json)
+        )
+        router.post(url__regex=r"/v1/workflow-groups/[^/]+$", name="update_workflow_group").mock(
             return_value=respx.MockResponse(200, json=_group_json)
         )
 

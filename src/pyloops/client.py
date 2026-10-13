@@ -79,6 +79,12 @@ from pyloops._generated.api.transactional_groups import (
     update_transactional_group,
 )
 from pyloops._generated.api.uploads import complete_upload, create_upload
+from pyloops._generated.api.workflow_groups import (
+    create_workflow_group,
+    get_workflow_group,
+    list_workflow_groups,
+    update_workflow_group,
+)
 from pyloops._generated.api.workflow_nodes import (
     add_workflow_branch,
     create_workflow_node,
@@ -3018,6 +3024,133 @@ class LoopsClient:
             success=GroupResponse,
             failure=GroupFailureResponse,
             action="update transactional group",
+        )
+
+    # ------------------------------------------------------------------
+    # Workflow groups (1.22.x)
+    # ------------------------------------------------------------------
+
+    async def list_workflow_groups(
+        self,
+        per_page: int | None = None,
+        cursor: str | None = None,
+    ) -> ListGroupsResponse:
+        """Retrieve a paginated list of workflow groups, most recently created first.
+
+        Args:
+            per_page: Results per page (10-50). Default: 20
+            cursor: Pagination cursor
+
+        Returns:
+            ListGroupsResponse with pagination and data
+
+        Raises:
+            LoopsError: If the request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await list_workflow_groups.asyncio_detailed(
+            client=self._client,
+            per_page=str(per_page) if per_page is not None else UNSET,
+            cursor=cursor if cursor else UNSET,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=ListGroupsResponse,
+            failure=GroupFailureResponse,
+            action="list workflow groups",
+        )
+
+    async def get_workflow_group(self, workflow_group_id: str) -> GroupResponse:
+        """Retrieve a single workflow group by ID.
+
+        Args:
+            workflow_group_id: The workflow group ID
+
+        Returns:
+            GroupResponse
+
+        Raises:
+            LoopsError: If not found (404) or request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        response = await get_workflow_group.asyncio_detailed(
+            workflow_group_id=workflow_group_id,
+            client=self._client,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=GroupResponse,
+            failure=GroupFailureResponse,
+            action="get workflow group",
+        )
+
+    async def create_workflow_group(self, name: str, description: str | None = None) -> GroupResponse:
+        """Create a new workflow group.
+
+        Args:
+            name: Group name
+            description: Optional group description
+
+        Returns:
+            GroupResponse
+
+        Raises:
+            LoopsError: If the request fails, e.g. the name is reserved
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = CreateGroupRequest(name=name, description=description if description else UNSET)
+        response = await create_workflow_group.asyncio_detailed(client=self._client, body=body)
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=GroupResponse,
+            failure=GroupFailureResponse,
+            action="create workflow group",
+        )
+
+    async def update_workflow_group(
+        self,
+        workflow_group_id: str,
+        name: str | None = None,
+        description: str | None = None,
+    ) -> GroupResponse:
+        """Update a workflow group's name or description.
+
+        The reserved "Unsorted" group cannot be edited.
+
+        Args:
+            workflow_group_id: The workflow group ID
+            name: New group name
+            description: New group description
+
+        Returns:
+            GroupResponse
+
+        Raises:
+            LoopsError: If not found (404) or request fails
+            LoopsRateLimitError: If rate limit is exceeded
+        """
+        body = UpdateGroupRequest(
+            name=name if name is not None else UNSET,
+            description=description if description is not None else UNSET,
+        )
+        response = await update_workflow_group.asyncio_detailed(
+            workflow_group_id=workflow_group_id,
+            client=self._client,
+            body=body,
+        )
+        result = self._handle_response(response)
+        return self._unwrap(
+            result,
+            response,
+            success=GroupResponse,
+            failure=GroupFailureResponse,
+            action="update workflow group",
         )
 
     # ------------------------------------------------------------------
