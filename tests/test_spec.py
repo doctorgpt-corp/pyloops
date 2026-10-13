@@ -53,3 +53,15 @@ def test_spec_lists_every_operation_the_client_calls():
 
     assert len(client_operations) == len(list(GENERATED_API.glob("*/[!_]*.py")))
     assert client_operations <= spec_operations
+
+
+def test_client_has_every_operation_the_spec_lists():
+    # The generator drops an endpoint it cannot parse and still exits 0.
+    spec_operations = {
+        (method, _normalise(path))
+        for path, item in _spec()["paths"].items()
+        for method in item
+        if method in HTTP_METHODS
+    }
+
+    assert spec_operations - _client_operations() == set()

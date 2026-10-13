@@ -59,14 +59,16 @@ jobs:
           # Remove old generated code
           rm -rf src/pyloops/_generated
 
-          # Generate new SDK from the spec fetched above, which ships with the package
-          uv tool run openapi-python-client generate --path src/pyloops/openapi.yaml --meta uv
+          # The spec fetched above ships with the package as is; the generator
+          # reads a normalized copy (see scripts/normalize_spec.py)
+          uv run python scripts/normalize_spec.py src/pyloops/openapi.yaml openapi.normalized.json
+          uv tool run openapi-python-client generate --path openapi.normalized.json --meta uv
 
           # Move generated code to _generated
           mv loops-open-api-spec-client/loops_open_api_spec_client src/pyloops/_generated
 
           # Clean up
-          rm -rf loops-open-api-spec-client
+          rm -rf loops-open-api-spec-client openapi.normalized.json
 
       - name: Update version in pyproject.toml
         if: steps.compare.outputs.needs_update == 'true'

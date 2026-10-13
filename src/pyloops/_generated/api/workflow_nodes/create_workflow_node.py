@@ -6,10 +6,10 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.after_a_node import AfterANode
-from ...models.between_nodes import BetweenNodes
-from ...models.target_node import TargetNode
-from ...models.target_node_deprecated import TargetNodeDeprecated
+from ...models.create_workflow_node_after_request import CreateWorkflowNodeAfterRequest
+from ...models.create_workflow_node_before_request_type_0 import CreateWorkflowNodeBeforeRequestType0
+from ...models.create_workflow_node_before_request_type_1 import CreateWorkflowNodeBeforeRequestType1
+from ...models.create_workflow_node_between_request import CreateWorkflowNodeBetweenRequest
 from ...models.workflow_failure_response import WorkflowFailureResponse
 from ...types import Response
 
@@ -17,7 +17,10 @@ from ...types import Response
 def _get_kwargs(
     workflow_id: str,
     *,
-    body: AfterANode | BetweenNodes | TargetNode | TargetNodeDeprecated,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -28,11 +31,11 @@ def _get_kwargs(
         ),
     }
 
-    if isinstance(body, BetweenNodes):
+    if isinstance(body, CreateWorkflowNodeBetweenRequest):
         _kwargs["json"] = body.to_dict()
-    elif isinstance(body, TargetNode):
+    elif isinstance(body, CreateWorkflowNodeBeforeRequestType0):
         _kwargs["json"] = body.to_dict()
-    elif isinstance(body, TargetNodeDeprecated):
+    elif isinstance(body, CreateWorkflowNodeBeforeRequestType1):
         _kwargs["json"] = body.to_dict()
     else:
         _kwargs["json"] = body.to_dict()
@@ -90,7 +93,10 @@ def sync_detailed(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: AfterANode | BetweenNodes | TargetNode | TargetNodeDeprecated,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> Response[Any | WorkflowFailureResponse]:
     """Create a workflow node
 
@@ -117,7 +123,8 @@ def sync_detailed(
 
     Args:
         workflow_id (str):
-        body (AfterANode | BetweenNodes | TargetNode | TargetNodeDeprecated): Create a new
+        body (CreateWorkflowNodeAfterRequest | CreateWorkflowNodeBeforeRequestType0 |
+            CreateWorkflowNodeBeforeRequestType1 | CreateWorkflowNodeBetweenRequest): Create a new
             workflow node with an explicit `insertMode`. To configure the node after creation, use the
             `POST /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint.
 
@@ -145,7 +152,10 @@ def sync(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: AfterANode | BetweenNodes | TargetNode | TargetNodeDeprecated,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> Any | WorkflowFailureResponse | None:
     """Create a workflow node
 
@@ -172,7 +182,8 @@ def sync(
 
     Args:
         workflow_id (str):
-        body (AfterANode | BetweenNodes | TargetNode | TargetNodeDeprecated): Create a new
+        body (CreateWorkflowNodeAfterRequest | CreateWorkflowNodeBeforeRequestType0 |
+            CreateWorkflowNodeBeforeRequestType1 | CreateWorkflowNodeBetweenRequest): Create a new
             workflow node with an explicit `insertMode`. To configure the node after creation, use the
             `POST /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint.
 
@@ -195,7 +206,10 @@ async def asyncio_detailed(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: AfterANode | BetweenNodes | TargetNode | TargetNodeDeprecated,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> Response[Any | WorkflowFailureResponse]:
     """Create a workflow node
 
@@ -222,7 +236,8 @@ async def asyncio_detailed(
 
     Args:
         workflow_id (str):
-        body (AfterANode | BetweenNodes | TargetNode | TargetNodeDeprecated): Create a new
+        body (CreateWorkflowNodeAfterRequest | CreateWorkflowNodeBeforeRequestType0 |
+            CreateWorkflowNodeBeforeRequestType1 | CreateWorkflowNodeBetweenRequest): Create a new
             workflow node with an explicit `insertMode`. To configure the node after creation, use the
             `POST /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint.
 
@@ -248,7 +263,10 @@ async def asyncio(
     workflow_id: str,
     *,
     client: AuthenticatedClient,
-    body: AfterANode | BetweenNodes | TargetNode | TargetNodeDeprecated,
+    body: CreateWorkflowNodeAfterRequest
+    | CreateWorkflowNodeBeforeRequestType0
+    | CreateWorkflowNodeBeforeRequestType1
+    | CreateWorkflowNodeBetweenRequest,
 ) -> Any | WorkflowFailureResponse | None:
     """Create a workflow node
 
@@ -275,7 +293,8 @@ async def asyncio(
 
     Args:
         workflow_id (str):
-        body (AfterANode | BetweenNodes | TargetNode | TargetNodeDeprecated): Create a new
+        body (CreateWorkflowNodeAfterRequest | CreateWorkflowNodeBeforeRequestType0 |
+            CreateWorkflowNodeBeforeRequestType1 | CreateWorkflowNodeBetweenRequest): Create a new
             workflow node with an explicit `insertMode`. To configure the node after creation, use the
             `POST /v1/workflows/{workflowId}/nodes/{nodeId}` endpoint.
 
