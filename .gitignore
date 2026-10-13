@@ -207,4 +207,4 @@ marimo/_lsp/
 __marimo__/
 
 # Generator input written by scripts/normalize_spec.py
-openapi.normalized.json
+openapi.normalized.yaml
