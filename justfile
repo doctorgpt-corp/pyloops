@@ -33,13 +33,13 @@ generate:
     @echo "📥 Fetching OpenAPI spec..."
     curl -fsSL https://app.loops.so/openapi.yaml -o src/pyloops/openapi.yaml
     @echo "🧽 Normalizing spec for the generator..."
-    uv run python scripts/normalize_spec.py src/pyloops/openapi.yaml openapi.normalized.json
+    uv run python scripts/normalize_spec.py src/pyloops/openapi.yaml openapi.normalized.yaml
     @echo "⚙️  Generating SDK..."
-    uv tool run openapi-python-client generate --path openapi.normalized.json --meta uv
+    uv tool run openapi-python-client generate --path openapi.normalized.yaml --meta uv
     @echo "📦 Moving generated code..."
     mv loops-open-api-spec-client/loops_open_api_spec_client src/pyloops/_generated
     @echo "🧹 Cleaning up..."
-    rm -rf loops-open-api-spec-client openapi.normalized.json
+    rm -rf loops-open-api-spec-client openapi.normalized.yaml
     @echo "✨ Done! Running checks..."
     just check
 

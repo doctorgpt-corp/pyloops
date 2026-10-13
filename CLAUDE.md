@@ -23,7 +23,7 @@ Supporting modules:
 
 openapi-python-client names a model after its schema's `title` when one is set. Loops uses titles as display labels and repeats them ("Signup trigger" labels five schemas), so the generator sees duplicate models, drops them, then drops every endpoint and response that referenced one, and still exits 0.
 
-`scripts/normalize_spec.py` strips every schema `title` so each model is named after its unique schema key. `just generate` and `check-updates.yml` feed the generator that copy; the shipped `openapi.yaml` stays as fetched. `tests/test_spec.py::test_client_has_every_operation_the_spec_lists` fails when the generator drops an endpoint anyway. If that happens, teach the normalizer the new pattern with a test in `tests/test_normalize_spec.py`, never by editing `_generated/`.
+`scripts/normalize_spec.py` strips every schema `title` so each model is named after its unique schema key. It reads and writes the spec with the YAML loader the generator uses (`ruamel.yaml`, safe mode, key order kept), so the titles are the only difference the generator sees. `just generate` and `check-updates.yml` feed the generator that copy; the shipped `openapi.yaml` stays as fetched. `tests/test_spec.py::test_client_has_every_operation_the_spec_lists` fails when the generator drops an endpoint anyway. If that happens, teach the normalizer the new pattern with a test in `tests/test_normalize_spec.py`, never by editing `_generated/`.
 
 ## Git conventions
 

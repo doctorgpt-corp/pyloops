@@ -6,18 +6,20 @@ schemas), so the generator sees duplicate models, drops them, and then drops
 every endpoint and response that referenced one. Without titles each model is
 named after its schema key, which is unique.
 
+The spec is read and written with the YAML loader the generator itself uses, so
+the generator sees every other value exactly as it would in the original.
+
 The shipped ``src/pyloops/openapi.yaml`` stays as fetched; only the generator
 reads the normalized copy.
 
-Usage: python scripts/normalize_spec.py <spec.yaml> <normalized.json>
+Usage: python scripts/normalize_spec.py <spec.yaml> <normalized.yaml>
 """
 
-import json
 import sys
 from pathlib import Path
 from typing import Any
 
-import yaml
+from ruamel.yaml import YAML
 
 # Keywords whose value is a map of name -> schema. The names are data, so a
 # property called "title" is kept.
@@ -37,18 +39,18 @@ _SCHEMAS = frozenset(
         "unevaluatedProperties",
     }
 )
-# Free-form values that can hold a "schema" or "title" key of their own.
-_OPAQUE = frozenset({"example", "examples", "default", "enum", "const"})
+# Example payloads outside a schema: free-form, and never read as schemas.
+_EXAMPLES = frozenset({"example", "examples"})
 
 
-class _SpecLoader(yaml.SafeLoader):
-    """SafeLoader that leaves timestamps as strings so the spec round-trips to JSON."""
-
-
-_SpecLoader.yaml_implicit_resolvers = {
-    first_char: [(tag, regexp) for tag, regexp in resolvers if tag != "tag:yaml.org,2002:timestamp"]
-    for first_char, resolvers in yaml.SafeLoader.yaml_implicit_resolvers.items()
-}
+def _yaml() -> YAML:
+    # typ="safe" is what openapi-python-client loads the document with. ruamel.yaml
+    # is installed as that dev dependency's own requirement.
+    yaml = YAML(typ="safe")
+    yaml.default_flow_style = False
+    # Property order becomes field order in the generated models.
+    yaml.representer.sort_base_mapping_type_on_output = False
+    return yaml
 
 
 def _strip_schema_titles(schema: Any) -> int:
@@ -78,7 +80,7 @@ def _strip_nested_schemas(node: Any) -> int:
     for key, value in node.items():
         if key == "schema":
             stripped += _strip_schema_titles(value)
-        elif key not in _OPAQUE:
+        elif key not in _EXAMPLES and not str(key).startswith("x-"):
             stripped += _strip_nested_schemas(value)
     return stripped
 
@@ -93,7 +95,7 @@ def normalize(spec: dict[str, Any]) -> int:
 
 
 def load_spec(path: Path) -> dict[str, Any]:
-    return yaml.load(path.read_text(), Loader=_SpecLoader)
+    return _yaml().load(path)
 
 
 def main(argv: list[str]) -> int:
@@ -103,7 +105,7 @@ def main(argv: list[str]) -> int:
     source, target = Path(argv[1]), Path(argv[2])
     spec = load_spec(source)
     stripped = normalize(spec)
-    target.write_text(json.dumps(spec, indent=2) + "\n")
+    _yaml().dump(spec, target)
     print(f"Stripped {stripped} schema title(s) from {source} into {target}")
     return 0
 
