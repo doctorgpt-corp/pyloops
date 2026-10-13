@@ -17,6 +17,13 @@ Supporting modules:
 - `src/pyloops/testing.py` — testing utilities (see below)
 - `src/pyloops/openapi.yaml` - the Loops OpenAPI spec `_generated/` was generated from, shipped in the package; `just generate` and `check-updates.yml` rewrite it together with `_generated/`, never by hand
 - `src/pyloops/spec.py` - `openapi_spec_path()`, the filesystem path of that spec for consumers
+- `scripts/normalize_spec.py` - rewrites the spec into the generator's input (see below). Not shipped.
+
+## Spec normalization
+
+openapi-python-client names a model after its schema's `title` when one is set. Loops uses titles as display labels and repeats them ("Signup trigger" labels five schemas), so the generator sees duplicate models, drops them, then drops every endpoint and response that referenced one, and still exits 0.
+
+`scripts/normalize_spec.py` strips every schema `title` so each model is named after its unique schema key. `just generate` and `check-updates.yml` feed the generator that copy; the shipped `openapi.yaml` stays as fetched. `tests/test_spec.py::test_client_has_every_operation_the_spec_lists` fails when the generator drops an endpoint anyway. If that happens, teach the normalizer the new pattern with a test in `tests/test_normalize_spec.py`, never by editing `_generated/`.
 
 ## Git conventions
 
@@ -75,7 +82,8 @@ tests/
   test_safe_mode.py   # 50 tests — safe mode email domain validation
   test_testing.py     # 157 tests — mock utility + every client method
   test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
-  test_spec.py        # 3 tests  - shipped OpenAPI spec exists and covers every generated operation
+  test_spec.py        # 4 tests  - shipped OpenAPI spec and generated client cover the same operations
+  test_normalize_spec.py  # 5 tests - generator-input normalizer
 ```
 
 Run tests:

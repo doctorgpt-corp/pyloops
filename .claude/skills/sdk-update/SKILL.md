@@ -42,12 +42,20 @@ expected - say so in the PR body and ask for squash or merge, not rebase.
 
 ## 3. Classify the diff
 
+Run `uv run pytest tests/test_spec.py` first. The generator drops an endpoint
+it cannot parse and still exits 0, and
+`test_client_has_every_operation_the_spec_lists` names each one. A dropped
+endpoint is a spec pattern `scripts/normalize_spec.py` must learn (fix it there
+with a test in `tests/test_normalize_spec.py`, then `just generate`), never a
+reason to hand-roll the call in the wrapper.
+
 Most of the diff is generator churn (StrEnum, `Self`, docstring rewording,
 import reordering). Ignore it and hunt for the substantive changes:
 
 | Looking for | Command |
 |---|---|
 | New or removed endpoints | `git diff --name-status origin/main..HEAD -- src/pyloops/_generated/api/ \| grep -E '^[AD]'` |
+| Responses the generator gave up on | regenerate and read its warnings: "response will be omitted" leaves `response.parsed` `None` on success |
 | Removed or renamed models | `git diff origin/main..HEAD -- src/pyloops/_generated/models/__init__.py \| grep '^-'` |
 | Bodies degraded to raw JSON | `git grep -n "body: Any" src/pyloops/_generated/api/` |
 | New required fields | `git diff origin/main..HEAD -- src/pyloops/_generated/models/ \| grep -E '^\+.*d\.pop\("' \| grep -v UNSET` |

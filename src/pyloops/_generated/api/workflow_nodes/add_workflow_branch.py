@@ -7,6 +7,7 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.add_workflow_branch_request import AddWorkflowBranchRequest
+from ...models.add_workflow_branch_response import AddWorkflowBranchResponse
 from ...models.workflow_failure_response import WorkflowFailureResponse
 from ...types import Response
 
@@ -37,7 +38,12 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | WorkflowFailureResponse | None:
+) -> AddWorkflowBranchResponse | Any | WorkflowFailureResponse | None:
+    if response.status_code == 200:
+        response_200 = AddWorkflowBranchResponse.from_dict(response.json())
+
+        return response_200
+
     if response.status_code == 400:
         response_400 = WorkflowFailureResponse.from_dict(response.json())
 
@@ -69,7 +75,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | WorkflowFailureResponse]:
+) -> Response[AddWorkflowBranchResponse | Any | WorkflowFailureResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -84,7 +90,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: AddWorkflowBranchRequest,
-) -> Response[Any | WorkflowFailureResponse]:
+) -> Response[AddWorkflowBranchResponse | Any | WorkflowFailureResponse]:
     """Add a branch
 
      Add a branch and a child node under an existing Branch or Experiment node. Returns the created child
@@ -107,7 +113,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | WorkflowFailureResponse]
+        Response[AddWorkflowBranchResponse | Any | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -129,7 +135,7 @@ def sync(
     *,
     client: AuthenticatedClient,
     body: AddWorkflowBranchRequest,
-) -> Any | WorkflowFailureResponse | None:
+) -> AddWorkflowBranchResponse | Any | WorkflowFailureResponse | None:
     """Add a branch
 
      Add a branch and a child node under an existing Branch or Experiment node. Returns the created child
@@ -152,7 +158,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | WorkflowFailureResponse
+        AddWorkflowBranchResponse | Any | WorkflowFailureResponse
     """
 
     return sync_detailed(
@@ -169,7 +175,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: AddWorkflowBranchRequest,
-) -> Response[Any | WorkflowFailureResponse]:
+) -> Response[AddWorkflowBranchResponse | Any | WorkflowFailureResponse]:
     """Add a branch
 
      Add a branch and a child node under an existing Branch or Experiment node. Returns the created child
@@ -192,7 +198,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | WorkflowFailureResponse]
+        Response[AddWorkflowBranchResponse | Any | WorkflowFailureResponse]
     """
 
     kwargs = _get_kwargs(
@@ -212,7 +218,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     body: AddWorkflowBranchRequest,
-) -> Any | WorkflowFailureResponse | None:
+) -> AddWorkflowBranchResponse | Any | WorkflowFailureResponse | None:
     """Add a branch
 
      Add a branch and a child node under an existing Branch or Experiment node. Returns the created child
@@ -235,7 +241,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | WorkflowFailureResponse
+        AddWorkflowBranchResponse | Any | WorkflowFailureResponse
     """
 
     return (

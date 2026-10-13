@@ -7,6 +7,7 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.campaign_failure_response import CampaignFailureResponse
+from ...models.campaign_response import CampaignResponse
 from ...types import Response
 
 
@@ -26,7 +27,12 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | CampaignFailureResponse | None:
+) -> Any | CampaignFailureResponse | CampaignResponse | None:
+    if response.status_code == 200:
+        response_200 = CampaignResponse.from_dict(response.json())
+
+        return response_200
+
     if response.status_code == 400:
         response_400 = CampaignFailureResponse.from_dict(response.json())
 
@@ -53,7 +59,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | CampaignFailureResponse]:
+) -> Response[Any | CampaignFailureResponse | CampaignResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -66,7 +72,7 @@ def sync_detailed(
     campaign_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | CampaignFailureResponse]:
+) -> Response[Any | CampaignFailureResponse | CampaignResponse]:
     """Get a campaign
 
      Retrieve a single campaign by ID.
@@ -79,7 +85,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | CampaignFailureResponse]
+        Response[Any | CampaignFailureResponse | CampaignResponse]
     """
 
     kwargs = _get_kwargs(
@@ -97,7 +103,7 @@ def sync(
     campaign_id: str,
     *,
     client: AuthenticatedClient,
-) -> Any | CampaignFailureResponse | None:
+) -> Any | CampaignFailureResponse | CampaignResponse | None:
     """Get a campaign
 
      Retrieve a single campaign by ID.
@@ -110,7 +116,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | CampaignFailureResponse
+        Any | CampaignFailureResponse | CampaignResponse
     """
 
     return sync_detailed(
@@ -123,7 +129,7 @@ async def asyncio_detailed(
     campaign_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | CampaignFailureResponse]:
+) -> Response[Any | CampaignFailureResponse | CampaignResponse]:
     """Get a campaign
 
      Retrieve a single campaign by ID.
@@ -136,7 +142,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | CampaignFailureResponse]
+        Response[Any | CampaignFailureResponse | CampaignResponse]
     """
 
     kwargs = _get_kwargs(
@@ -152,7 +158,7 @@ async def asyncio(
     campaign_id: str,
     *,
     client: AuthenticatedClient,
-) -> Any | CampaignFailureResponse | None:
+) -> Any | CampaignFailureResponse | CampaignResponse | None:
     """Get a campaign
 
      Retrieve a single campaign by ID.
@@ -165,7 +171,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | CampaignFailureResponse
+        Any | CampaignFailureResponse | CampaignResponse
     """
 
     return (

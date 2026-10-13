@@ -5,13 +5,13 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.attachments_not_enabled import AttachmentsNotEnabled
-from ...models.email_not_sendable import EmailNotSendable
-from ...models.general_error import GeneralError
 from ...models.idempotency_key_failure_response import IdempotencyKeyFailureResponse
-from ...models.invalid_data_variables import InvalidDataVariables
-from ...models.invalid_request_or_email import InvalidRequestOrEmail
+from ...models.transactional_failure_2_response import TransactionalFailure2Response
+from ...models.transactional_failure_3_response import TransactionalFailure3Response
+from ...models.transactional_failure_4_response import TransactionalFailure4Response
+from ...models.transactional_failure_5_response import TransactionalFailure5Response
 from ...models.transactional_request import TransactionalRequest
+from ...models.transactional_send_failure_response import TransactionalSendFailureResponse
 from ...models.transactional_success_response import TransactionalSuccessResponse
 from ...types import UNSET, Response, Unset
 
@@ -42,13 +42,13 @@ def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
 ) -> (
     Any
-    | AttachmentsNotEnabled
-    | EmailNotSendable
-    | GeneralError
-    | InvalidDataVariables
-    | InvalidRequestOrEmail
     | IdempotencyKeyFailureResponse
-    | InvalidRequestOrEmail
+    | TransactionalFailure2Response
+    | TransactionalFailure3Response
+    | TransactionalFailure4Response
+    | TransactionalFailure5Response
+    | TransactionalSendFailureResponse
+    | TransactionalFailure3Response
     | TransactionalSuccessResponse
     | None
 ):
@@ -61,11 +61,17 @@ def _parse_response(
 
         def _parse_response_400(
             data: object,
-        ) -> AttachmentsNotEnabled | EmailNotSendable | GeneralError | InvalidDataVariables | InvalidRequestOrEmail:
+        ) -> (
+            TransactionalFailure2Response
+            | TransactionalFailure3Response
+            | TransactionalFailure4Response
+            | TransactionalFailure5Response
+            | TransactionalSendFailureResponse
+        ):
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                response_400_type_0 = GeneralError.from_dict(data)
+                response_400_type_0 = TransactionalSendFailureResponse.from_dict(data)
 
                 return response_400_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
@@ -73,7 +79,7 @@ def _parse_response(
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                response_400_type_1 = AttachmentsNotEnabled.from_dict(data)
+                response_400_type_1 = TransactionalFailure2Response.from_dict(data)
 
                 return response_400_type_1
             except (TypeError, ValueError, AttributeError, KeyError):
@@ -81,7 +87,7 @@ def _parse_response(
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                response_400_type_2 = InvalidRequestOrEmail.from_dict(data)
+                response_400_type_2 = TransactionalFailure3Response.from_dict(data)
 
                 return response_400_type_2
             except (TypeError, ValueError, AttributeError, KeyError):
@@ -89,14 +95,14 @@ def _parse_response(
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                response_400_type_3 = EmailNotSendable.from_dict(data)
+                response_400_type_3 = TransactionalFailure4Response.from_dict(data)
 
                 return response_400_type_3
             except (TypeError, ValueError, AttributeError, KeyError):
                 pass
             if not isinstance(data, dict):
                 raise TypeError()
-            response_400_type_4 = InvalidDataVariables.from_dict(data)
+            response_400_type_4 = TransactionalFailure5Response.from_dict(data)
 
             return response_400_type_4
 
@@ -105,7 +111,7 @@ def _parse_response(
         return response_400
 
     if response.status_code == 404:
-        response_404 = InvalidRequestOrEmail.from_dict(response.json())
+        response_404 = TransactionalFailure3Response.from_dict(response.json())
 
         return response_404
 
@@ -128,13 +134,13 @@ def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
 ) -> Response[
     Any
-    | AttachmentsNotEnabled
-    | EmailNotSendable
-    | GeneralError
-    | InvalidDataVariables
-    | InvalidRequestOrEmail
     | IdempotencyKeyFailureResponse
-    | InvalidRequestOrEmail
+    | TransactionalFailure2Response
+    | TransactionalFailure3Response
+    | TransactionalFailure4Response
+    | TransactionalFailure5Response
+    | TransactionalSendFailureResponse
+    | TransactionalFailure3Response
     | TransactionalSuccessResponse
 ]:
     return Response(
@@ -152,13 +158,13 @@ def sync_detailed(
     idempotency_key: str | Unset = UNSET,
 ) -> Response[
     Any
-    | AttachmentsNotEnabled
-    | EmailNotSendable
-    | GeneralError
-    | InvalidDataVariables
-    | InvalidRequestOrEmail
     | IdempotencyKeyFailureResponse
-    | InvalidRequestOrEmail
+    | TransactionalFailure2Response
+    | TransactionalFailure3Response
+    | TransactionalFailure4Response
+    | TransactionalFailure5Response
+    | TransactionalSendFailureResponse
+    | TransactionalFailure3Response
     | TransactionalSuccessResponse
 ]:
     """Send a transactional email
@@ -179,7 +185,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | AttachmentsNotEnabled | EmailNotSendable | GeneralError | InvalidDataVariables | InvalidRequestOrEmail | IdempotencyKeyFailureResponse | InvalidRequestOrEmail | TransactionalSuccessResponse]
+        Response[Any | IdempotencyKeyFailureResponse | TransactionalFailure2Response | TransactionalFailure3Response | TransactionalFailure4Response | TransactionalFailure5Response | TransactionalSendFailureResponse | TransactionalFailure3Response | TransactionalSuccessResponse]
     """
 
     kwargs = _get_kwargs(
@@ -201,13 +207,13 @@ def sync(
     idempotency_key: str | Unset = UNSET,
 ) -> (
     Any
-    | AttachmentsNotEnabled
-    | EmailNotSendable
-    | GeneralError
-    | InvalidDataVariables
-    | InvalidRequestOrEmail
     | IdempotencyKeyFailureResponse
-    | InvalidRequestOrEmail
+    | TransactionalFailure2Response
+    | TransactionalFailure3Response
+    | TransactionalFailure4Response
+    | TransactionalFailure5Response
+    | TransactionalSendFailureResponse
+    | TransactionalFailure3Response
     | TransactionalSuccessResponse
     | None
 ):
@@ -229,7 +235,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | AttachmentsNotEnabled | EmailNotSendable | GeneralError | InvalidDataVariables | InvalidRequestOrEmail | IdempotencyKeyFailureResponse | InvalidRequestOrEmail | TransactionalSuccessResponse
+        Any | IdempotencyKeyFailureResponse | TransactionalFailure2Response | TransactionalFailure3Response | TransactionalFailure4Response | TransactionalFailure5Response | TransactionalSendFailureResponse | TransactionalFailure3Response | TransactionalSuccessResponse
     """
 
     return sync_detailed(
@@ -246,13 +252,13 @@ async def asyncio_detailed(
     idempotency_key: str | Unset = UNSET,
 ) -> Response[
     Any
-    | AttachmentsNotEnabled
-    | EmailNotSendable
-    | GeneralError
-    | InvalidDataVariables
-    | InvalidRequestOrEmail
     | IdempotencyKeyFailureResponse
-    | InvalidRequestOrEmail
+    | TransactionalFailure2Response
+    | TransactionalFailure3Response
+    | TransactionalFailure4Response
+    | TransactionalFailure5Response
+    | TransactionalSendFailureResponse
+    | TransactionalFailure3Response
     | TransactionalSuccessResponse
 ]:
     """Send a transactional email
@@ -273,7 +279,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | AttachmentsNotEnabled | EmailNotSendable | GeneralError | InvalidDataVariables | InvalidRequestOrEmail | IdempotencyKeyFailureResponse | InvalidRequestOrEmail | TransactionalSuccessResponse]
+        Response[Any | IdempotencyKeyFailureResponse | TransactionalFailure2Response | TransactionalFailure3Response | TransactionalFailure4Response | TransactionalFailure5Response | TransactionalSendFailureResponse | TransactionalFailure3Response | TransactionalSuccessResponse]
     """
 
     kwargs = _get_kwargs(
@@ -293,13 +299,13 @@ async def asyncio(
     idempotency_key: str | Unset = UNSET,
 ) -> (
     Any
-    | AttachmentsNotEnabled
-    | EmailNotSendable
-    | GeneralError
-    | InvalidDataVariables
-    | InvalidRequestOrEmail
     | IdempotencyKeyFailureResponse
-    | InvalidRequestOrEmail
+    | TransactionalFailure2Response
+    | TransactionalFailure3Response
+    | TransactionalFailure4Response
+    | TransactionalFailure5Response
+    | TransactionalSendFailureResponse
+    | TransactionalFailure3Response
     | TransactionalSuccessResponse
     | None
 ):
@@ -321,7 +327,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | AttachmentsNotEnabled | EmailNotSendable | GeneralError | InvalidDataVariables | InvalidRequestOrEmail | IdempotencyKeyFailureResponse | InvalidRequestOrEmail | TransactionalSuccessResponse
+        Any | IdempotencyKeyFailureResponse | TransactionalFailure2Response | TransactionalFailure3Response | TransactionalFailure4Response | TransactionalFailure5Response | TransactionalSendFailureResponse | TransactionalFailure3Response | TransactionalSuccessResponse
     """
 
     return (

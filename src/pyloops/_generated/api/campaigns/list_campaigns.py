@@ -6,6 +6,7 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.campaign_failure_response import CampaignFailureResponse
+from ...models.list_campaigns_response import ListCampaignsResponse
 from ...types import UNSET, Response, Unset
 
 
@@ -34,7 +35,12 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | CampaignFailureResponse | None:
+) -> Any | CampaignFailureResponse | ListCampaignsResponse | None:
+    if response.status_code == 200:
+        response_200 = ListCampaignsResponse.from_dict(response.json())
+
+        return response_200
+
     if response.status_code == 400:
         response_400 = CampaignFailureResponse.from_dict(response.json())
 
@@ -56,7 +62,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | CampaignFailureResponse]:
+) -> Response[Any | CampaignFailureResponse | ListCampaignsResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -70,7 +76,7 @@ def sync_detailed(
     client: AuthenticatedClient,
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
-) -> Response[Any | CampaignFailureResponse]:
+) -> Response[Any | CampaignFailureResponse | ListCampaignsResponse]:
     """List campaigns
 
      Retrieve a paginated list of campaigns.
@@ -84,7 +90,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | CampaignFailureResponse]
+        Response[Any | CampaignFailureResponse | ListCampaignsResponse]
     """
 
     kwargs = _get_kwargs(
@@ -104,7 +110,7 @@ def sync(
     client: AuthenticatedClient,
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
-) -> Any | CampaignFailureResponse | None:
+) -> Any | CampaignFailureResponse | ListCampaignsResponse | None:
     """List campaigns
 
      Retrieve a paginated list of campaigns.
@@ -118,7 +124,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | CampaignFailureResponse
+        Any | CampaignFailureResponse | ListCampaignsResponse
     """
 
     return sync_detailed(
@@ -133,7 +139,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
-) -> Response[Any | CampaignFailureResponse]:
+) -> Response[Any | CampaignFailureResponse | ListCampaignsResponse]:
     """List campaigns
 
      Retrieve a paginated list of campaigns.
@@ -147,7 +153,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | CampaignFailureResponse]
+        Response[Any | CampaignFailureResponse | ListCampaignsResponse]
     """
 
     kwargs = _get_kwargs(
@@ -165,7 +171,7 @@ async def asyncio(
     client: AuthenticatedClient,
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
-) -> Any | CampaignFailureResponse | None:
+) -> Any | CampaignFailureResponse | ListCampaignsResponse | None:
     """List campaigns
 
      Retrieve a paginated list of campaigns.
@@ -179,7 +185,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | CampaignFailureResponse
+        Any | CampaignFailureResponse | ListCampaignsResponse
     """
 
     return (
