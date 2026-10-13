@@ -80,7 +80,7 @@ Tests run with pytest and require no real API key — all HTTP is intercepted at
 ```
 tests/
   test_safe_mode.py   # 50 tests — safe mode email domain validation
-  test_testing.py     # 157 tests — mock utility + every client method
+  test_testing.py     # 166 tests — mock utility + every client method
   test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
   test_spec.py        # 4 tests  - shipped OpenAPI spec and generated client cover the same operations
   test_normalize_spec.py  # 5 tests - generator-input normalizer
@@ -224,6 +224,10 @@ All routes are accessible by name on the yielded router.
 | `get_campaign_metrics` | `GET /v1/campaigns/{id}/metrics` |
 | `get_transactional_template_metrics` | `GET /v1/transactional-emails/{id}/metrics` |
 | `get_workflow_node_metrics` | `GET /v1/workflows/{id}/nodes/{node_id}/metrics` |
+| `list_workflow_groups` | `GET /v1/workflow-groups` |
+| `get_workflow_group` | `GET /v1/workflow-groups/{id}` |
+| `create_workflow_group` | `POST /v1/workflow-groups` |
+| `update_workflow_group` | `POST /v1/workflow-groups/{id}` |
 
 ### Simulating errors
 

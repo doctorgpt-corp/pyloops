@@ -129,6 +129,7 @@ The high-level `LoopsClient` wraps every Loops.so API endpoint:
 - **Transactional Emails**: Send, list, and manage transactional templates (create, update, draft, publish), and read the data variables a template expects
 - **Campaigns & Campaign Groups**: List, get, create, and update
 - **Transactional Groups**: List, get, create, and update
+- **Workflow Groups**: List, get, create, and update
 - **Themes & Components**: List, get, create, and update reusable branding/building blocks
 - **Email Messages**: Get, update, preview, and run Guardian content checks
 - **Workflows & Workflow Nodes**: Create, update, and delete workflows, change mailing lists, and build the node graph (create/update/branch/reroute/delete nodes)
@@ -267,7 +268,7 @@ Common routes:
 | `list_mailing_lists` | GET | `/lists` |
 | `list_sending_ips` | GET | `/dedicated-sending-ips` |
 
-Additional families are mocked too — campaigns, campaign/transactional groups,
+Additional families are mocked too — campaigns, campaign/transactional/workflow groups,
 transactional templates, themes, components, email messages (incl. preview and
 Guardian), uploads, audience segments, event patterns, and workflows/workflow
 nodes. See `EXPECTED_ROUTE_NAMES` in `tests/test_testing.py` for the full list.
