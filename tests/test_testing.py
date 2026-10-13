@@ -992,11 +992,45 @@ async def test_update_transactional_group():
 async def test_list_workflow_groups():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
-        result = await client.list_workflow_groups(per_page=10, cursor="next")
+        result = await client.list_workflow_groups()
         assert result.data == []
+        assert api["list_workflow_groups"].called
+
+
+@pytest.mark.asyncio
+async def test_list_workflow_groups_paginates():
+    with loops_respx_mock() as api:
+        api["list_workflow_groups"].mock(
+            return_value=Response(
+                200,
+                json={
+                    "pagination": {
+                        "totalResults": 11,
+                        "returnedResults": 1,
+                        "perPage": 10,
+                        "totalPages": 2,
+                        "nextCursor": "c2",
+                        "nextPage": None,
+                    },
+                    "data": [
+                        {
+                            "id": "grp_1",
+                            "name": "Onboarding",
+                            "description": "",
+                            "createdAt": "2024-01-01T00:00:00.000Z",
+                            "updatedAt": "2024-01-02T00:00:00.000Z",
+                        }
+                    ],
+                },
+            )
+        )
+        client = pyloops.get_client()
+        result = await client.list_workflow_groups(per_page=10, cursor="c1")
+        assert result.pagination.next_cursor == "c2"
+        assert [(group.id, group.name) for group in result.data] == [("grp_1", "Onboarding")]
         params = api["list_workflow_groups"].calls[0].request.url.params
         assert params["perPage"] == "10"
-        assert params["cursor"] == "next"
+        assert params["cursor"] == "c1"
 
 
 @pytest.mark.asyncio
