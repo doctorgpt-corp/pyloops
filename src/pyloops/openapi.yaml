@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Loops OpenAPI Spec
   description: This is the OpenAPI Spec for the [Loops API](https://loops.so/docs/api).
-  version: 1.22.4
+  version: 1.22.5
 servers:
   - url: https://app.loops.so/api
 tags:
@@ -5364,7 +5364,8 @@ components:
         - message
       examples:
         - success: false
-          message: Idempotency key already used with a different request body.
+          message: Request with idempotency key <idempotencyKey> has already been
+            processed.
     TransactionalEmail:
       type: object
       properties:
