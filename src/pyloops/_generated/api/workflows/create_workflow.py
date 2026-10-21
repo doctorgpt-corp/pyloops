@@ -51,11 +51,6 @@ def _parse_response(
         response_405 = cast(Any, None)
         return response_405
 
-    if response.status_code == 500:
-        response_500 = WorkflowFailureResponse.from_dict(response.json())
-
-        return response_500
-
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -80,7 +75,8 @@ def sync_detailed(
 ) -> Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]:
     """Create a workflow
 
-     Create a draft workflow with a blank trigger and exit node.
+     Create a draft workflow with a blank trigger and exit node. When `workflowGroupId` is omitted, the
+    workflow is added to the team's Unsorted group.
 
     Args:
         body (CreateWorkflowRequest):
@@ -111,7 +107,8 @@ def sync(
 ) -> Any | SimplifiedWorkflow | WorkflowFailureResponse | None:
     """Create a workflow
 
-     Create a draft workflow with a blank trigger and exit node.
+     Create a draft workflow with a blank trigger and exit node. When `workflowGroupId` is omitted, the
+    workflow is added to the team's Unsorted group.
 
     Args:
         body (CreateWorkflowRequest):
@@ -137,7 +134,8 @@ async def asyncio_detailed(
 ) -> Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]:
     """Create a workflow
 
-     Create a draft workflow with a blank trigger and exit node.
+     Create a draft workflow with a blank trigger and exit node. When `workflowGroupId` is omitted, the
+    workflow is added to the team's Unsorted group.
 
     Args:
         body (CreateWorkflowRequest):
@@ -166,7 +164,8 @@ async def asyncio(
 ) -> Any | SimplifiedWorkflow | WorkflowFailureResponse | None:
     """Create a workflow
 
-     Create a draft workflow with a blank trigger and exit node.
+     Create a draft workflow with a blank trigger and exit node. When `workflowGroupId` is omitted, the
+    workflow is added to the team's Unsorted group.
 
     Args:
         body (CreateWorkflowRequest):

@@ -17,6 +17,7 @@ class WorkflowSummary:
         id (str): The ID of the workflow.
         url (str): The URL of the workflow in the Loops app.
         name (str): The name of the workflow.
+        workflow_group_id (str): The ID of the workflow group this workflow belongs to.
         created_at (datetime.datetime): ISO 8601 timestamp for when the workflow was created.
         updated_at (datetime.datetime): ISO 8601 timestamp for when the workflow was last updated.
     """
@@ -24,6 +25,7 @@ class WorkflowSummary:
     id: str
     url: str
     name: str
+    workflow_group_id: str
     created_at: datetime.datetime
     updated_at: datetime.datetime
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -34,6 +36,8 @@ class WorkflowSummary:
         url = self.url
 
         name = self.name
+
+        workflow_group_id = self.workflow_group_id
 
         created_at = self.created_at.isoformat()
 
@@ -46,6 +50,7 @@ class WorkflowSummary:
                 "id": id,
                 "url": url,
                 "name": name,
+                "workflowGroupId": workflow_group_id,
                 "createdAt": created_at,
                 "updatedAt": updated_at,
             }
@@ -62,6 +67,8 @@ class WorkflowSummary:
 
         name = d.pop("name")
 
+        workflow_group_id = d.pop("workflowGroupId")
+
         created_at = datetime.datetime.fromisoformat(d.pop("createdAt"))
 
         updated_at = datetime.datetime.fromisoformat(d.pop("updatedAt"))
@@ -70,6 +77,7 @@ class WorkflowSummary:
             id=id,
             url=url,
             name=name,
+            workflow_group_id=workflow_group_id,
             created_at=created_at,
             updated_at=updated_at,
         )
