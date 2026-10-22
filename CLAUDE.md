@@ -80,7 +80,7 @@ Tests run with pytest and require no real API key — all HTTP is intercepted at
 ```
 tests/
   test_safe_mode.py   # 50 tests — safe mode email domain validation
-  test_testing.py     # 167 tests — mock utility + every client method
+  test_testing.py     # 172 tests — mock utility + every client method
   test_base_url.py    # 8 tests  — base_url normalization (/v1 strip + DeprecationWarning)
   test_spec.py        # 4 tests  - shipped OpenAPI spec and generated client cover the same operations
   test_normalize_spec.py  # 5 tests - generator-input normalizer

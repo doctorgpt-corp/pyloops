@@ -2114,6 +2114,7 @@ class LoopsClient:
         name: str,
         description: str | None = None,
         mailing_list_id: str | None = None,
+        workflow_group_id: str | None = None,
     ) -> SimplifiedWorkflow:
         """Create a new (draft) workflow.
 
@@ -2124,6 +2125,8 @@ class LoopsClient:
             name: Workflow name
             description: Optional workflow description
             mailing_list_id: Optional mailing list to associate with the workflow
+            workflow_group_id: Optional workflow group to create the workflow in;
+                Loops uses the team's Unsorted group when omitted
 
         Returns:
             SimplifiedWorkflow
@@ -2136,6 +2139,7 @@ class LoopsClient:
             name=name,
             description=description if description is not None else UNSET,
             mailing_list_id=mailing_list_id if mailing_list_id is not None else UNSET,
+            workflow_group_id=workflow_group_id if workflow_group_id is not None else UNSET,
         )
         response = await create_workflow.asyncio_detailed(client=self._client, body=body)
         result = self._handle_response(response)
@@ -2153,8 +2157,12 @@ class LoopsClient:
         expected_revision_id: str | None,
         name: str | None = None,
         description: str | None = None,
+        workflow_group_id: str | None = None,
     ) -> SimplifiedWorkflow:
-        """Update a workflow's name and/or description.
+        """Update a workflow's name, description and/or group.
+
+        At least one of ``name``, ``description`` or ``workflow_group_id`` must be
+        given.
 
         Args:
             workflow_id: The workflow ID
@@ -2163,14 +2171,18 @@ class LoopsClient:
                 a stale value raises a 409 conflict.
             name: New workflow name
             description: New workflow description
+            workflow_group_id: Workflow group to move the workflow into
 
         Returns:
             SimplifiedWorkflow
 
         Raises:
-            LoopsError: If not found (404) or a revision conflict occurs (409)
+            LoopsError: If no field to update is given, the workflow or group is
+                not found, or a revision conflict occurs (409)
             LoopsRateLimitError: If rate limit is exceeded
         """
+        if name is None and description is None and workflow_group_id is None:
+            raise LoopsError("update_workflow requires name, description or workflow_group_id")
         # This endpoint's request schema is untyped in the spec, so the generated
         # client sends the body dict as-is (no model). Keys must be camelCase.
         body: dict[str, Any] = {"expectedRevisionId": expected_revision_id}
@@ -2178,6 +2190,8 @@ class LoopsClient:
             body["name"] = name
         if description is not None:
             body["description"] = description
+        if workflow_group_id is not None:
+            body["workflowGroupId"] = workflow_group_id
         response = await update_workflow_properties.asyncio_detailed(
             workflow_id=workflow_id,
             client=self._client,
