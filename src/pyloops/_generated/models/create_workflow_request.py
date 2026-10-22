@@ -18,11 +18,14 @@ class CreateWorkflowRequest:
         description (str | Unset): The description of the workflow.
         mailing_list_id (None | str | Unset): The ID of a mailing list the workflow sends to. After creation, the
             mailing list can be changed with the `/v1/workflows/{workflowId}/mailing-list` endpoint.
+        workflow_group_id (str | Unset): The ID of the workflow group to create this workflow in. Defaults to the team's
+            Unsorted group when omitted.
     """
 
     name: str
     description: str | Unset = UNSET
     mailing_list_id: None | str | Unset = UNSET
+    workflow_group_id: str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         name = self.name
@@ -35,6 +38,8 @@ class CreateWorkflowRequest:
         else:
             mailing_list_id = self.mailing_list_id
 
+        workflow_group_id = self.workflow_group_id
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update(
@@ -46,6 +51,8 @@ class CreateWorkflowRequest:
             field_dict["description"] = description
         if mailing_list_id is not UNSET:
             field_dict["mailingListId"] = mailing_list_id
+        if workflow_group_id is not UNSET:
+            field_dict["workflowGroupId"] = workflow_group_id
 
         return field_dict
 
@@ -65,10 +72,13 @@ class CreateWorkflowRequest:
 
         mailing_list_id = _parse_mailing_list_id(d.pop("mailingListId", UNSET))
 
+        workflow_group_id = d.pop("workflowGroupId", UNSET)
+
         create_workflow_request = cls(
             name=name,
             description=description,
             mailing_list_id=mailing_list_id,
+            workflow_group_id=workflow_group_id,
         )
 
         return create_workflow_request

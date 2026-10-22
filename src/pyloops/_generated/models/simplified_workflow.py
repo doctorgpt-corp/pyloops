@@ -25,6 +25,7 @@ class SimplifiedWorkflow:
         workflow_revision_id (None | str): The current workflow revision token. Pass the latest value as
             `expectedRevisionId` on the next workflow mutation. Will be `null` for workflows without a revision token yet.
         status (SimplifiedWorkflowStatus):
+        workflow_group_id (str): The ID of the workflow group this workflow belongs to.
         mailing_list_id (None | str): The ID of the mailing list the workflow sends to.
         root_node_id (str): The ID of the root node in the workflow graph.
         nodes (SimplifiedWorkflowNodes): A map of node IDs to simplified node objects. Each node includes `typeName` and
@@ -39,6 +40,7 @@ class SimplifiedWorkflow:
     url: str
     workflow_revision_id: None | str
     status: SimplifiedWorkflowStatus
+    workflow_group_id: str
     mailing_list_id: None | str
     root_node_id: str
     nodes: SimplifiedWorkflowNodes
@@ -55,6 +57,8 @@ class SimplifiedWorkflow:
         workflow_revision_id = self.workflow_revision_id
 
         status = self.status.value
+
+        workflow_group_id = self.workflow_group_id
 
         mailing_list_id: None | str
         mailing_list_id = self.mailing_list_id
@@ -75,6 +79,7 @@ class SimplifiedWorkflow:
                 "url": url,
                 "workflowRevisionId": workflow_revision_id,
                 "status": status,
+                "workflowGroupId": workflow_group_id,
                 "mailingListId": mailing_list_id,
                 "rootNodeId": root_node_id,
                 "nodes": nodes,
@@ -105,6 +110,8 @@ class SimplifiedWorkflow:
 
         status = SimplifiedWorkflowStatus(d.pop("status"))
 
+        workflow_group_id = d.pop("workflowGroupId")
+
         def _parse_mailing_list_id(data: object) -> None | str:
             if data is None:
                 return data
@@ -125,6 +132,7 @@ class SimplifiedWorkflow:
             url=url,
             workflow_revision_id=workflow_revision_id,
             status=status,
+            workflow_group_id=workflow_group_id,
             mailing_list_id=mailing_list_id,
             root_node_id=root_node_id,
             nodes=nodes,

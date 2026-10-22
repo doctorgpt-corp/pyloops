@@ -876,12 +876,46 @@ async def test_list_workflows():
 
 
 @pytest.mark.asyncio
+async def test_list_workflows_returns_group_id():
+    with loops_respx_mock() as api:
+        api["list_workflows"].mock(
+            return_value=Response(
+                200,
+                json={
+                    "pagination": {
+                        "totalResults": 1,
+                        "returnedResults": 1,
+                        "perPage": 20,
+                        "totalPages": 1,
+                        "nextCursor": None,
+                        "nextPage": None,
+                    },
+                    "data": [
+                        {
+                            "id": "wf_1",
+                            "url": "https://app.loops.so/workflows/wf_1",
+                            "name": "Welcome series",
+                            "workflowGroupId": "grp_1",
+                            "createdAt": "2024-01-01T00:00:00.000Z",
+                            "updatedAt": "2024-01-02T00:00:00.000Z",
+                        }
+                    ],
+                },
+            )
+        )
+        client = pyloops.get_client()
+        result = await client.list_workflows()
+        assert [w.workflow_group_id for w in result.data] == ["grp_1"]
+
+
+@pytest.mark.asyncio
 async def test_get_workflow():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_workflow("mock-workflow-id")
         assert result.id == "mock-workflow-id"
         assert result.url == "https://app.loops.so/workflows/mock-workflow-id"
+        assert result.workflow_group_id == "mock-workflow-group-id"
         assert api["get_workflow"].called
 
 
@@ -1202,6 +1236,42 @@ async def test_update_workflow():
         body = json.loads(api["update_workflow"].calls[0].request.content)
         assert body["expectedRevisionId"] == "rev-1"
         assert body["name"] == "Renamed"
+
+
+@pytest.mark.asyncio
+async def test_create_workflow_in_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        await client.create_workflow(name="Onboarding", workflow_group_id="grp_1")
+        body = json.loads(api["create_workflow"].calls[0].request.content)
+        assert body == {"name": "Onboarding", "workflowGroupId": "grp_1"}
+
+
+@pytest.mark.asyncio
+async def test_update_workflow_moves_group():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        await client.update_workflow("mock-workflow-id", "rev-1", workflow_group_id="grp_2")
+        body = json.loads(api["update_workflow"].calls[0].request.content)
+        assert body == {"expectedRevisionId": "rev-1", "workflowGroupId": "grp_2"}
+
+
+@pytest.mark.asyncio
+async def test_update_workflow_requires_a_field():
+    with loops_respx_mock() as api:
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="requires name, description or workflow_group_id"):
+            await client.update_workflow("mock-workflow-id", "rev-1")
+        assert not api["update_workflow"].called
+
+
+@pytest.mark.asyncio
+async def test_update_workflow_group_not_found():
+    with loops_respx_mock() as api:
+        api["update_workflow"].mock(return_value=Response(400, json={"message": "Workflow group not found"}))
+        client = pyloops.get_client()
+        with pytest.raises(LoopsError, match="Workflow group not found"):
+            await client.update_workflow("mock-workflow-id", "rev-1", workflow_group_id="missing")
 
 
 @pytest.mark.asyncio

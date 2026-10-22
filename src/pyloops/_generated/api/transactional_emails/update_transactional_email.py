@@ -85,7 +85,7 @@ def sync_detailed(
 ) -> Response[Any | TransactionalFailureResponse | TransactionalResource]:
     """Update a transactional email
 
-     Update a transactional email by ID.
+     Update a transactional email's name or group. At least one field must be provided.
 
     Args:
         transactional_id (str):
@@ -119,7 +119,7 @@ def sync(
 ) -> Any | TransactionalFailureResponse | TransactionalResource | None:
     """Update a transactional email
 
-     Update a transactional email by ID.
+     Update a transactional email's name or group. At least one field must be provided.
 
     Args:
         transactional_id (str):
@@ -148,7 +148,7 @@ async def asyncio_detailed(
 ) -> Response[Any | TransactionalFailureResponse | TransactionalResource]:
     """Update a transactional email
 
-     Update a transactional email by ID.
+     Update a transactional email's name or group. At least one field must be provided.
 
     Args:
         transactional_id (str):
@@ -180,7 +180,7 @@ async def asyncio(
 ) -> Any | TransactionalFailureResponse | TransactionalResource | None:
     """Update a transactional email
 
-     Update a transactional email by ID.
+     Update a transactional email's name or group. At least one field must be provided.
 
     Args:
         transactional_id (str):

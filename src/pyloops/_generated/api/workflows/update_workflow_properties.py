@@ -89,7 +89,7 @@ def sync_detailed(
 ) -> Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]:
     """Update a workflow
 
-     Update a workflow's display properties. At least one property must be provided. To change the
+     Update a workflow's name, description, or group. At least one field must be provided. To change the
     workflow's mailing list, use the `POST /v1/workflows/{workflowId}/mailing-list` endpoint instead.
 
     Args:
@@ -124,7 +124,7 @@ def sync(
 ) -> Any | SimplifiedWorkflow | WorkflowFailureResponse | None:
     """Update a workflow
 
-     Update a workflow's display properties. At least one property must be provided. To change the
+     Update a workflow's name, description, or group. At least one field must be provided. To change the
     workflow's mailing list, use the `POST /v1/workflows/{workflowId}/mailing-list` endpoint instead.
 
     Args:
@@ -154,7 +154,7 @@ async def asyncio_detailed(
 ) -> Response[Any | SimplifiedWorkflow | WorkflowFailureResponse]:
     """Update a workflow
 
-     Update a workflow's display properties. At least one property must be provided. To change the
+     Update a workflow's name, description, or group. At least one field must be provided. To change the
     workflow's mailing list, use the `POST /v1/workflows/{workflowId}/mailing-list` endpoint instead.
 
     Args:
@@ -187,7 +187,7 @@ async def asyncio(
 ) -> Any | SimplifiedWorkflow | WorkflowFailureResponse | None:
     """Update a workflow
 
-     Update a workflow's display properties. At least one property must be provided. To change the
+     Update a workflow's name, description, or group. At least one field must be provided. To change the
     workflow's mailing list, use the `POST /v1/workflows/{workflowId}/mailing-list` endpoint instead.
 
     Args:

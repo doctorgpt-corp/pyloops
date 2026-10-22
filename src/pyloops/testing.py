@@ -408,6 +408,7 @@ def loops_respx_mock(
             "status": "Draft",
             "name": "Mock Workflow",
             "description": None,
+            "workflowGroupId": "mock-workflow-group-id",
             "mailingListId": None,
             "rootNodeId": "mock-node-id",
             "nodes": {},
