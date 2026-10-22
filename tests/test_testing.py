@@ -876,12 +876,46 @@ async def test_list_workflows():
 
 
 @pytest.mark.asyncio
+async def test_list_workflows_returns_group_id():
+    with loops_respx_mock() as api:
+        api["list_workflows"].mock(
+            return_value=Response(
+                200,
+                json={
+                    "pagination": {
+                        "totalResults": 1,
+                        "returnedResults": 1,
+                        "perPage": 20,
+                        "totalPages": 1,
+                        "nextCursor": None,
+                        "nextPage": None,
+                    },
+                    "data": [
+                        {
+                            "id": "wf_1",
+                            "url": "https://app.loops.so/workflows/wf_1",
+                            "name": "Welcome series",
+                            "workflowGroupId": "grp_1",
+                            "createdAt": "2024-01-01T00:00:00.000Z",
+                            "updatedAt": "2024-01-02T00:00:00.000Z",
+                        }
+                    ],
+                },
+            )
+        )
+        client = pyloops.get_client()
+        result = await client.list_workflows()
+        assert [w.workflow_group_id for w in result.data] == ["grp_1"]
+
+
+@pytest.mark.asyncio
 async def test_get_workflow():
     with loops_respx_mock() as api:
         client = pyloops.get_client()
         result = await client.get_workflow("mock-workflow-id")
         assert result.id == "mock-workflow-id"
         assert result.url == "https://app.loops.so/workflows/mock-workflow-id"
+        assert result.workflow_group_id == "mock-workflow-group-id"
         assert api["get_workflow"].called
 
 
