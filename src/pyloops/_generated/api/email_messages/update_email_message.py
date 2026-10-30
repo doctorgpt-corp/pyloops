@@ -100,8 +100,9 @@ def sync_detailed(
 ) -> Response[Any | EmailMessageFailureResponse | EmailMessageResponse]:
     """Update an email message
 
-     Update fields on an email message (subject, preview text, sender, LMX content). The campaign must be
-    in draft status. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
+     Update fields on an email message (subject, preview text, sender, LMX content). A campaign must be
+    in draft status. You can only edit the draft email message of a transactional email. A workflow must
+    not be sending. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
     rejects mismatched revisions with 409.
 
     Args:
@@ -136,8 +137,9 @@ def sync(
 ) -> Any | EmailMessageFailureResponse | EmailMessageResponse | None:
     """Update an email message
 
-     Update fields on an email message (subject, preview text, sender, LMX content). The campaign must be
-    in draft status. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
+     Update fields on an email message (subject, preview text, sender, LMX content). A campaign must be
+    in draft status. You can only edit the draft email message of a transactional email. A workflow must
+    not be sending. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
     rejects mismatched revisions with 409.
 
     Args:
@@ -167,8 +169,9 @@ async def asyncio_detailed(
 ) -> Response[Any | EmailMessageFailureResponse | EmailMessageResponse]:
     """Update an email message
 
-     Update fields on an email message (subject, preview text, sender, LMX content). The campaign must be
-    in draft status. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
+     Update fields on an email message (subject, preview text, sender, LMX content). A campaign must be
+    in draft status. You can only edit the draft email message of a transactional email. A workflow must
+    not be sending. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
     rejects mismatched revisions with 409.
 
     Args:
@@ -201,8 +204,9 @@ async def asyncio(
 ) -> Any | EmailMessageFailureResponse | EmailMessageResponse | None:
     """Update an email message
 
-     Update fields on an email message (subject, preview text, sender, LMX content). The campaign must be
-    in draft status. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
+     Update fields on an email message (subject, preview text, sender, LMX content). A campaign must be
+    in draft status. You can only edit the draft email message of a transactional email. A workflow must
+    not be sending. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
     rejects mismatched revisions with 409.
 
     Args:
