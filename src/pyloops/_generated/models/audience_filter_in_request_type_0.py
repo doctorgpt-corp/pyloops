@@ -22,7 +22,8 @@ class AudienceFilterInRequestType0:
     any existing `audienceSegmentId`. When both are provided, this filter is applied on top of the segment's filter.
 
         Attributes:
-            match (AudienceFilterInRequestType0Match):
+            match (AudienceFilterInRequestType0Match): `all` matches contacts that meet every condition, `any` matches
+                contacts that meet at least one.
             conditions (list[ActivityCondition | OptInCondition | PropertyCondition]):
     """
 

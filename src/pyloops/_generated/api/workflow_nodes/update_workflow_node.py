@@ -92,8 +92,9 @@ def sync_detailed(
 ) -> Response[Any | WorkflowFailureResponse]:
     """Update a workflow node
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update workflow-node-owned fields for a single node. To update a node, the workflow's `state` must
+    not be `Sending`. Shared resources such as email messages and audience segments should be updated
+    through their own APIs.
 
     Args:
         workflow_id (str):
@@ -130,8 +131,9 @@ def sync(
 ) -> Any | WorkflowFailureResponse | None:
     """Update a workflow node
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update workflow-node-owned fields for a single node. To update a node, the workflow's `state` must
+    not be `Sending`. Shared resources such as email messages and audience segments should be updated
+    through their own APIs.
 
     Args:
         workflow_id (str):
@@ -163,8 +165,9 @@ async def asyncio_detailed(
 ) -> Response[Any | WorkflowFailureResponse]:
     """Update a workflow node
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update workflow-node-owned fields for a single node. To update a node, the workflow's `state` must
+    not be `Sending`. Shared resources such as email messages and audience segments should be updated
+    through their own APIs.
 
     Args:
         workflow_id (str):
@@ -199,8 +202,9 @@ async def asyncio(
 ) -> Any | WorkflowFailureResponse | None:
     """Update a workflow node
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update workflow-node-owned fields for a single node. To update a node, the workflow's `state` must
+    not be `Sending`. Shared resources such as email messages and audience segments should be updated
+    through their own APIs.
 
     Args:
         workflow_id (str):

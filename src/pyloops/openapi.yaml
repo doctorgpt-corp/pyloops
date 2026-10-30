@@ -2,13 +2,13 @@ openapi: 3.1.0
 info:
   title: Loops OpenAPI Spec
   description: This is the OpenAPI Spec for the [Loops API](https://loops.so/docs/api).
-  version: 1.22.6
+  version: 1.22.8
 servers:
   - url: https://app.loops.so/api
 tags:
   - name: API key
   - name: Audience segments
-    description: View audience segments
+    description: View and create audience segments
   - name: Campaigns
     description: Create and manage email campaigns
   - name: Campaign groups
@@ -1332,9 +1332,10 @@ paths:
         - Email messages
       summary: Update an email message
       description: Update fields on an email message (subject, preview text, sender,
-        LMX content). The campaign must be in draft status. Supply
-        `expectedRevisionId` matching the current `contentRevisionId` — the
-        server rejects mismatched revisions with 409.
+        LMX content). A campaign must be in draft status. You can only edit the
+        draft email message of a transactional email. A workflow must not be
+        sending. Supply `expectedRevisionId` matching the current
+        `contentRevisionId` — the server rejects mismatched revisions with 409.
       x-mint:
         href: /api-reference/update-email-message
         metadata:
@@ -1345,8 +1346,9 @@ paths:
           Supply `expectedRevisionId` matching the current `contentRevisionId`.
 
 
-          <Info>The campaign or transactional email that owns this email message
-          must be in `Draft` status.</Info>
+          <Info>A campaign that owns this email message must be in `Draft`
+          status. You can only edit the draft email message of a transactional
+          email. A workflow's status must not be `Sending`.</Info>
       requestBody:
         required: true
         content:
@@ -1377,8 +1379,10 @@ paths:
         "405":
           description: Wrong HTTP request method.
         "409":
-          description: Campaign is not in draft status, `contentRevisionId` is stale,
-            content cannot be parsed, or email message uses MJML format.
+          description: Campaign is not in draft status, email message is the published
+            email message of a transactional email, workflow is sending,
+            `contentRevisionId` is stale, content cannot be parsed, or email
+            message uses MJML format.
           content:
             application/json:
               schema:
@@ -3545,13 +3549,18 @@ paths:
         - Workflow nodes
       summary: Update a workflow node
       operationId: updateWorkflowNode
-      description: Update workflow-node-owned fields for a single node. Shared
-        resources such as email messages and audience segments should be updated
-        through their own APIs.
+      description: Update workflow-node-owned fields for a single node. To update a
+        node, the workflow's `state` must not be `Sending`. Shared resources
+        such as email messages and audience segments should be updated through
+        their own APIs.
       x-mint:
         href: /api-reference/update-workflow-node
-        content: Shared resources such as email messages and audience segments should be
-          updated through their own APIs.
+        content: >-
+          Workflows can only be updated when they are not sending.
+
+
+          <Info>Shared resources such as email messages and audience segments
+          should be updated through their own APIs.</Info>
         metadata:
           sidebarTitle: Update a node
           description: Update workflow-node-owned fields for a single node.
@@ -3569,7 +3578,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/UpdateWorkflowNodeResponse"
         "400":
-          description: Invalid `workflowId`, `nodeId`, request body, or node update.
+          description: Invalid `workflowId`, `nodeId`, request body, or node update, or
+            workflow is sending.
           content:
             application/json:
               schema:
@@ -3644,7 +3654,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteWorkflowNodeResponse"
         "400":
-          description: Invalid `workflowId`, `nodeId`, request body, or delete target.
+          description: Invalid `workflowId`, `nodeId`, request body, or delete target, or
+            workflow is sending.
           content:
             application/json:
               schema:
@@ -3870,7 +3881,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteWorkflowNodeResponse"
         "400":
-          description: Invalid `workflowId`, `nodeId`, request body, or delete target.
+          description: Invalid `workflowId`, `nodeId`, request body, or delete target, or
+            workflow is sending.
           content:
             application/json:
               schema:
@@ -6370,6 +6382,8 @@ components:
           type: string
           maxLength: 1000
           description: An optional description of the audience segment.
+          examples:
+            - Contacts on the pro plan
         filter:
           type: object
           description: A tree of audience conditions combined with `match`.
@@ -6379,6 +6393,10 @@ components:
               enum:
                 - all
                 - any
+              description: "`all` matches contacts that meet every condition, `any` matches
+                contacts that meet at least one."
+              examples:
+                - all
             conditions:
               type: array
               minItems: 1
@@ -6453,6 +6471,10 @@ components:
           enum:
             - all
             - any
+          description: "`all` matches contacts that meet every condition, `any` matches
+            contacts that meet at least one."
+          examples:
+            - all
         conditions:
           type: array
           minItems: 1
@@ -6476,6 +6498,10 @@ components:
           enum:
             - all
             - any
+          description: "`all` matches contacts that meet every condition, `any` matches
+            contacts that meet at least one."
+          examples:
+            - all
         conditions:
           type: array
           minItems: 1
@@ -9327,6 +9353,7 @@ components:
         - message
       examples:
         - message: Email message not found.
+        - message: "Workflow must not be sending. Current status: Sending."
     EmailMessagePreviewRequest:
       type: object
       properties:
