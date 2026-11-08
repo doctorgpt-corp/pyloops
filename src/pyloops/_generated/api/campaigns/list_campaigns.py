@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import Any, cast
 
-import httpx
+import httpx2
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
@@ -14,6 +14,7 @@ def _get_kwargs(
     *,
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
+    campaign_group_id: str | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -21,6 +22,8 @@ def _get_kwargs(
     params["perPage"] = per_page
 
     params["cursor"] = cursor
+
+    params["campaignGroupId"] = campaign_group_id
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -34,7 +37,7 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
+    *, client: AuthenticatedClient | Client, response: httpx2.Response
 ) -> Any | CampaignFailureResponse | ListCampaignsResponse | None:
     if response.status_code == 200:
         response_200 = ListCampaignsResponse.from_dict(response.json())
@@ -61,7 +64,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
+    *, client: AuthenticatedClient | Client, response: httpx2.Response
 ) -> Response[Any | CampaignFailureResponse | ListCampaignsResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -76,6 +79,7 @@ def sync_detailed(
     client: AuthenticatedClient,
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
+    campaign_group_id: str | Unset = UNSET,
 ) -> Response[Any | CampaignFailureResponse | ListCampaignsResponse]:
     """List campaigns
 
@@ -84,10 +88,11 @@ def sync_detailed(
     Args:
         per_page (str | Unset):
         cursor (str | Unset):
+        campaign_group_id (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Any | CampaignFailureResponse | ListCampaignsResponse]
@@ -96,6 +101,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         per_page=per_page,
         cursor=cursor,
+        campaign_group_id=campaign_group_id,
     )
 
     response = client.get_httpx_client().request(
@@ -110,6 +116,7 @@ def sync(
     client: AuthenticatedClient,
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
+    campaign_group_id: str | Unset = UNSET,
 ) -> Any | CampaignFailureResponse | ListCampaignsResponse | None:
     """List campaigns
 
@@ -118,10 +125,11 @@ def sync(
     Args:
         per_page (str | Unset):
         cursor (str | Unset):
+        campaign_group_id (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Any | CampaignFailureResponse | ListCampaignsResponse
@@ -131,6 +139,7 @@ def sync(
         client=client,
         per_page=per_page,
         cursor=cursor,
+        campaign_group_id=campaign_group_id,
     ).parsed
 
 
@@ -139,6 +148,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
+    campaign_group_id: str | Unset = UNSET,
 ) -> Response[Any | CampaignFailureResponse | ListCampaignsResponse]:
     """List campaigns
 
@@ -147,10 +157,11 @@ async def asyncio_detailed(
     Args:
         per_page (str | Unset):
         cursor (str | Unset):
+        campaign_group_id (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Any | CampaignFailureResponse | ListCampaignsResponse]
@@ -159,6 +170,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         per_page=per_page,
         cursor=cursor,
+        campaign_group_id=campaign_group_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -171,6 +183,7 @@ async def asyncio(
     client: AuthenticatedClient,
     per_page: str | Unset = UNSET,
     cursor: str | Unset = UNSET,
+    campaign_group_id: str | Unset = UNSET,
 ) -> Any | CampaignFailureResponse | ListCampaignsResponse | None:
     """List campaigns
 
@@ -179,10 +192,11 @@ async def asyncio(
     Args:
         per_page (str | Unset):
         cursor (str | Unset):
+        campaign_group_id (str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Any | CampaignFailureResponse | ListCampaignsResponse
@@ -193,5 +207,6 @@ async def asyncio(
             client=client,
             per_page=per_page,
             cursor=cursor,
+            campaign_group_id=campaign_group_id,
         )
     ).parsed

@@ -2,13 +2,13 @@ openapi: 3.1.0
 info:
   title: Loops OpenAPI Spec
   description: This is the OpenAPI Spec for the [Loops API](https://loops.so/docs/api).
-  version: 1.22.6
+  version: 1.23.0
 servers:
   - url: https://app.loops.so/api
 tags:
   - name: API key
   - name: Audience segments
-    description: View audience segments
+    description: View and create audience segments
   - name: Campaigns
     description: Create and manage email campaigns
   - name: Campaign groups
@@ -261,6 +261,14 @@ paths:
             from the `pagination.nextCursor` value in each response.
           schema:
             type: string
+        - name: campaignGroupId
+          in: query
+          required: false
+          description: Only return campaigns in this campaign group. An ID that matches no
+            group returns an empty list.
+          schema:
+            type: string
+            minLength: 1
       responses:
         "200":
           description: Successful.
@@ -269,7 +277,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListCampaignsResponse"
         "400":
-          description: Invalid `perPage` value.
+          description: Invalid `perPage` value, or `campaignGroupId` is an empty string.
           content:
             application/json:
               schema:
@@ -1332,9 +1340,10 @@ paths:
         - Email messages
       summary: Update an email message
       description: Update fields on an email message (subject, preview text, sender,
-        LMX content). The campaign must be in draft status. Supply
-        `expectedRevisionId` matching the current `contentRevisionId` — the
-        server rejects mismatched revisions with 409.
+        LMX content). A campaign must be in draft status. You can only edit the
+        draft email message of a transactional email. A workflow must not be
+        sending. Supply `expectedRevisionId` matching the current
+        `contentRevisionId` — the server rejects mismatched revisions with 409.
       x-mint:
         href: /api-reference/update-email-message
         metadata:
@@ -1345,8 +1354,9 @@ paths:
           Supply `expectedRevisionId` matching the current `contentRevisionId`.
 
 
-          <Info>The campaign or transactional email that owns this email message
-          must be in `Draft` status.</Info>
+          <Info>A campaign that owns this email message must be in `Draft`
+          status. You can only edit the draft email message of a transactional
+          email. A workflow's status must not be `Sending`.</Info>
       requestBody:
         required: true
         content:
@@ -1377,8 +1387,10 @@ paths:
         "405":
           description: Wrong HTTP request method.
         "409":
-          description: Campaign is not in draft status, `contentRevisionId` is stale,
-            content cannot be parsed, or email message uses MJML format.
+          description: Campaign is not in draft status, email message is the published
+            email message of a transactional email, workflow is sending,
+            `contentRevisionId` is stale, content cannot be parsed, or email
+            message uses MJML format.
           content:
             application/json:
               schema:
@@ -1446,6 +1458,30 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/EmailMessagePreviewRequest"
+            examples:
+              campaign:
+                summary: Campaign email
+                value:
+                  emails:
+                    - alex@company.com
+                  contactProperties:
+                    firstName: Alex
+              workflow:
+                summary: Workflow email
+                value:
+                  emails:
+                    - alex@company.com
+                  contactProperties:
+                    firstName: Alex
+                  eventProperties:
+                    planName: Pro
+              transactional:
+                summary: Transactional email
+                value:
+                  emails:
+                    - alex@company.com
+                  dataVariables:
+                    loginUrl: https://app.company.com/login
       responses:
         "200":
           description: Preview scheduled.
@@ -1476,6 +1512,104 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EmailMessageFailureResponse"
+      security:
+        - apiKey: []
+  /v1/email-messages/{emailMessageId}/render:
+    parameters:
+      - name: emailMessageId
+        in: path
+        required: true
+        description: The ID of the email message.
+        schema:
+          type: string
+          examples:
+            - cle5f7g9h1i3j5k7l9m1n3p5
+    post:
+      operationId: renderEmailMessage
+      tags:
+        - Email messages
+      summary: Render an email message as HTML
+      description: Render the HTML of an email message the way its preview email is
+        rendered. Nothing is sent. The accepted variable fields are the same as
+        for previews - campaigns accept `contactProperties`, workflows accept
+        `contactProperties` and `eventProperties`, and transactional emails
+        accept `dataVariables`. A variable without a value uses its fallback, or
+        shows a missing-value marker as in a preview email. Supplying a field
+        the parent cannot reference is rejected with 400.
+      x-mint:
+        href: /api-reference/render-email-message
+        content: >-
+          Render an email message as HTML without sending it. The HTML is the
+          same as the body of a preview email. Accepted variable fields depend
+          on the parent's type:
+
+
+          - **Campaign** accepts `contactProperties`.
+
+          - **Workflow** accepts `contactProperties` and `eventProperties`.
+
+          - **Transactional** accepts `dataVariables`.
+
+
+          Supplying a field the parent cannot reference results in a `400 Bad
+          Request` error. A variable without a value uses its fallback, or shows
+          a missing-value marker as in a preview email.
+
+
+          The HTML has no open tracking pixel. As in a preview email, the
+          unsubscribe link opens a page that does not unsubscribe anyone.
+        metadata:
+          description: Render an email message as HTML for an immediate preview.
+          sidebarTitle: Render email
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageRenderRequest"
+            examples:
+              campaign:
+                summary: Campaign email
+                value:
+                  contactProperties:
+                    firstName: Alex
+              workflow:
+                summary: Workflow email
+                value:
+                  contactProperties:
+                    firstName: Alex
+                  eventProperties:
+                    planName: Pro
+              transactional:
+                summary: Transactional email
+                value:
+                  dataVariables:
+                    loginUrl: https://app.company.com/login
+      responses:
+        "200":
+          description: Rendered email message.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessageRenderResponse"
+        "400":
+          description: Invalid request body, a variable field the parent cannot reference,
+            a sending domain without a domain or address, or a from or reply-to
+            address that renders to an invalid email.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessageFailureResponse"
+        "401":
+          description: Invalid API key or content API not enabled for this team.
+        "404":
+          description: Email message not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessageFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
       security:
         - apiKey: []
   /v1/email-messages/{emailMessageId}/guardian:
@@ -2135,6 +2269,14 @@ paths:
             from the `pagination.nextCursor` value in each response.
           schema:
             type: string
+        - name: transactionalGroupId
+          in: query
+          required: false
+          description: Only return transactional emails in this transactional group. An ID
+            that matches no group returns an empty list.
+          schema:
+            type: string
+            minLength: 1
       responses:
         "200":
           description: Successful.
@@ -2143,7 +2285,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListTransactionalsResourceResponse"
         "400":
-          description: Invalid `perPage` value.
+          description: Invalid `perPage` value, or `transactionalGroupId` is an empty
+            string.
           content:
             application/json:
               schema:
@@ -2950,6 +3093,14 @@ paths:
             from the `pagination.nextCursor` value in each response.
           schema:
             type: string
+        - name: workflowGroupId
+          in: query
+          required: false
+          description: Only return workflows in this workflow group. An ID that matches no
+            group returns an empty list.
+          schema:
+            type: string
+            minLength: 1
       responses:
         "200":
           description: Successful.
@@ -2958,7 +3109,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListWorkflowsResponse"
         "400":
-          description: Invalid `perPage` or `cursor` value.
+          description: Invalid `perPage` or `cursor` value, or `workflowGroupId` is an
+            empty string.
           content:
             application/json:
               schema:
@@ -3545,13 +3697,18 @@ paths:
         - Workflow nodes
       summary: Update a workflow node
       operationId: updateWorkflowNode
-      description: Update workflow-node-owned fields for a single node. Shared
-        resources such as email messages and audience segments should be updated
-        through their own APIs.
+      description: Update workflow-node-owned fields for a single node. To update a
+        node, the workflow's `state` must not be `Sending`. Shared resources
+        such as email messages and audience segments should be updated through
+        their own APIs.
       x-mint:
         href: /api-reference/update-workflow-node
-        content: Shared resources such as email messages and audience segments should be
-          updated through their own APIs.
+        content: >-
+          Workflows can only be updated when they are not sending.
+
+
+          <Info>Shared resources such as email messages and audience segments
+          should be updated through their own APIs.</Info>
         metadata:
           sidebarTitle: Update a node
           description: Update workflow-node-owned fields for a single node.
@@ -3569,7 +3726,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/UpdateWorkflowNodeResponse"
         "400":
-          description: Invalid `workflowId`, `nodeId`, request body, or node update.
+          description: Invalid `workflowId`, `nodeId`, request body, or node update, or
+            workflow is sending.
           content:
             application/json:
               schema:
@@ -3644,7 +3802,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteWorkflowNodeResponse"
         "400":
-          description: Invalid `workflowId`, `nodeId`, request body, or delete target.
+          description: Invalid `workflowId`, `nodeId`, request body, or delete target, or
+            workflow is sending.
           content:
             application/json:
               schema:
@@ -3870,7 +4029,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteWorkflowNodeResponse"
         "400":
-          description: Invalid `workflowId`, `nodeId`, request body, or delete target.
+          description: Invalid `workflowId`, `nodeId`, request body, or delete target, or
+            workflow is sending.
           content:
             application/json:
               schema:
@@ -6370,6 +6530,8 @@ components:
           type: string
           maxLength: 1000
           description: An optional description of the audience segment.
+          examples:
+            - Contacts on the pro plan
         filter:
           type: object
           description: A tree of audience conditions combined with `match`.
@@ -6379,6 +6541,10 @@ components:
               enum:
                 - all
                 - any
+              description: "`all` matches contacts that meet every condition, `any` matches
+                contacts that meet at least one."
+              examples:
+                - all
             conditions:
               type: array
               minItems: 1
@@ -6453,6 +6619,10 @@ components:
           enum:
             - all
             - any
+          description: "`all` matches contacts that meet every condition, `any` matches
+            contacts that meet at least one."
+          examples:
+            - all
         conditions:
           type: array
           minItems: 1
@@ -6476,6 +6646,10 @@ components:
           enum:
             - all
             - any
+          description: "`all` matches contacts that meet every condition, `any` matches
+            contacts that meet at least one."
+          examples:
+            - all
         conditions:
           type: array
           minItems: 1
@@ -9327,6 +9501,7 @@ components:
         - message
       examples:
         - message: Email message not found.
+        - message: "Workflow must not be sending. Current status: Sending."
     EmailMessagePreviewRequest:
       type: object
       properties:
@@ -9362,15 +9537,6 @@ components:
       required:
         - emails
       additionalProperties: false
-      examples:
-        - emails:
-            - alex@company.com
-          contactProperties:
-            firstName: Alex
-          eventProperties:
-            planName: Pro
-          dataVariables:
-            loginUrl: https://app.company.com/login
     EmailMessagePreviewResponse:
       type: object
       properties:
@@ -9383,6 +9549,46 @@ components:
         - id
       examples:
         - id: cle5f7g9h1i3j5k7l9m1n3p5
+    EmailMessageRenderRequest:
+      type: object
+      properties:
+        contactProperties:
+          type: object
+          additionalProperties:
+            type: string
+          description: Contact property values to render. Accepted for campaign and
+            workflow emails.
+          example:
+            firstName: Alex
+        eventProperties:
+          type: object
+          additionalProperties:
+            type: string
+          description: Event property values to render. Accepted for workflow emails only.
+          example:
+            planName: Pro
+        dataVariables:
+          type: object
+          additionalProperties:
+            type: string
+          description: Transactional data variables to render. Accepted for transactional
+            emails only.
+          example:
+            loginUrl: https://app.company.com/login
+      additionalProperties: false
+    EmailMessageRenderResponse:
+      type: object
+      properties:
+        html:
+          type: string
+          description: The rendered HTML. For emails made in the editor, it includes the
+            rendered subject in `<title>` and the rendered preview text.
+          examples:
+            - <!doctype html><html>...</html>
+      required:
+        - html
+      examples:
+        - html: <!doctype html><html>...</html>
     EmailMessageGuardianResponse:
       type: object
       properties:
