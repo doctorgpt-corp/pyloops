@@ -107,6 +107,11 @@ from .email_message_preview_request_contact_properties import EmailMessagePrevie
 from .email_message_preview_request_data_variables import EmailMessagePreviewRequestDataVariables
 from .email_message_preview_request_event_properties import EmailMessagePreviewRequestEventProperties
 from .email_message_preview_response import EmailMessagePreviewResponse
+from .email_message_render_request import EmailMessageRenderRequest
+from .email_message_render_request_contact_properties import EmailMessageRenderRequestContactProperties
+from .email_message_render_request_data_variables import EmailMessageRenderRequestDataVariables
+from .email_message_render_request_event_properties import EmailMessageRenderRequestEventProperties
+from .email_message_render_response import EmailMessageRenderResponse
 from .email_message_response import EmailMessageResponse
 from .email_message_response_contact_properties_fallbacks import EmailMessageResponseContactPropertiesFallbacks
 from .email_message_response_data_variables_fallbacks import EmailMessageResponseDataVariablesFallbacks
@@ -402,6 +407,11 @@ __all__ = (
     "EmailMessagePreviewRequestDataVariables",
     "EmailMessagePreviewRequestEventProperties",
     "EmailMessagePreviewResponse",
+    "EmailMessageRenderRequest",
+    "EmailMessageRenderRequestContactProperties",
+    "EmailMessageRenderRequestDataVariables",
+    "EmailMessageRenderRequestEventProperties",
+    "EmailMessageRenderResponse",
     "EmailMessageResponse",
     "EmailMessageResponseContactPropertiesFallbacks",
     "EmailMessageResponseDataVariablesFallbacks",

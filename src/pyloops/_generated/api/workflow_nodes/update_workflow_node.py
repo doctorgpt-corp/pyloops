@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Any, cast
 from urllib.parse import quote
 
-import httpx
+import httpx2
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
@@ -36,7 +36,7 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
+    *, client: AuthenticatedClient | Client, response: httpx2.Response
 ) -> Any | WorkflowFailureResponse | None:
     if response.status_code == 400:
         response_400 = WorkflowFailureResponse.from_dict(response.json())
@@ -73,7 +73,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
+    *, client: AuthenticatedClient | Client, response: httpx2.Response
 ) -> Response[Any | WorkflowFailureResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -92,8 +92,9 @@ def sync_detailed(
 ) -> Response[Any | WorkflowFailureResponse]:
     """Update a workflow node
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update workflow-node-owned fields for a single node. To update a node, the workflow's `state` must
+    not be `Sending`. Shared resources such as email messages and audience segments should be updated
+    through their own APIs.
 
     Args:
         workflow_id (str):
@@ -102,7 +103,7 @@ def sync_detailed(
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Any | WorkflowFailureResponse]
@@ -130,8 +131,9 @@ def sync(
 ) -> Any | WorkflowFailureResponse | None:
     """Update a workflow node
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update workflow-node-owned fields for a single node. To update a node, the workflow's `state` must
+    not be `Sending`. Shared resources such as email messages and audience segments should be updated
+    through their own APIs.
 
     Args:
         workflow_id (str):
@@ -140,7 +142,7 @@ def sync(
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Any | WorkflowFailureResponse
@@ -163,8 +165,9 @@ async def asyncio_detailed(
 ) -> Response[Any | WorkflowFailureResponse]:
     """Update a workflow node
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update workflow-node-owned fields for a single node. To update a node, the workflow's `state` must
+    not be `Sending`. Shared resources such as email messages and audience segments should be updated
+    through their own APIs.
 
     Args:
         workflow_id (str):
@@ -173,7 +176,7 @@ async def asyncio_detailed(
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Any | WorkflowFailureResponse]
@@ -199,8 +202,9 @@ async def asyncio(
 ) -> Any | WorkflowFailureResponse | None:
     """Update a workflow node
 
-     Update workflow-node-owned fields for a single node. Shared resources such as email messages and
-    audience segments should be updated through their own APIs.
+     Update workflow-node-owned fields for a single node. To update a node, the workflow's `state` must
+    not be `Sending`. Shared resources such as email messages and audience segments should be updated
+    through their own APIs.
 
     Args:
         workflow_id (str):
@@ -209,7 +213,7 @@ async def asyncio(
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Any | WorkflowFailureResponse
