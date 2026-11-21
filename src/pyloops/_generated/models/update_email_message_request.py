@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 
@@ -40,6 +40,9 @@ class UpdateEmailMessageRequest:
             emails.
         language_code (str | Unset): ISO 639-1 language code for the email, e.g. `en` or `fr`.
         email_format (UpdateEmailMessageRequestEmailFormat | Unset): The rendering format of the email.
+        footer_id (None | str | Unset): Apply a specific footer to this email message. Use `null` for the system default
+            footer. Omit it to keep the current footer. Only for teams with footers enabled, and only for campaign and
+            workflow emails. Transactional emails and critical notices have no footer.
         lmx (str | Unset): The email body serialized as LMX. Styles must be embedded in the LMX `<Style />` tag.
         contact_properties_fallbacks (UpdateEmailMessageRequestContactPropertiesFallbacks | Unset): Fallback values for
             contact properties, keyed by property name. Per-key merge: a string value sets the fallback, a null value
@@ -62,6 +65,7 @@ class UpdateEmailMessageRequest:
     bcc_email: str | Unset = UNSET
     language_code: str | Unset = UNSET
     email_format: UpdateEmailMessageRequestEmailFormat | Unset = UNSET
+    footer_id: None | str | Unset = UNSET
     lmx: str | Unset = UNSET
     contact_properties_fallbacks: UpdateEmailMessageRequestContactPropertiesFallbacks | Unset = UNSET
     event_properties_fallbacks: UpdateEmailMessageRequestEventPropertiesFallbacks | Unset = UNSET
@@ -89,6 +93,12 @@ class UpdateEmailMessageRequest:
         email_format: str | Unset = UNSET
         if not isinstance(self.email_format, Unset):
             email_format = self.email_format.value
+
+        footer_id: None | str | Unset
+        if isinstance(self.footer_id, Unset):
+            footer_id = UNSET
+        else:
+            footer_id = self.footer_id
 
         lmx = self.lmx
 
@@ -127,6 +137,8 @@ class UpdateEmailMessageRequest:
             field_dict["languageCode"] = language_code
         if email_format is not UNSET:
             field_dict["emailFormat"] = email_format
+        if footer_id is not UNSET:
+            field_dict["footerId"] = footer_id
         if lmx is not UNSET:
             field_dict["lmx"] = lmx
         if contact_properties_fallbacks is not UNSET:
@@ -176,6 +188,15 @@ class UpdateEmailMessageRequest:
         else:
             email_format = UpdateEmailMessageRequestEmailFormat(_email_format)
 
+        def _parse_footer_id(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        footer_id = _parse_footer_id(d.pop("footerId", UNSET))
+
         lmx = d.pop("lmx", UNSET)
 
         _contact_properties_fallbacks = d.pop("contactPropertiesFallbacks", UNSET)
@@ -216,6 +237,7 @@ class UpdateEmailMessageRequest:
             bcc_email=bcc_email,
             language_code=language_code,
             email_format=email_format,
+            footer_id=footer_id,
             lmx=lmx,
             contact_properties_fallbacks=contact_properties_fallbacks,
             event_properties_fallbacks=event_properties_fallbacks,

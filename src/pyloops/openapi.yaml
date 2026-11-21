@@ -2,13 +2,13 @@ openapi: 3.1.0
 info:
   title: Loops OpenAPI Spec
   description: This is the OpenAPI Spec for the [Loops API](https://loops.so/docs/api).
-  version: 1.22.6
+  version: 1.24.0
 servers:
   - url: https://app.loops.so/api
 tags:
   - name: API key
   - name: Audience segments
-    description: View audience segments
+    description: View and create audience segments
   - name: Campaigns
     description: Create and manage email campaigns
   - name: Campaign groups
@@ -27,6 +27,8 @@ tags:
     description: Trigger workflows with events
   - name: Event patterns
     description: View workflow event patterns
+  - name: Footers
+    description: Create and manage email footers
   - name: Mailing lists
     description: View mailing lists
   - name: Themes
@@ -261,6 +263,14 @@ paths:
             from the `pagination.nextCursor` value in each response.
           schema:
             type: string
+        - name: campaignGroupId
+          in: query
+          required: false
+          description: Only return campaigns in this campaign group. An ID that matches no
+            group returns an empty list.
+          schema:
+            type: string
+            minLength: 1
       responses:
         "200":
           description: Successful.
@@ -269,7 +279,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListCampaignsResponse"
         "400":
-          description: Invalid `perPage` value.
+          description: Invalid `perPage` value, or `campaignGroupId` is an empty string.
           content:
             application/json:
               schema:
@@ -1332,9 +1342,10 @@ paths:
         - Email messages
       summary: Update an email message
       description: Update fields on an email message (subject, preview text, sender,
-        LMX content). The campaign must be in draft status. Supply
-        `expectedRevisionId` matching the current `contentRevisionId` — the
-        server rejects mismatched revisions with 409.
+        LMX content). A campaign must be in draft status. You can only edit the
+        draft email message of a transactional email. A workflow must not be
+        sending. Supply `expectedRevisionId` matching the current
+        `contentRevisionId` — the server rejects mismatched revisions with 409.
       x-mint:
         href: /api-reference/update-email-message
         metadata:
@@ -1345,8 +1356,9 @@ paths:
           Supply `expectedRevisionId` matching the current `contentRevisionId`.
 
 
-          <Info>The campaign or transactional email that owns this email message
-          must be in `Draft` status.</Info>
+          <Info>A campaign that owns this email message must be in `Draft`
+          status. You can only edit the draft email message of a transactional
+          email. A workflow's status must not be `Sending`.</Info>
       requestBody:
         required: true
         content:
@@ -1377,8 +1389,10 @@ paths:
         "405":
           description: Wrong HTTP request method.
         "409":
-          description: Campaign is not in draft status, `contentRevisionId` is stale,
-            content cannot be parsed, or email message uses MJML format.
+          description: Campaign is not in draft status, email message is the published
+            email message of a transactional email, workflow is sending,
+            `contentRevisionId` is stale, content cannot be parsed, or email
+            message uses MJML format.
           content:
             application/json:
               schema:
@@ -1390,7 +1404,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/EmailMessageFailureResponse"
         "422":
-          description: LMX failed to compile.
+          description: LMX failed to compile, or `footerId` is not a published footer of
+            the team.
           content:
             application/json:
               schema:
@@ -1446,6 +1461,30 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/EmailMessagePreviewRequest"
+            examples:
+              campaign:
+                summary: Campaign email
+                value:
+                  emails:
+                    - alex@company.com
+                  contactProperties:
+                    firstName: Alex
+              workflow:
+                summary: Workflow email
+                value:
+                  emails:
+                    - alex@company.com
+                  contactProperties:
+                    firstName: Alex
+                  eventProperties:
+                    planName: Pro
+              transactional:
+                summary: Transactional email
+                value:
+                  emails:
+                    - alex@company.com
+                  dataVariables:
+                    loginUrl: https://app.company.com/login
       responses:
         "200":
           description: Preview scheduled.
@@ -1476,6 +1515,104 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EmailMessageFailureResponse"
+      security:
+        - apiKey: []
+  /v1/email-messages/{emailMessageId}/render:
+    parameters:
+      - name: emailMessageId
+        in: path
+        required: true
+        description: The ID of the email message.
+        schema:
+          type: string
+          examples:
+            - cle5f7g9h1i3j5k7l9m1n3p5
+    post:
+      operationId: renderEmailMessage
+      tags:
+        - Email messages
+      summary: Render an email message as HTML
+      description: Render the HTML of an email message the way its preview email is
+        rendered. Nothing is sent. The accepted variable fields are the same as
+        for previews - campaigns accept `contactProperties`, workflows accept
+        `contactProperties` and `eventProperties`, and transactional emails
+        accept `dataVariables`. A variable without a value uses its fallback, or
+        shows a missing-value marker as in a preview email. Supplying a field
+        the parent cannot reference is rejected with 400.
+      x-mint:
+        href: /api-reference/render-email-message
+        content: >-
+          Render an email message as HTML without sending it. The HTML is the
+          same as the body of a preview email. Accepted variable fields depend
+          on the parent's type:
+
+
+          - **Campaign** accepts `contactProperties`.
+
+          - **Workflow** accepts `contactProperties` and `eventProperties`.
+
+          - **Transactional** accepts `dataVariables`.
+
+
+          Supplying a field the parent cannot reference results in a `400 Bad
+          Request` error. A variable without a value uses its fallback, or shows
+          a missing-value marker as in a preview email.
+
+
+          The HTML has no open tracking pixel. As in a preview email, the
+          unsubscribe link opens a page that does not unsubscribe anyone.
+        metadata:
+          description: Render an email message as HTML for an immediate preview.
+          sidebarTitle: Render email
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailMessageRenderRequest"
+            examples:
+              campaign:
+                summary: Campaign email
+                value:
+                  contactProperties:
+                    firstName: Alex
+              workflow:
+                summary: Workflow email
+                value:
+                  contactProperties:
+                    firstName: Alex
+                  eventProperties:
+                    planName: Pro
+              transactional:
+                summary: Transactional email
+                value:
+                  dataVariables:
+                    loginUrl: https://app.company.com/login
+      responses:
+        "200":
+          description: Rendered email message.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessageRenderResponse"
+        "400":
+          description: Invalid request body, a variable field the parent cannot reference,
+            a sending domain without a domain or address, or a from or reply-to
+            address that renders to an invalid email.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessageFailureResponse"
+        "401":
+          description: Invalid API key or content API not enabled for this team.
+        "404":
+          description: Email message not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailMessageFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
       security:
         - apiKey: []
   /v1/email-messages/{emailMessageId}/guardian:
@@ -1671,7 +1808,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListEventPatternsResponse"
         "400":
-          description: Invalid `perPage` or `cursor` value.
+          description: Invalid `perPage` value.
           content:
             application/json:
               schema:
@@ -1769,6 +1906,479 @@ paths:
                 $ref: "#/components/schemas/EventPatternFailureResponse"
         "405":
           description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+  /v1/footers:
+    get:
+      operationId: listFooters
+      tags:
+        - Footers
+      summary: List footers
+      description: Retrieve a paginated list of footers, most recently created first.
+      x-mint:
+        href: /api-reference/list-footers
+      parameters:
+        - name: perPage
+          in: query
+          required: false
+          description: How many results to return in each request. Must be between 10 and
+            50. Default is 20.
+          schema:
+            type: string
+        - name: cursor
+          in: query
+          required: false
+          description: A cursor to return a specific page of results. Cursors can be found
+            from the `pagination.nextCursor` value in each response.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListFootersResponse"
+        "400":
+          description: Invalid `perPage` value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "401":
+          description: Invalid API key or footers not enabled for this team.
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+    post:
+      operationId: createFooter
+      tags:
+        - Footers
+      summary: Create a footer
+      description: Create a footer with one variant. The variant starts with an
+        unpublished draft that has the company name, company address and
+        unsubscribe link. Emails cannot use the footer until you publish the
+        variant.
+      x-mint:
+        href: /api-reference/create-footer
+        metadata:
+          description: Create a new custom footer.
+        content: Create a footer, with one variant. The variant starts with an
+          unpublished draft that has the company name, company address and
+          unsubscribe link. Emails cannot use the footer until you publish the
+          variant.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFooterBody"
+      responses:
+        "201":
+          description: Footer created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterWithVariants"
+        "400":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "401":
+          description: Invalid API key or footers not enabled for this team.
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+  /v1/footers/{footerId}:
+    parameters:
+      - name: footerId
+        in: path
+        required: true
+        description: The ID of the footer.
+        schema:
+          type: string
+          examples:
+            - clf0o1t2e3r4i5d6a7b8c9d0
+    get:
+      operationId: getFooter
+      tags:
+        - Footers
+      summary: Get a footer
+      description: Retrieve a single footer by ID, with the content of each variant.
+      x-mint:
+        href: /api-reference/get-footer
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterWithVariants"
+        "400":
+          description: Invalid `footerId`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "401":
+          description: Invalid API key or footers not enabled for this team.
+        "404":
+          description: Footer not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+    post:
+      operationId: updateFooter
+      tags:
+        - Footers
+      summary: Update a footer
+      description: Update a footer's name or placement. Changes apply at once, also to
+        running workflows. Emails already sent don't change. To change the
+        default footer, use `POST /v1/footers/{footerId}/set-default`.
+      x-mint:
+        href: /api-reference/update-footer
+        metadata:
+          description: Update a footer's name or placement.
+        content: >-
+          Changes apply at once, also to running workflows. Emails already sent
+          don't change.
+
+
+          <Info>To change the default footer, use the [Set the default
+          footer](/api-reference/set-default-footer) endpoint.</Info>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFooterBody"
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterWithVariants"
+        "400":
+          description: Invalid `footerId` or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "401":
+          description: Invalid API key or footers not enabled for this team.
+        "404":
+          description: Footer not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+    delete:
+      operationId: deleteFooter
+      tags:
+        - Footers
+      summary: Delete a footer
+      description: Delete a footer and its variants. You cannot delete the team's
+        default footer or a footer that emails use.
+      x-mint:
+        href: /api-reference/delete-footer
+        metadata:
+          description: Delete a footer and its variants.
+        content: <Info>You cannot delete the team's default footer or a footer that
+          emails use.</Info>
+      responses:
+        "204":
+          description: Footer deleted. No response body.
+        "400":
+          description: Invalid `footerId`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "401":
+          description: Invalid API key or footers not enabled for this team.
+        "404":
+          description: Footer not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+        "409":
+          description: The footer is the team's default footer, or emails use it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterDeleteFailureResponse"
+      security:
+        - apiKey: []
+  /v1/footers/{footerId}/set-default:
+    parameters:
+      - name: footerId
+        in: path
+        required: true
+        description: The ID of the footer.
+        schema:
+          type: string
+          examples:
+            - clf0o1t2e3r4i5d6a7b8c9d0
+    post:
+      operationId: setDefaultFooter
+      tags:
+        - Footers
+      summary: Set the default footer
+      description: Make a published footer the team's default footer. New campaign and
+        workflow emails use the default footer. `existingEmails` picks which
+        existing emails switch to it. With `none`, only new emails use it.
+      x-mint:
+        href: /api-reference/set-default-footer
+        metadata:
+          description: Make a published footer the team's default footer.
+        content: Set your team's new default footer. New campaign and workflow emails
+          use the default footer. Use `existingEmails` to choose which existing
+          emails switch to it. With `none`, only new emails use it.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetDefaultFooterBody"
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SetDefaultFooterResponse"
+        "400":
+          description: Invalid `footerId` or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "401":
+          description: Invalid API key or footers not enabled for this team.
+        "404":
+          description: Footer not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+        "409":
+          description: The footer is not published.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+      security:
+        - apiKey: []
+  /v1/footers/{footerId}/variants/{variantId}:
+    parameters:
+      - name: footerId
+        in: path
+        required: true
+        description: The ID of the footer.
+        schema:
+          type: string
+          examples:
+            - clf0o1t2e3r4i5d6a7b8c9d0
+      - name: variantId
+        in: path
+        required: true
+        description: The ID of the footer variant.
+        schema:
+          type: string
+          examples:
+            - clv1a2r3i4a5n6t7i8d9e0f1
+    get:
+      operationId: getFooterVariant
+      tags:
+        - Footers
+      summary: Get a footer variant
+      description: Retrieve a footer variant's draft and published content as LMX.
+      x-mint:
+        href: /api-reference/get-footer-variant
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterVariant"
+        "400":
+          description: Invalid `footerId` or `variantId`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "401":
+          description: Invalid API key or footers not enabled for this team.
+        "404":
+          description: Footer variant not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+      security:
+        - apiKey: []
+    post:
+      operationId: updateFooterVariant
+      tags:
+        - Footers
+      summary: Update a footer variant
+      description: Update a footer variant's LMX content. Emails keep the variant's
+        published content until you publish the updated variant.
+      x-mint:
+        href: /api-reference/update-footer-variant
+        metadata:
+          description: Update a footer variant's LMX content.
+        content: <Info>Emails keep the variant's published content until you publish the
+          updated variant.</Info>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFooterVariantBody"
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterVariant"
+        "400":
+          description: Invalid `footerId`, `variantId` or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "401":
+          description: Invalid API key or footers not enabled for this team.
+        "404":
+          description: Footer variant not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+        "409":
+          description: "`expectedRevisionId` is stale."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "413":
+          description: LMX body exceeds the size limit.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "422":
+          description: Invalid LMX, or LMX that footers do not support.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+      security:
+        - apiKey: []
+  /v1/footers/{footerId}/variants/{variantId}/publish:
+    parameters:
+      - name: footerId
+        in: path
+        required: true
+        description: The ID of the footer.
+        schema:
+          type: string
+          examples:
+            - clf0o1t2e3r4i5d6a7b8c9d0
+      - name: variantId
+        in: path
+        required: true
+        description: The ID of the footer variant.
+        schema:
+          type: string
+          examples:
+            - clv1a2r3i4a5n6t7i8d9e0f1
+    post:
+      operationId: publishFooterVariant
+      tags:
+        - Footers
+      summary: Publish a footer variant
+      description: Publish the variant's draft LMX content, to replace the current
+        published LMX content. Emails that use the footer will immediately use
+        the newly published content. The draft must have `{system.company_name}`
+        and `{system.company_address}` in the text, and
+        `{system.unsubscribe_link}` as the URL of a link or button.
+      x-mint:
+        href: /api-reference/publish-footer-variant
+        metadata:
+          description: Publish the variant's draft LMX content, to replace the current
+            published LMX content.
+        content: Emails that use the footer will immediately use the newly published
+          content. The draft must have `{system.company_name}` and
+          `{system.company_address}` in the text, and
+          `{system.unsubscribe_link}` as the URL of a link or button.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublishFooterVariantBody"
+      responses:
+        "200":
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterVariant"
+        "400":
+          description: Invalid `footerId`, `variantId` or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "401":
+          description: Invalid API key or footers not enabled for this team.
+        "404":
+          description: Footer variant not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "405":
+          description: Wrong HTTP request method.
+        "409":
+          description: "`expectedRevisionId` is stale."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
+        "422":
+          description: The draft does not have the required footer variables.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FooterFailureResponse"
       security:
         - apiKey: []
   /v1/lists:
@@ -2135,6 +2745,14 @@ paths:
             from the `pagination.nextCursor` value in each response.
           schema:
             type: string
+        - name: transactionalGroupId
+          in: query
+          required: false
+          description: Only return transactional emails in this transactional group. An ID
+            that matches no group returns an empty list.
+          schema:
+            type: string
+            minLength: 1
       responses:
         "200":
           description: Successful.
@@ -2143,7 +2761,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListTransactionalsResourceResponse"
         "400":
-          description: Invalid `perPage` value.
+          description: Invalid `perPage` value, or `transactionalGroupId` is an empty
+            string.
           content:
             application/json:
               schema:
@@ -2950,6 +3569,14 @@ paths:
             from the `pagination.nextCursor` value in each response.
           schema:
             type: string
+        - name: workflowGroupId
+          in: query
+          required: false
+          description: Only return workflows in this workflow group. An ID that matches no
+            group returns an empty list.
+          schema:
+            type: string
+            minLength: 1
       responses:
         "200":
           description: Successful.
@@ -2958,7 +3585,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListWorkflowsResponse"
         "400":
-          description: Invalid `perPage` or `cursor` value.
+          description: Invalid `perPage` value, or `workflowGroupId` is an empty string.
           content:
             application/json:
               schema:
@@ -3545,13 +4172,18 @@ paths:
         - Workflow nodes
       summary: Update a workflow node
       operationId: updateWorkflowNode
-      description: Update workflow-node-owned fields for a single node. Shared
-        resources such as email messages and audience segments should be updated
-        through their own APIs.
+      description: Update workflow-node-owned fields for a single node. To update a
+        node, the workflow's `state` must not be `Sending`. Shared resources
+        such as email messages and audience segments should be updated through
+        their own APIs.
       x-mint:
         href: /api-reference/update-workflow-node
-        content: Shared resources such as email messages and audience segments should be
-          updated through their own APIs.
+        content: >-
+          Workflows can only be updated when they are not sending.
+
+
+          <Info>Shared resources such as email messages and audience segments
+          should be updated through their own APIs.</Info>
         metadata:
           sidebarTitle: Update a node
           description: Update workflow-node-owned fields for a single node.
@@ -3569,7 +4201,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/UpdateWorkflowNodeResponse"
         "400":
-          description: Invalid `workflowId`, `nodeId`, request body, or node update.
+          description: Invalid `workflowId`, `nodeId`, request body, or node update, or
+            workflow is sending.
           content:
             application/json:
               schema:
@@ -3644,7 +4277,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteWorkflowNodeResponse"
         "400":
-          description: Invalid `workflowId`, `nodeId`, request body, or delete target.
+          description: Invalid `workflowId`, `nodeId`, request body, or delete target, or
+            workflow is sending.
           content:
             application/json:
               schema:
@@ -3870,7 +4504,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteWorkflowNodeResponse"
         "400":
-          description: Invalid `workflowId`, `nodeId`, request body, or delete target.
+          description: Invalid `workflowId`, `nodeId`, request body, or delete target, or
+            workflow is sending.
           content:
             application/json:
               schema:
@@ -6257,6 +6892,349 @@ components:
           name: Header
           lmx: <Paragraph>Welcome to Acme</Paragraph>
           affectedEmailCount: 3
+    Footer:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the footer.
+          examples:
+            - clf0o1t2e3r4i5d6a7b8c9d0
+        name:
+          type: string
+          description: The name of the footer.
+          examples:
+            - Main footer
+        isDefault:
+          type: boolean
+          description: Whether this is the team's default footer. New campaign and
+            workflow emails use the default footer.
+        placement:
+          type: string
+          enum:
+            - inside
+            - below
+          description: Whether the footer is rendered inside the email body (`inside`) or
+            below it (`below`).
+        createdAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp for when the footer was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp for when the footer's own fields last changed,
+            such as its name or placement. Not changed when a variant is
+            updated.
+      required:
+        - id
+        - name
+        - isDefault
+        - placement
+        - createdAt
+        - updatedAt
+      examples:
+        - id: clf0o1t2e3r4i5d6a7b8c9d0
+          name: Main footer
+          isDefault: true
+          placement: inside
+          createdAt: 2026-10-27T10:00:00.000Z
+          updatedAt: 2026-11-02T08:30:00.000Z
+    FooterWithVariants:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the footer.
+          examples:
+            - clf0o1t2e3r4i5d6a7b8c9d0
+        name:
+          type: string
+          description: The name of the footer.
+          examples:
+            - Main footer
+        isDefault:
+          type: boolean
+          description: Whether this is the team's default footer. New campaign and
+            workflow emails use the default footer.
+        placement:
+          type: string
+          enum:
+            - inside
+            - below
+          description: Whether the footer is rendered inside the email body (`inside`) or
+            below it (`below`).
+        createdAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp for when the footer was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp for when the footer's own fields last changed,
+            such as its name or placement. Not changed when a variant is
+            updated.
+        variants:
+          type: array
+          description: The footer's content variants. A footer has at most one variant. A
+            footer created before variants has none.
+          items:
+            $ref: "#/components/schemas/FooterVariant"
+      required:
+        - id
+        - name
+        - isDefault
+        - placement
+        - createdAt
+        - updatedAt
+        - variants
+      examples:
+        - id: clf0o1t2e3r4i5d6a7b8c9d0
+          name: Main footer
+          isDefault: true
+          placement: inside
+          createdAt: 2026-10-27T10:00:00.000Z
+          updatedAt: 2026-11-02T08:30:00.000Z
+          variants:
+            - id: clv1a2r3i4a5n6t7i8d9e0f1
+              footerId: clf0o1t2e3r4i5d6a7b8c9d0
+              contentRevisionId: clr2e3v4i5s6i7o8n9i0d1e2
+              publishedAt: 2026-11-02T08:30:00.000Z
+              createdAt: 2026-10-27T10:00:00.000Z
+              updatedAt: 2026-11-02T08:30:00.000Z
+              draftLmx: <Paragraph>{system.company_name}, {system.company_address}. <Link
+                href="{system.unsubscribe_link}">Unsubscribe</Link></Paragraph>
+              publishedLmx: <Paragraph>{system.company_name}, {system.company_address}. <Link
+                href="{system.unsubscribe_link}">Unsubscribe</Link></Paragraph>
+    ListFootersResponse:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Footer"
+      required:
+        - pagination
+        - data
+      examples:
+        - pagination:
+            totalResults: 1
+            returnedResults: 1
+            perPage: 20
+            totalPages: 1
+            nextCursor: null
+            nextPage: null
+          data:
+            - id: clf0o1t2e3r4i5d6a7b8c9d0
+              name: Main footer
+              isDefault: true
+              placement: inside
+              createdAt: 2026-10-27T10:00:00.000Z
+              updatedAt: 2026-11-02T08:30:00.000Z
+    CreateFooterBody:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The name of the footer. Default is "Custom footer" if omitted.
+      examples:
+        - name: Main footer
+    UpdateFooterBody:
+      type: object
+      description: At least one field must be provided.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The new name of the footer.
+        placement:
+          type: string
+          enum:
+            - inside
+            - below
+          description: Whether the footer is rendered inside the email body (`inside`) or
+            below it (`below`).
+      minProperties: 1
+      examples:
+        - name: Marketing footer
+          placement: below
+    SetDefaultFooterBody:
+      type: object
+      properties:
+        existingEmails:
+          type: string
+          enum:
+            - previousDefault
+            - all
+            - none
+          description: "Which existing campaign and workflow emails switch to this footer:
+            the ones that use the previous default footer (`previousDefault`),
+            all of them (`all`), or none (`none`). With `none`, existing emails
+            keep their footer and only new emails use this footer."
+      required:
+        - existingEmails
+      examples:
+        - existingEmails: all
+    SetDefaultFooterResponse:
+      allOf:
+        - $ref: "#/components/schemas/FooterWithVariants"
+        - type: object
+          properties:
+            updatedEmailCount:
+              type: number
+              description: How many existing emails switched to this footer.
+          required:
+            - updatedEmailCount
+      examples:
+        - id: clf0o1t2e3r4i5d6a7b8c9d0
+          name: Main footer
+          isDefault: true
+          placement: inside
+          createdAt: 2026-10-27T10:00:00.000Z
+          updatedAt: 2026-11-02T08:30:00.000Z
+          variants:
+            - id: clv1a2r3i4a5n6t7i8d9e0f1
+              footerId: clf0o1t2e3r4i5d6a7b8c9d0
+              contentRevisionId: clr2e3v4i5s6i7o8n9i0d1e2
+              publishedAt: 2026-11-02T08:30:00.000Z
+              createdAt: 2026-10-27T10:00:00.000Z
+              updatedAt: 2026-11-02T08:30:00.000Z
+              draftLmx: <Paragraph>{system.company_name}, {system.company_address}. <Link
+                href="{system.unsubscribe_link}">Unsubscribe</Link></Paragraph>
+              publishedLmx: <Paragraph>{system.company_name}, {system.company_address}. <Link
+                href="{system.unsubscribe_link}">Unsubscribe</Link></Paragraph>
+          updatedEmailCount: 12
+    FooterVariant:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the variant.
+          examples:
+            - clv1a2r3i4a5n6t7i8d9e0f1
+        footerId:
+          type: string
+          description: The ID of the footer the variant belongs to.
+          examples:
+            - clf0o1t2e3r4i5d6a7b8c9d0
+        contentRevisionId:
+          type: string
+          description: The variant's current content revision. Pass it as
+            `expectedRevisionId` when you update or publish the variant.
+          examples:
+            - clr2e3v4i5s6i7o8n9i0d1e2
+        publishedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: ISO 8601 timestamp for when the variant was last published. `null`
+            if it was never published.
+        createdAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp for when the variant was created.
+        draftLmx:
+          type: string
+          description: The draft content as LMX.
+          examples:
+            - <Paragraph>{system.company_name}, {system.company_address}. <Link
+              href="{system.unsubscribe_link}">Unsubscribe</Link></Paragraph>
+        publishedLmx:
+          type:
+            - string
+            - "null"
+          description: The published content as LMX. `null` if the variant was never
+            published.
+          examples:
+            - <Paragraph>{system.company_name}, {system.company_address}. <Link
+              href="{system.unsubscribe_link}">Unsubscribe</Link></Paragraph>
+        updatedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp for when the variant's draft or published
+            content last changed.
+      required:
+        - id
+        - footerId
+        - contentRevisionId
+        - publishedAt
+        - createdAt
+        - draftLmx
+        - publishedLmx
+        - updatedAt
+      examples:
+        - id: clv1a2r3i4a5n6t7i8d9e0f1
+          footerId: clf0o1t2e3r4i5d6a7b8c9d0
+          contentRevisionId: clr2e3v4i5s6i7o8n9i0d1e2
+          publishedAt: 2026-11-02T08:30:00.000Z
+          createdAt: 2026-10-27T10:00:00.000Z
+          draftLmx: <Paragraph>{system.company_name}, {system.company_address}. <Link
+            href="{system.unsubscribe_link}">Unsubscribe</Link></Paragraph>
+          publishedLmx: <Paragraph>{system.company_name}, {system.company_address}. <Link
+            href="{system.unsubscribe_link}">Unsubscribe</Link></Paragraph>
+          updatedAt: 2026-11-02T08:30:00.000Z
+    UpdateFooterVariantBody:
+      type: object
+      properties:
+        expectedRevisionId:
+          type: string
+          description: The `contentRevisionId` you last fetched.
+          examples:
+            - clr2e3v4i5s6i7o8n9i0d1e2
+        lmx:
+          type: string
+          description: The new draft content as LMX. Footer LMX can use
+            `{system.company_name}`, `{system.company_address}`,
+            `{system.mailing_list_name}`, `{system.unsubscribe_link}` and
+            `{contact.email}`. It cannot use `<Style />`, components, other
+            contact properties, event properties or data variables.
+      required:
+        - expectedRevisionId
+        - lmx
+      examples:
+        - expectedRevisionId: clr2e3v4i5s6i7o8n9i0d1e2
+          lmx: <Paragraph>{system.company_name}, {system.company_address}. <Link
+            href="{system.unsubscribe_link}">Unsubscribe</Link></Paragraph>
+    PublishFooterVariantBody:
+      type: object
+      properties:
+        expectedRevisionId:
+          type: string
+          description: The `contentRevisionId` you last fetched.
+          examples:
+            - clr2e3v4i5s6i7o8n9i0d1e2
+      required:
+        - expectedRevisionId
+      examples:
+        - expectedRevisionId: clr2e3v4i5s6i7o8n9i0d1e2
+    FooterFailureResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+      examples:
+        - message: Footer not found.
+    FooterDeleteFailureResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        emailCount:
+          type: number
+          description: How many emails use the footer. Only when emails use the footer.
+      required:
+        - message
+      examples:
+        - message: 3 emails use the footer. Change their footer before you delete it.
+          emailCount: 3
     AudienceSegment:
       type: object
       properties:
@@ -6370,6 +7348,8 @@ components:
           type: string
           maxLength: 1000
           description: An optional description of the audience segment.
+          examples:
+            - Contacts on the pro plan
         filter:
           type: object
           description: A tree of audience conditions combined with `match`.
@@ -6379,6 +7359,10 @@ components:
               enum:
                 - all
                 - any
+              description: "`all` matches contacts that meet every condition, `any` matches
+                contacts that meet at least one."
+              examples:
+                - all
             conditions:
               type: array
               minItems: 1
@@ -6453,6 +7437,10 @@ components:
           enum:
             - all
             - any
+          description: "`all` matches contacts that meet every condition, `any` matches
+            contacts that meet at least one."
+          examples:
+            - all
         conditions:
           type: array
           minItems: 1
@@ -6476,6 +7464,10 @@ components:
           enum:
             - all
             - any
+          description: "`all` matches contacts that meet every condition, `any` matches
+            contacts that meet at least one."
+          examples:
+            - all
         conditions:
           type: array
           minItems: 1
@@ -9135,6 +10127,14 @@ components:
             - styled
             - plain
           description: The rendering format of the email.
+        footerId:
+          type:
+            - string
+            - "null"
+          description: Apply a specific footer to this email message. Use `null` for the
+            system default footer. Omit it to keep the current footer. Only for
+            teams with footers enabled, and only for campaign and workflow
+            emails. Transactional emails and critical notices have no footer.
         lmx:
           type: string
           description: The email body serialized as LMX. Styles must be embedded in the
@@ -9246,6 +10246,13 @@ components:
           description: The email body serialized as LMX.
           examples:
             - <Paragraph>Hello, {firstName}!</Paragraph>
+        footerId:
+          type:
+            - string
+            - "null"
+          description: The ID of the email's footer, or `null` for the system default
+            footer. Only present for workflow emails and campaign emails that
+            are not critical notices, when footers are enabled for the team.
         contentRevisionId:
           type:
             - string
@@ -9327,6 +10334,7 @@ components:
         - message
       examples:
         - message: Email message not found.
+        - message: "Workflow must not be sending. Current status: Sending."
     EmailMessagePreviewRequest:
       type: object
       properties:
@@ -9362,15 +10370,6 @@ components:
       required:
         - emails
       additionalProperties: false
-      examples:
-        - emails:
-            - alex@company.com
-          contactProperties:
-            firstName: Alex
-          eventProperties:
-            planName: Pro
-          dataVariables:
-            loginUrl: https://app.company.com/login
     EmailMessagePreviewResponse:
       type: object
       properties:
@@ -9383,6 +10382,46 @@ components:
         - id
       examples:
         - id: cle5f7g9h1i3j5k7l9m1n3p5
+    EmailMessageRenderRequest:
+      type: object
+      properties:
+        contactProperties:
+          type: object
+          additionalProperties:
+            type: string
+          description: Contact property values to render. Accepted for campaign and
+            workflow emails.
+          example:
+            firstName: Alex
+        eventProperties:
+          type: object
+          additionalProperties:
+            type: string
+          description: Event property values to render. Accepted for workflow emails only.
+          example:
+            planName: Pro
+        dataVariables:
+          type: object
+          additionalProperties:
+            type: string
+          description: Transactional data variables to render. Accepted for transactional
+            emails only.
+          example:
+            loginUrl: https://app.company.com/login
+      additionalProperties: false
+    EmailMessageRenderResponse:
+      type: object
+      properties:
+        html:
+          type: string
+          description: The rendered HTML. For emails made in the editor, it includes the
+            rendered subject in `<title>` and the rendered preview text.
+          examples:
+            - <!doctype html><html>...</html>
+      required:
+        - html
+      examples:
+        - html: <!doctype html><html>...</html>
     EmailMessageGuardianResponse:
       type: object
       properties:

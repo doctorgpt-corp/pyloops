@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Any, cast
 from urllib.parse import quote
 
-import httpx
+import httpx2
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
@@ -35,7 +35,7 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
+    *, client: AuthenticatedClient | Client, response: httpx2.Response
 ) -> Any | EmailMessageFailureResponse | EmailMessageResponse | None:
     if response.status_code == 200:
         response_200 = EmailMessageResponse.from_dict(response.json())
@@ -82,7 +82,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
+    *, client: AuthenticatedClient | Client, response: httpx2.Response
 ) -> Response[Any | EmailMessageFailureResponse | EmailMessageResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -100,8 +100,9 @@ def sync_detailed(
 ) -> Response[Any | EmailMessageFailureResponse | EmailMessageResponse]:
     """Update an email message
 
-     Update fields on an email message (subject, preview text, sender, LMX content). The campaign must be
-    in draft status. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
+     Update fields on an email message (subject, preview text, sender, LMX content). A campaign must be
+    in draft status. You can only edit the draft email message of a transactional email. A workflow must
+    not be sending. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
     rejects mismatched revisions with 409.
 
     Args:
@@ -110,7 +111,7 @@ def sync_detailed(
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Any | EmailMessageFailureResponse | EmailMessageResponse]
@@ -136,8 +137,9 @@ def sync(
 ) -> Any | EmailMessageFailureResponse | EmailMessageResponse | None:
     """Update an email message
 
-     Update fields on an email message (subject, preview text, sender, LMX content). The campaign must be
-    in draft status. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
+     Update fields on an email message (subject, preview text, sender, LMX content). A campaign must be
+    in draft status. You can only edit the draft email message of a transactional email. A workflow must
+    not be sending. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
     rejects mismatched revisions with 409.
 
     Args:
@@ -146,7 +148,7 @@ def sync(
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Any | EmailMessageFailureResponse | EmailMessageResponse
@@ -167,8 +169,9 @@ async def asyncio_detailed(
 ) -> Response[Any | EmailMessageFailureResponse | EmailMessageResponse]:
     """Update an email message
 
-     Update fields on an email message (subject, preview text, sender, LMX content). The campaign must be
-    in draft status. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
+     Update fields on an email message (subject, preview text, sender, LMX content). A campaign must be
+    in draft status. You can only edit the draft email message of a transactional email. A workflow must
+    not be sending. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
     rejects mismatched revisions with 409.
 
     Args:
@@ -177,7 +180,7 @@ async def asyncio_detailed(
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Response[Any | EmailMessageFailureResponse | EmailMessageResponse]
@@ -201,8 +204,9 @@ async def asyncio(
 ) -> Any | EmailMessageFailureResponse | EmailMessageResponse | None:
     """Update an email message
 
-     Update fields on an email message (subject, preview text, sender, LMX content). The campaign must be
-    in draft status. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
+     Update fields on an email message (subject, preview text, sender, LMX content). A campaign must be
+    in draft status. You can only edit the draft email message of a transactional email. A workflow must
+    not be sending. Supply `expectedRevisionId` matching the current `contentRevisionId` — the server
     rejects mismatched revisions with 409.
 
     Args:
@@ -211,7 +215,7 @@ async def asyncio(
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
+        httpx2.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
         Any | EmailMessageFailureResponse | EmailMessageResponse
