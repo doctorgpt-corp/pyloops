@@ -85,6 +85,7 @@ from .create_campaign_request import CreateCampaignRequest
 from .create_campaign_response import CreateCampaignResponse
 from .create_campaign_response_status import CreateCampaignResponseStatus
 from .create_component_body import CreateComponentBody
+from .create_footer_body import CreateFooterBody
 from .create_group_request import CreateGroupRequest
 from .create_theme_body import CreateThemeBody
 from .create_transactional_request import CreateTransactionalRequest
@@ -107,6 +108,11 @@ from .email_message_preview_request_contact_properties import EmailMessagePrevie
 from .email_message_preview_request_data_variables import EmailMessagePreviewRequestDataVariables
 from .email_message_preview_request_event_properties import EmailMessagePreviewRequestEventProperties
 from .email_message_preview_response import EmailMessagePreviewResponse
+from .email_message_render_request import EmailMessageRenderRequest
+from .email_message_render_request_contact_properties import EmailMessageRenderRequestContactProperties
+from .email_message_render_request_data_variables import EmailMessageRenderRequestDataVariables
+from .email_message_render_request_event_properties import EmailMessageRenderRequestEventProperties
+from .email_message_render_response import EmailMessageRenderResponse
 from .email_message_response import EmailMessageResponse
 from .email_message_response_contact_properties_fallbacks import EmailMessageResponseContactPropertiesFallbacks
 from .email_message_response_data_variables_fallbacks import EmailMessageResponseDataVariablesFallbacks
@@ -137,6 +143,13 @@ from .experiment_branch_workflow_mutation_node_type_name import ExperimentBranch
 from .experiment_branch_workflow_mutation_node_with_revision import ExperimentBranchWorkflowMutationNodeWithRevision
 from .experiment_branch_workflow_node import ExperimentBranchWorkflowNode
 from .experiment_branch_workflow_node_type_name import ExperimentBranchWorkflowNodeTypeName
+from .footer import Footer
+from .footer_delete_failure_response import FooterDeleteFailureResponse
+from .footer_failure_response import FooterFailureResponse
+from .footer_placement import FooterPlacement
+from .footer_variant import FooterVariant
+from .footer_with_variants import FooterWithVariants
+from .footer_with_variants_placement import FooterWithVariantsPlacement
 from .group_failure_response import GroupFailureResponse
 from .group_response import GroupResponse
 from .guardian_rule import GuardianRule
@@ -148,6 +161,7 @@ from .list_campaigns_response import ListCampaignsResponse
 from .list_components_response import ListComponentsResponse
 from .list_event_patterns_response import ListEventPatternsResponse
 from .list_event_patterns_response_pagination import ListEventPatternsResponsePagination
+from .list_footers_response import ListFootersResponse
 from .list_groups_response import ListGroupsResponse
 from .list_themes_response import ListThemesResponse
 from .list_transactionals_resource_response import ListTransactionalsResourceResponse
@@ -164,12 +178,16 @@ from .property_condition import PropertyCondition
 from .property_condition_operator import PropertyConditionOperator
 from .property_condition_type import PropertyConditionType
 from .property_condition_value_type_2 import PropertyConditionValueType2
+from .publish_footer_variant_body import PublishFooterVariantBody
 from .reroute_node_connection_request import RerouteNodeConnectionRequest
 from .send_email_action_workflow_mutation_node import SendEmailActionWorkflowMutationNode
 from .send_email_action_workflow_mutation_node_type_name import SendEmailActionWorkflowMutationNodeTypeName
 from .send_email_action_workflow_mutation_node_with_revision import SendEmailActionWorkflowMutationNodeWithRevision
 from .send_email_action_workflow_node import SendEmailActionWorkflowNode
 from .send_email_action_workflow_node_type_name import SendEmailActionWorkflowNodeTypeName
+from .set_default_footer_body import SetDefaultFooterBody
+from .set_default_footer_body_existing_emails import SetDefaultFooterBodyExistingEmails
+from .set_default_footer_response import SetDefaultFooterResponse
 from .signup_trigger_workflow_mutation_node import SignupTriggerWorkflowMutationNode
 from .signup_trigger_workflow_mutation_node_type_name import SignupTriggerWorkflowMutationNodeTypeName
 from .signup_trigger_workflow_mutation_node_with_revision import SignupTriggerWorkflowMutationNodeWithRevision
@@ -241,6 +259,9 @@ from .update_email_message_request_contact_properties_fallbacks import (
 from .update_email_message_request_data_variables_fallbacks import UpdateEmailMessageRequestDataVariablesFallbacks
 from .update_email_message_request_email_format import UpdateEmailMessageRequestEmailFormat
 from .update_email_message_request_event_properties_fallbacks import UpdateEmailMessageRequestEventPropertiesFallbacks
+from .update_footer_body import UpdateFooterBody
+from .update_footer_body_placement import UpdateFooterBodyPlacement
+from .update_footer_variant_body import UpdateFooterVariantBody
 from .update_group_request import UpdateGroupRequest
 from .update_theme_body import UpdateThemeBody
 from .update_theme_response import UpdateThemeResponse
@@ -380,6 +401,7 @@ __all__ = (
     "CreateCampaignResponse",
     "CreateCampaignResponseStatus",
     "CreateComponentBody",
+    "CreateFooterBody",
     "CreateGroupRequest",
     "CreateThemeBody",
     "CreateTransactionalRequest",
@@ -402,6 +424,11 @@ __all__ = (
     "EmailMessagePreviewRequestDataVariables",
     "EmailMessagePreviewRequestEventProperties",
     "EmailMessagePreviewResponse",
+    "EmailMessageRenderRequest",
+    "EmailMessageRenderRequestContactProperties",
+    "EmailMessageRenderRequestDataVariables",
+    "EmailMessageRenderRequestEventProperties",
+    "EmailMessageRenderResponse",
     "EmailMessageResponse",
     "EmailMessageResponseContactPropertiesFallbacks",
     "EmailMessageResponseDataVariablesFallbacks",
@@ -432,6 +459,13 @@ __all__ = (
     "ExperimentBranchWorkflowMutationNodeWithRevision",
     "ExperimentBranchWorkflowNode",
     "ExperimentBranchWorkflowNodeTypeName",
+    "Footer",
+    "FooterDeleteFailureResponse",
+    "FooterFailureResponse",
+    "FooterPlacement",
+    "FooterVariant",
+    "FooterWithVariants",
+    "FooterWithVariantsPlacement",
     "GroupFailureResponse",
     "GroupResponse",
     "GuardianRule",
@@ -443,6 +477,7 @@ __all__ = (
     "ListComponentsResponse",
     "ListEventPatternsResponse",
     "ListEventPatternsResponsePagination",
+    "ListFootersResponse",
     "ListGroupsResponse",
     "ListThemesResponse",
     "ListTransactionalsResourceResponse",
@@ -459,12 +494,16 @@ __all__ = (
     "PropertyConditionOperator",
     "PropertyConditionType",
     "PropertyConditionValueType2",
+    "PublishFooterVariantBody",
     "RerouteNodeConnectionRequest",
     "SendEmailActionWorkflowMutationNode",
     "SendEmailActionWorkflowMutationNodeTypeName",
     "SendEmailActionWorkflowMutationNodeWithRevision",
     "SendEmailActionWorkflowNode",
     "SendEmailActionWorkflowNodeTypeName",
+    "SetDefaultFooterBody",
+    "SetDefaultFooterBodyExistingEmails",
+    "SetDefaultFooterResponse",
     "SignupTriggerWorkflowMutationNode",
     "SignupTriggerWorkflowMutationNodeTypeName",
     "SignupTriggerWorkflowMutationNodeWithRevision",
@@ -532,6 +571,9 @@ __all__ = (
     "UpdateEmailMessageRequestDataVariablesFallbacks",
     "UpdateEmailMessageRequestEmailFormat",
     "UpdateEmailMessageRequestEventPropertiesFallbacks",
+    "UpdateFooterBody",
+    "UpdateFooterBodyPlacement",
+    "UpdateFooterVariantBody",
     "UpdateGroupRequest",
     "UpdateThemeBody",
     "UpdateThemeResponse",

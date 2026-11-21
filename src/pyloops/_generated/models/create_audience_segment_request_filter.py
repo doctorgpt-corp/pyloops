@@ -21,7 +21,8 @@ class CreateAudienceSegmentRequestFilter:
     """A tree of audience conditions combined with `match`.
 
     Attributes:
-        match (CreateAudienceSegmentRequestFilterMatch):
+        match (CreateAudienceSegmentRequestFilterMatch): `all` matches contacts that meet every condition, `any` matches
+            contacts that meet at least one.
         conditions (list[ActivityCondition | OptInCondition | PropertyCondition]):
     """
 

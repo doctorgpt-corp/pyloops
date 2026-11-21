@@ -44,6 +44,9 @@ class EmailMessageResponse:
         cc_email (str | Unset): The email CC address. Only present when set.
         bcc_email (str | Unset): The email BCC address. Only present when set.
         language_code (str | Unset): ISO 639-1 language code for the email, e.g. `en` or `fr`. Only present when set.
+        footer_id (None | str | Unset): The ID of the email's footer, or `null` for the system default footer. Only
+            present for workflow emails and campaign emails that are not critical notices, when footers are enabled for the
+            team.
         contact_properties_fallbacks (EmailMessageResponseContactPropertiesFallbacks | Unset): Fallback values for
             contact properties. Only present when set.
         event_properties_fallbacks (EmailMessageResponseEventPropertiesFallbacks | Unset): Fallback values for event
@@ -69,6 +72,7 @@ class EmailMessageResponse:
     cc_email: str | Unset = UNSET
     bcc_email: str | Unset = UNSET
     language_code: str | Unset = UNSET
+    footer_id: None | str | Unset = UNSET
     contact_properties_fallbacks: EmailMessageResponseContactPropertiesFallbacks | Unset = UNSET
     event_properties_fallbacks: EmailMessageResponseEventPropertiesFallbacks | Unset = UNSET
     data_variables_fallbacks: EmailMessageResponseDataVariablesFallbacks | Unset = UNSET
@@ -106,6 +110,12 @@ class EmailMessageResponse:
         bcc_email = self.bcc_email
 
         language_code = self.language_code
+
+        footer_id: None | str | Unset
+        if isinstance(self.footer_id, Unset):
+            footer_id = UNSET
+        else:
+            footer_id = self.footer_id
 
         contact_properties_fallbacks: dict[str, Any] | Unset = UNSET
         if not isinstance(self.contact_properties_fallbacks, Unset):
@@ -152,6 +162,8 @@ class EmailMessageResponse:
             field_dict["bccEmail"] = bcc_email
         if language_code is not UNSET:
             field_dict["languageCode"] = language_code
+        if footer_id is not UNSET:
+            field_dict["footerId"] = footer_id
         if contact_properties_fallbacks is not UNSET:
             field_dict["contactPropertiesFallbacks"] = contact_properties_fallbacks
         if event_properties_fallbacks is not UNSET:
@@ -210,6 +222,15 @@ class EmailMessageResponse:
 
         language_code = d.pop("languageCode", UNSET)
 
+        def _parse_footer_id(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        footer_id = _parse_footer_id(d.pop("footerId", UNSET))
+
         _contact_properties_fallbacks = d.pop("contactPropertiesFallbacks", UNSET)
         contact_properties_fallbacks: EmailMessageResponseContactPropertiesFallbacks | Unset
         if isinstance(_contact_properties_fallbacks, Unset):
@@ -260,6 +281,7 @@ class EmailMessageResponse:
             cc_email=cc_email,
             bcc_email=bcc_email,
             language_code=language_code,
+            footer_id=footer_id,
             contact_properties_fallbacks=contact_properties_fallbacks,
             event_properties_fallbacks=event_properties_fallbacks,
             data_variables_fallbacks=data_variables_fallbacks,
